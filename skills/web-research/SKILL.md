@@ -26,14 +26,21 @@ selective full-page fetching, and synthesis into a polished, cited report.
 
 ## Tools available
 
-**Search** — run Python with the `ddgs` library:
-```python
+**Search** — run the packaged Web Forager CLI with uvx:
+```bash
+uvx --python '>=3.10,<3.14' web-forager search "your query" --max-results 8 --output-format json
+```
+
+If `uvx` cannot run the packaged CLI, use a direct `ddgs` fallback through uv without
+touching the current project environment:
+```bash
+uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python - <<'PY'
 from ddgs import DDGS
 results = DDGS().text(query="your query", max_results=8)
 for r in results:
     print(r["title"], r["href"], r["body"])
+PY
 ```
-If `ddgs` isn't installed: `pip install ddgs`
 
 **Fetch** — call Jina Reader directly to get a URL as clean markdown:
 ```bash

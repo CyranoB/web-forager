@@ -9,214 +9,225 @@
 
 *The thing about information on the web is that it doesn't want to be found. It wants to hide behind cookie banners, keep itself to itself, and generally behave like a cat that knows it's time for the vet. Web Forager is the sort of dogged, slightly grubby assistant who goes out there anyway — accompanied by a duck of questionable temperament — rummages through DuckDuckGo, grabs pages directly when it can, and calls in Jina Reader when things get complicated. The results come back neatly converted for LLM consumption, which is to say, in a format that would make a librarian weep with either joy or despair, depending on the librarian.*
 
-A search-and-fetch toolkit for AI agents, available as an MCP server and as standalone Agent Skills:
-1. **Search** the web via DuckDuckGo
-2. **Search news** via DuckDuckGo News
-3. **Fetch** and convert web pages (direct HTTP + trafilatura, Jina Reader fallback)
+Web Forager gives AI agents practical web research workflows as **Agent Skills**.
+The skills search DuckDuckGo, monitor news, fetch pages, and synthesize cited answers.
 
-Also ships five **[Agent Skills](#agent-skills)** that work independently — no MCP required — for research, fact-checking, news monitoring, competitive analysis, and technology evaluation.
+Default usage is skill-first. You do not need to configure an MCP server to use the
+research workflows.
 
-## Features
+## Install For Your Coding Tool
 
-- DuckDuckGo web search with safe search controls
-- DuckDuckGo news search with date-sorted results and source attribution
-- Fetch and convert URLs to markdown or JSON (direct HTTP + trafilatura, Jina Reader fallback)
-- LLM-friendly output format option for search results
-- CLI for search, news, fetch, serve, and version commands
-- MCP tools for LLM integration
-- Five standalone Agent Skills for specialized research workflows
-- Docker support for containerized deployment
+Install as skills/plugins when your agent supports them. Use MCP only when your tool
+does not support skills, or when you want raw search/fetch tools instead of guided
+research workflows.
 
-## Installation
+<details>
+<summary><strong>Claude Code</strong></summary>
 
-### Prerequisites
-
-- Python 3.10 or higher
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
-
-### Install from PyPI (recommended)
+Install all five skills from the plugin marketplace:
 
 ```bash
-# Using uv (recommended)
-uv pip install web-forager
-
-# Or using pip
-pip install web-forager
+/plugin marketplace add CyranoB/web-forager
+/plugin install forager-skills@web-forager
 ```
 
-### Install with UVX (for Claude Desktop)
+Restart Claude Code, then check `/skills`.
 
-```bash
-# Install UVX if you haven't already
-pip install uvx
-
-# Install the Web Forager package
-uvx install web-forager
-```
-
-### Install from source
-
-For development or to get the latest changes:
-
-```bash
-# Clone the repository
-git clone https://github.com/CyranoB/web-forager.git
-cd web-forager
-
-# Install with uv (recommended)
-uv pip install -e .
-
-# Or with pip
-pip install -e .
-```
-
-### Docker
-
-Build and run with Docker:
-
-```bash
-# Build the image (uses version from latest git tag)
-docker build --build-arg VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//') -t web-forager .
-
-# Or specify a version manually
-docker build --build-arg VERSION=2.0.2 -t web-forager .
-
-# Run the server (MCP servers use STDIO, so typically run within an MCP client)
-docker run -i web-forager
-```
-
-## Usage
-
-### Starting the Server (STDIO Mode)
-
-```bash
-# Start the server in STDIO mode (for use with MCP clients like Claude)
-web-forager serve
-
-# Enable debug logging
-web-forager serve --debug
-```
-
-### Testing the Search Tool
-
-```bash
-# Search DuckDuckGo (JSON output, default)
-web-forager search "your search query" --max-results 5 --safesearch moderate
-
-# Search with LLM-friendly text output
-web-forager search "your search query" --output-format text
-```
-
-### Testing the News Search Tool
-
-```bash
-# Search DuckDuckGo news (JSON output, default)
-web-forager news "your search query" --max-results 10 --safesearch moderate
-
-# Search with LLM-friendly text output
-web-forager news "your search query" --output-format text
-```
-
-### Testing the Fetch Tool
-
-```bash
-# Fetch a URL and return markdown
-web-forager fetch "https://example.com" --format markdown
-
-# Fetch a URL and return JSON
-web-forager fetch "https://example.com" --format json
-
-# Limit output length
-web-forager fetch "https://example.com" --max-length 2000
-
-# Include generated image alt text
-web-forager fetch "https://example.com" --with-images
-```
-
-### Version Information
-
-```bash
-# Show version
-web-forager version
-
-# Show detailed version info
-web-forager version --debug
-```
-
-## MCP Client Setup
-
-This MCP server works with any MCP-compatible client. Use one of the setups below.
-
-Python 3.10-3.13 is supported (3.14 not yet). Use `--python ">=3.10,<3.14"` with `uvx` to enforce. Verified with Python 3.12 and 3.13.
-
-### Claude Desktop
-
-1. Open Claude Desktop > Settings > Developer > Edit Config.
-2. Edit the config file:
-   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-3. Add the server config under `mcpServers`:
-   ```json
-    {
-      "mcpServers": {
-        "web-forager": {
-          "command": "uvx",
-          "args": ["--python", ">=3.10,<3.14", "web-forager", "serve"]
-        }
-      }
-    }
-
-   ```
-4. Restart Claude Desktop.
-
-### Claude Code
-
-Add a local stdio server:
+MCP-only fallback:
 
 ```bash
 claude mcp add --transport stdio web-forager -- uvx --python ">=3.10,<3.14" web-forager serve
 ```
 
-Optional: `claude mcp list` to verify, or `claude mcp add-from-claude-desktop` to import.
+</details>
 
-### Codex (CLI + IDE)
+<details>
+<summary><strong>Codex</strong></summary>
 
-Add via CLI:
+Install the skills manually:
+
+```bash
+git clone https://github.com/CyranoB/web-forager.git
+mkdir -p ~/.codex/skills
+cp -R web-forager/skills/* ~/.codex/skills/
+```
+
+MCP-only fallback:
 
 ```bash
 codex mcp add web-forager -- uvx --python ">=3.10,<3.14" web-forager serve
 ```
 
-Or configure `~/.codex/config.toml`:
+</details>
 
-```toml
-[mcp_servers.web-forager]
-command = "uvx"
-args = ["--python", ">=3.10,<3.14", "web-forager", "serve"]
+<details>
+<summary><strong>VS Code / GitHub Copilot</strong></summary>
+
+If your VS Code build supports agent plugins, use the command palette:
+
+1. Open `Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windows/Linux.
+2. Run `Chat: Install Plugin From Source`.
+3. Paste `https://github.com/CyranoB/web-forager`.
+
+MCP-only fallback: configure a local MCP server with the standard config below.
+
+</details>
+
+<details>
+<summary><strong>Gemini CLI</strong></summary>
+
+If you want MCP tools:
+
+```bash
+gemini mcp add web-forager uvx --python ">=3.10,<3.14" web-forager serve
 ```
 
-### OpenCode
+For skills, copy the folders from `skills/` into the skills location supported by
+your Gemini environment.
 
-Add to your OpenCode config (`~/.config/opencode/opencode.json` or project `opencode.json`):
+</details>
+
+<details>
+<summary><strong>Pi Coding Agent</strong></summary>
+
+Install globally for Pi:
+
+```bash
+git clone https://github.com/CyranoB/web-forager.git
+mkdir -p ~/.pi/agent/skills
+cp -R web-forager/skills/* ~/.pi/agent/skills/
+```
+
+Or install only for the current project:
+
+```bash
+git clone https://github.com/CyranoB/web-forager.git
+mkdir -p .pi/skills
+cp -R web-forager/skills/* .pi/skills/
+```
+
+Pi also discovers skills from the generic Agent Skills directories:
+
+```bash
+mkdir -p ~/.agents/skills
+cp -R web-forager/skills/* ~/.agents/skills/
+```
+
+For one-off sessions, pass a skill path explicitly:
+
+```bash
+pi --skill web-forager/skills/web-research
+```
+
+</details>
+
+<details>
+<summary><strong>Kiro CLI</strong></summary>
+
+Install globally for all Kiro CLI projects:
+
+```bash
+git clone https://github.com/CyranoB/web-forager.git
+mkdir -p ~/.kiro/skills
+cp -R web-forager/skills/* ~/.kiro/skills/
+```
+
+Or install only for the current workspace:
+
+```bash
+git clone https://github.com/CyranoB/web-forager.git
+mkdir -p .kiro/skills
+cp -R web-forager/skills/* .kiro/skills/
+```
+
+Kiro's default agent loads skills from both locations automatically. For custom
+agents, add skill resources such as:
 
 ```json
 {
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "web-forager": {
-      "type": "local",
-      "command": ["uvx", "--python", ">=3.10,<3.14", "web-forager", "serve"],
-      "enabled": true
-    }
-  }
+  "resources": [
+    "skill://.kiro/skills/*/SKILL.md",
+    "skill://~/.kiro/skills/*/SKILL.md"
+  ]
 }
 ```
 
-Or run `opencode mcp add` and follow the prompts.
+</details>
 
-### Cursor
+<details>
+<summary><strong>Cursor, OpenCode, Cline, Windsurf, JetBrains</strong></summary>
 
-Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
+Use the standard MCP config below unless your client supports Agent Skills or plugins
+from a GitHub repository. If it does, install from:
+
+```text
+https://github.com/CyranoB/web-forager
+```
+
+</details>
+
+### Individual Skills
+
+For any Agent Skills-compatible tool, install one skill folder directly. For example:
+
+```bash
+claude install-skill github:CyranoB/web-forager/skills/web-research
+```
+
+Or install from a local checkout:
+
+```bash
+git clone https://github.com/CyranoB/web-forager.git
+cd web-forager
+claude install-skill ./skills/web-research
+```
+
+For agents without `claude install-skill`, copy a folder from `skills/` into your
+agent's skills directory.
+
+## Use The Skills
+
+After installing, ask your agent naturally. The matching skill should be selected
+automatically by skill metadata.
+
+Examples:
+
+```text
+Research the current state of open-source browser agents.
+Fact check: did Apple announce a foldable iPhone?
+What's new with Anthropic this month?
+Map the competitive landscape for AI meeting assistants.
+Should we adopt Bun for a production Node service?
+```
+
+## Available Skills
+
+| Skill | Use it for | Output |
+| --- | --- | --- |
+| [web-research](skills/web-research/) | General research, lookups, deep dives | Adaptive report with citations |
+| [fact-check](skills/fact-check/) | Verifying a specific claim | Verdict with supporting and contradicting evidence |
+| [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
+| [competitive-intel](skills/competitive-intel/) | Market maps and competitor analysis | Landscape or positioning report |
+| [tech-advisor](skills/tech-advisor/) | Tech/product evaluation and adoption decisions | Recommendation with evidence |
+
+## How Search Works
+
+The skills prefer tools in this order:
+
+1. Existing MCP search/fetch tools, if your agent already has them.
+2. Built-in agent web search/fetch tools.
+3. The packaged Web Forager CLI through `uvx`.
+4. A direct `ddgs` fallback through `uv run --no-project`.
+
+Python 3.10-3.13 is supported. Python 3.14 is not supported yet, so all documented
+`uvx` commands pin `--python ">=3.10,<3.14"`.
+
+## Optional: MCP Server
+
+Use the MCP server only if you want reusable search/fetch tools exposed directly to
+an MCP-compatible client. Skills work without this setup.
+
+Add a local stdio MCP server with this standard config:
 
 ```json
 {
@@ -229,250 +240,64 @@ Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
 }
 ```
 
-Verify with:
+Some clients use a different top-level config shape, but the command and args are
+the same.
+
+## Optional: CLI
+
+Run commands without installing the package:
 
 ```bash
-cursor-agent mcp list
+uvx --python ">=3.10,<3.14" web-forager search "your search query" --max-results 5 --output-format text
+uvx --python ">=3.10,<3.14" web-forager news "your topic" --max-results 10 --output-format text
+uvx --python ">=3.10,<3.14" web-forager fetch "https://example.com" --format markdown
 ```
 
-### Gemini CLI
-
-Add to your Gemini CLI settings file:
-- Global: `~/.gemini/settings.json`
-- Project: `.gemini/settings.json`
-
-```json
-{
-  "mcpServers": {
-    "web-forager": {
-      "command": "uvx",
-      "args": ["--python", ">=3.10,<3.14", "web-forager", "serve"],
-      "timeout": 30000
-    }
-  }
-}
-```
-
-Verify the server is configured:
+Or install locally:
 
 ```bash
-gemini tools list
+uv pip install web-forager
+web-forager search "your search query"
+web-forager news "your topic"
+web-forager fetch "https://example.com"
 ```
 
 ## MCP Tools
 
-The server exposes these tools to MCP clients:
+The MCP server exposes:
 
-```python
-@mcp.tool()
-def duckduckgo_search(
-    query: str,
-    max_results: int = 5,
-    safesearch: str = "moderate",
-    output_format: str = "json"
-) -> list | str:
-    """Search DuckDuckGo for the given query."""
-```
+| Tool | Purpose |
+| --- | --- |
+| `duckduckgo_search` | Search the web with DuckDuckGo-compatible results |
+| `duckduckgo_news_search` | Search recent news with dates and sources |
+| `web_fetch` | Fetch a URL and return markdown or JSON |
 
-```python
-@mcp.tool()
-def duckduckgo_news_search(
-    query: str,
-    max_results: int = 10,
-    safesearch: str = "moderate",
-    output_format: str = "json"
-) -> list | str:
-    """Search DuckDuckGo for recent news articles."""
-```
+Search and news tools return JSON by default and support `output_format="text"` for
+LLM-friendly formatted results.
 
-```python
-@mcp.tool()
-def web_fetch(url: str, format: str = "markdown", max_length: int | None = None, with_images: bool = False) -> str | dict:
-    """Fetch a URL and convert it to markdown or JSON.
-    Tries direct HTTP fetch first, falls back to Jina Reader."""
-```
-
-Example usage in an MCP client:
-
-```python
-# This is handled automatically by the MCP client
-results = duckduckgo_search("Python programming", max_results=3)
-news = duckduckgo_news_search("AI regulation 2026", max_results=5)
-content = web_fetch("https://example.com", format="markdown")
-
-# Get LLM-friendly text output
-text_results = duckduckgo_search("Python programming", output_format="text")
-```
-
-## API
-
-### Tool 1: Search
-
-- **Tool Name**: `duckduckgo_search`
-- **Description**: Search the web using DuckDuckGo (powered by the `ddgs` library)
-
-#### Parameters
-
-- `query` (string, required): The search query
-- `max_results` (integer, optional, default: 5): Maximum number of search results to return
-- `safesearch` (string, optional, default: "moderate"): Safe search setting ("on", "moderate", or "off")
-- `output_format` (string, optional, default: "json"): Output format - "json" for structured data, "text" for LLM-friendly formatted string
-
-#### Response
-
-**JSON format** (default): A list of dictionaries:
-
-```json
-[
-  {
-    "title": "Result title",
-    "url": "https://example.com",
-    "snippet": "Text snippet from the search result"
-  }
-]
-```
-
-**Text format**: An LLM-friendly formatted string:
-
-```
-Found 3 search results:
-
-1. Result title
-   URL: https://example.com
-   Summary: Text snippet from the search result
-
-2. Another result
-   URL: https://example2.com
-   Summary: Another snippet
-```
-
-### Tool 2: News Search
-
-- **Tool Name**: `duckduckgo_news_search`
-- **Description**: Search for recent news articles using DuckDuckGo (powered by the `ddgs` library)
-
-#### Parameters
-
-- `query` (string, required): The news search query
-- `max_results` (integer, optional, default: 10): Maximum number of news results to return
-- `safesearch` (string, optional, default: "moderate"): Safe search setting ("on", "moderate", or "off")
-- `output_format` (string, optional, default: "json"): Output format - "json" for structured data, "text" for LLM-friendly formatted string
-
-#### Response
-
-**JSON format** (default): A list of dictionaries:
-
-```json
-[
-  {
-    "title": "News headline",
-    "url": "https://example.com/article",
-    "snippet": "Article summary text",
-    "date": "2026-03-01T12:00:00+00:00",
-    "source": "News Outlet"
-  }
-]
-```
-
-**Text format**: An LLM-friendly formatted string:
-
-```
-Found 3 news results:
-
-1. News headline
-   URL: https://example.com/article
-   Date: 2026-03-01T12:00:00+00:00
-   Source: News Outlet
-   Summary: Article summary text
-```
-
-### Tool 3: Fetch
-
-- **Tool Name**: `web_fetch`
-- **Description**: Fetch a URL and convert it to markdown or JSON. Tries direct HTTP fetch with trafilatura for fast content extraction, falls back to Jina Reader for JavaScript-heavy or bot-protected pages.
-
-#### Parameters
-
-- `url` (string, required): The URL to fetch and convert
-- `format` (string, optional, default: "markdown"): Output format ("markdown" or "json")
-- `max_length` (integer, optional): Maximum content length to return (None for no limit)
-- `with_images` (boolean, optional, default: false): Whether to include images in the output
-
-#### Response
-
-For markdown format: a string containing markdown content
-
-For JSON format: a dictionary with the structure:
-
-```json
-{
-  "url": "https://example.com",
-  "title": "Page title",
-  "content": "Markdown content"
-}
-```
-
-## Agent Skills
-
-This repo includes five **Agent Skills** that orchestrate the MCP's search and fetch tools into specialized workflows. Each skill follows the open [Agent Skills](https://agentskills.io/) specification and works with Claude Code, Codex CLI, and other compatible agents.
-
-All skills work **without** the MCP configured — they use the `ddgs` Python library and the Jina Reader HTTP API directly. If MCP tools are available in the session, they prefer those automatically.
-
-### Install via Plugin Marketplace (recommended)
-
-Register this repo as a plugin marketplace, then install all five skills at once:
+## Development
 
 ```bash
-# Add the marketplace
-/plugin marketplace add CyranoB/web-forager
-
-# Install all 5 skills
-/plugin install forager-skills@web-forager
+git clone https://github.com/CyranoB/web-forager.git
+cd web-forager
+uv pip install -e ".[dev]"
+pytest
 ```
 
-### Install individual skills
+Useful local commands:
 
-**Claude Code:**
 ```bash
-# Install a specific skill
-claude install-skill ./skills/web-research
-
-# Or from GitHub
-claude install-skill github:CyranoB/web-forager/skills/web-research
+web-forager serve
+web-forager version --debug
 ```
-
-**Manual (any agent):**
-Copy a skill folder from `skills/` into your agent's skills directory (e.g., `~/.claude/skills/` or `.claude/skills/`).
-
-### Available skills
-
-| Skill | Triggers on | Output |
-|-------|-------------|--------|
-| **[web-research](skills/web-research/)** | "research X", "look up X", "deep dive into X" | Adaptive report (quick answer / standard / deep dive) with citations |
-| **[fact-check](skills/fact-check/)** | "is it true that X", "verify this claim", "fact check this" | Verdict (Confirmed -> False) with evidence for and against |
-| **[news-monitor](skills/news-monitor/)** | "what's new with X", "recent news about X", "catch me up on X" | Chronological news briefing with headlines and details |
-| **[competitive-intel](skills/competitive-intel/)** | "competitive landscape for X", "market study", "how do we compare to competitors" | Market landscape map or competitive positioning analysis with pricing, gaps, and recommendations |
-| **[tech-advisor](skills/tech-advisor/)** | "should we adopt X", "is X production ready", "X vs Y for my needs" | Maturity scorecard (Adopt/Trial/Assess/Hold) or product comparison with evidence |
 
 ## Notes
 
-- Search and news search use the `ddgs` package (renamed from `duckduckgo-search`).
-- Fetch tries direct HTTP + [trafilatura](https://trafilatura.readthedocs.io/) first for speed, falls back to [Jina Reader](https://r.jina.ai/) for JavaScript-heavy or bot-protected pages.
-
-## Contributing
-
-Contributions are welcome! Here's how you can contribute:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Support
-
-If you encounter any issues or have questions, please [open an issue](https://github.com/CyranoB/web-forager/issues).
+- Search and news search use the `ddgs` package.
+- Fetch tries direct HTTP plus `trafilatura` first, then falls back to Jina Reader
+  for JavaScript-heavy or bot-protected pages.
+- The plugin marketplace manifest lives in `.claude-plugin/marketplace.json`.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT. See [LICENSE](LICENSE).

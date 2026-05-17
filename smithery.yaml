@@ -36,8 +36,8 @@ startCommand:
     (config) => ({
       command: 'uvx',
       args: config.debug
-        ? ['web-forager', 'serve', '--debug']
-        : ['web-forager', 'serve']
+        ? ['--python', '>=3.10,<3.14', 'web-forager', 'serve', '--debug']
+        : ['--python', '>=3.10,<3.14', 'web-forager', 'serve']
     })
   exampleConfig:
     debug: false

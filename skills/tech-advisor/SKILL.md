@@ -40,18 +40,24 @@ preference:
    available, use those.
 2. **Built-in tools** — if your agent has a built-in web search tool (e.g., `WebSearch`,
    `web_search`, `search`) or a URL fetch tool (e.g., `WebFetch`, `fetch`), use those.
-3. **Python ddgs library** — run a search via the `ddgs` package:
-   ```python
-   from ddgs import DDGS
-   results = DDGS().text(query="your query", max_results=8)
-   for r in results:
-       print(r["title"], r["href"], r["body"])
-   ```
-   If `ddgs` isn't installed: `pip install ddgs`
-4. **Jina Reader** — fetch any URL as clean markdown:
-   ```bash
-   curl -s "https://r.jina.ai/https://example.com"
-   ```
+3. **Web Forager CLI** — run packaged search through `uvx`:
+```bash
+uvx --python '>=3.10,<3.14' web-forager search "your query" --max-results 8 --output-format json
+```
+4. **Direct ddgs fallback** — if `uvx` cannot run the packaged CLI, run `ddgs`
+   through uv without touching the current project environment:
+```bash
+uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python - <<'PY'
+from ddgs import DDGS
+results = DDGS().text(query="your query", max_results=8)
+for r in results:
+    print(r["title"], r["href"], r["body"])
+PY
+```
+5. **Jina Reader** — fetch any URL as clean markdown:
+```bash
+curl -s "https://r.jina.ai/https://example.com"
+```
 
 The skill works with any combination of search + fetch. You need at least one way to
 search the web and one way to read a URL's content.
