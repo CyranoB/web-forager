@@ -60,3 +60,11 @@ include = ["web_forager", "web_forager.*"]
 write_to = "src/web_forager/_version.py"
 version_scheme = "post-release"
 local_scheme = "no-local-version"  # This removes the local version component
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["src/web_forager/_version.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "SIM", "UP", "N", "S", "A", "C90", "RUF"]

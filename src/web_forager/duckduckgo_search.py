@@ -2,12 +2,12 @@
 """
 DuckDuckGo Search MCP Tool
 
-This tool allows searching the web using DuckDuckGo through the MCP (Model Context Protocol) framework.
-It integrates with the ddgs library to provide reliable search results.
+This tool allows searching the web using DuckDuckGo through the MCP
+(Model Context Protocol) framework. It integrates with the ddgs library
+to provide reliable search results.
 """
 
 import logging
-from typing import Dict, List, Union
 
 from ddgs import DDGS
 from ddgs.exceptions import DDGSException
@@ -17,7 +17,7 @@ from .server import mcp
 logger = logging.getLogger(__name__)
 
 
-def _format_search_result(result: Dict) -> Dict[str, str]:
+def _format_search_result(result: dict) -> dict[str, str]:
     """Transform a raw DuckDuckGo result to the standard format."""
     return {
         "title": result.get("title", ""),
@@ -26,7 +26,7 @@ def _format_search_result(result: Dict) -> Dict[str, str]:
     }
 
 
-def _format_results_as_text(results: List[Dict[str, str]], query: str) -> str:
+def _format_results_as_text(results: list[dict[str, str]], query: str) -> str:
     """
     Format search results as LLM-friendly natural language text.
 
@@ -62,7 +62,7 @@ def _execute_search(
     max_results: int,
     timeout: int,
     backend: str,
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """
     Execute a search with the specified parameters.
 
@@ -95,7 +95,7 @@ def _try_fallback_search(
     max_results: int,
     timeout: int,
     original_error: Exception,
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """
     Attempt a fallback search using the brave backend.
 
@@ -117,8 +117,8 @@ def _try_fallback_search(
     logger.info("Retrying with brave backend as fallback")
     try:
         return _execute_search(query, region, safesearch, max_results, timeout, "brave")
-    except Exception as e:
-        logger.error(f"Fallback search failed: {str(e)}")
+    except Exception:
+        logger.exception("Fallback search failed")
         return []
 
 
@@ -159,7 +159,7 @@ def search_duckduckgo(
     safesearch: str = "moderate",
     region: str = "wt-wt",
     timeout: int = 15,
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """
     Search DuckDuckGo using the ddgs library and return parsed results.
 
@@ -180,10 +180,10 @@ def search_duckduckgo(
             query, region, safesearch, max_results, timeout, "duckduckgo"
         )
     except DDGSException as e:
-        logger.error(f"DuckDuckGo search error: {str(e)}")
+        logger.exception("DuckDuckGo search error")
         return _try_fallback_search(query, region, safesearch, max_results, timeout, e)
-    except Exception as e:
-        logger.error(f"Unexpected error during search: {str(e)}")
+    except Exception:
+        logger.exception("Unexpected error during search")
         return []
 
 
@@ -193,7 +193,7 @@ def duckduckgo_search(
     max_results: int = 5,
     safesearch: str = "moderate",
     output_format: str = "json",
-) -> Union[List[Dict[str, str]], str]:
+) -> list[dict[str, str]] | str:
     """
     Search the web using DuckDuckGo.
 
@@ -211,8 +211,8 @@ def duckduckgo_search(
     if not isinstance(max_results, int):
         try:
             max_results = int(max_results)
-        except (ValueError, TypeError):
-            raise ValueError("max_results must be a valid positive integer")
+        except (ValueError, TypeError) as e:
+            raise ValueError("max_results must be a valid positive integer") from e
 
     # Validate output_format
     output_format = output_format.lower() if output_format else "json"

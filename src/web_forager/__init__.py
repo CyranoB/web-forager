@@ -1,8 +1,8 @@
 """Web Forager - A search-and-fetch toolkit for AI agents via MCP and standalone Agent Skills."""
 
 from .duckduckgo_search import duckduckgo_search, search_duckduckgo
-from .web_fetch import fetch_url, jina_fetch, web_fetch
 from .server import mcp
+from .web_fetch import fetch_url, jina_fetch, web_fetch
 
 try:
     # Get version from setuptools_scm-generated file
@@ -14,11 +14,11 @@ except ImportError:
     __version__ = _version("web-forager")
 
 __all__ = [
-    "mcp",
+    "__version__",
     "duckduckgo_search",
+    "fetch_url",
+    "jina_fetch",
+    "mcp",
     "search_duckduckgo",
     "web_fetch",
-    "jina_fetch",
-    "fetch_url",
-    "__version__",
 ]

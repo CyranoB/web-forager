@@ -7,7 +7,7 @@ It integrates with the ddgs library's news() method to provide time-sorted news 
 """
 
 import logging
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from ddgs import DDGS
 from ddgs.exceptions import DDGSException
@@ -17,7 +17,7 @@ from .server import mcp
 logger = logging.getLogger(__name__)
 
 
-def _format_news_result(result: Dict[str, Any]) -> Dict[str, str]:
+def _format_news_result(result: dict[str, Any]) -> dict[str, str]:
     """Transform a raw DuckDuckGo news result to the standard format."""
     return {
         "title": result.get("title", ""),
@@ -28,7 +28,7 @@ def _format_news_result(result: Dict[str, Any]) -> Dict[str, str]:
     }
 
 
-def _format_news_as_text(results: List[Dict[str, str]], query: str) -> str:
+def _format_news_as_text(results: list[dict[str, str]], query: str) -> str:
     """Format news results as LLM-friendly natural language text."""
     if not results:
         return (
@@ -55,7 +55,7 @@ def search_duckduckgo_news(
     safesearch: str = "moderate",
     region: str = "wt-wt",
     timeout: int = 30,
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """
     Search DuckDuckGo news using the ddgs library and return parsed results.
 
@@ -92,11 +92,11 @@ def search_duckduckgo_news(
             max_results=max_results,
         )
         return [_format_news_result(r) for r in results]
-    except DDGSException as e:
-        logger.error(f"DuckDuckGo news search error: {str(e)}")
+    except DDGSException:
+        logger.exception("DuckDuckGo news search error")
         return []
-    except Exception as e:
-        logger.error(f"Unexpected error during news search: {str(e)}")
+    except Exception:
+        logger.exception("Unexpected error during news search")
         return []
 
 
@@ -106,7 +106,7 @@ def duckduckgo_news_search(
     max_results: int = 10,
     safesearch: str = "moderate",
     output_format: str = "json",
-) -> Union[List[Dict[str, str]], str]:
+) -> list[dict[str, str]] | str:
     """
     Search DuckDuckGo for recent news articles.
 
@@ -127,8 +127,8 @@ def duckduckgo_news_search(
     if not isinstance(max_results, int):
         try:
             max_results = int(max_results)
-        except (ValueError, TypeError):
-            raise ValueError("max_results must be a valid positive integer")
+        except (ValueError, TypeError) as e:
+            raise ValueError("max_results must be a valid positive integer") from e
 
     output_format = output_format.lower() if output_format else "json"
     if output_format not in ("json", "text"):

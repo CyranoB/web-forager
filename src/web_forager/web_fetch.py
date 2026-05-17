@@ -9,7 +9,7 @@ insufficient content (e.g., JavaScript-rendered pages, bot-blocked sites).
 
 import json
 import logging
-from typing import Any, Dict, Optional, Union
+from typing import Any
 from urllib.parse import quote, urlparse
 
 import requests
@@ -53,7 +53,7 @@ def _validate_url(url: str) -> None:
         raise ValueError("Only HTTP/HTTPS URLs are supported")
 
 
-def _truncate_content(content: str, max_length: Optional[int]) -> str:
+def _truncate_content(content: str, max_length: int | None) -> str:
     """Truncate content if it exceeds max_length."""
     if max_length and len(content) > max_length:
         return content[:max_length] + "... (content truncated)"
@@ -63,9 +63,9 @@ def _truncate_content(content: str, max_length: Optional[int]) -> str:
 def _direct_fetch(
     url: str,
     output_format: str = "markdown",
-    max_length: Optional[int] = None,
+    max_length: int | None = None,
     with_images: bool = False,
-) -> Optional[Union[str, Dict[str, Any]]]:
+) -> str | dict[str, Any] | None:
     """
     Fetch a URL directly via HTTP and extract content with trafilatura.
 
@@ -122,9 +122,9 @@ def _direct_fetch(
 def _jina_fetch(
     url: str,
     output_format: str = "markdown",
-    max_length: Optional[int] = None,
+    max_length: int | None = None,
     with_images: bool = False,
-) -> Union[str, Dict[str, Any]]:
+) -> str | dict[str, Any]:
     """Fetch a URL using the Jina Reader API."""
     headers = {"x-no-cache": "true"}
 
@@ -152,9 +152,9 @@ def _jina_fetch(
 def fetch_url(
     url: str,
     output_format: str = "markdown",
-    max_length: Optional[int] = None,
+    max_length: int | None = None,
     with_images: bool = False,
-) -> Union[str, Dict[str, Any]]:
+) -> str | dict[str, Any]:
     """
     Fetch a URL and convert its content to markdown or JSON.
 
@@ -185,18 +185,18 @@ def fetch_url(
     try:
         return _jina_fetch(url, output_format, max_length, with_images)
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Error fetching URL ({url}): {str(e)}")
+        raise RuntimeError(f"Error fetching URL ({url}): {e!s}") from e
     except json.JSONDecodeError as e:
-        raise RuntimeError(f"Error decoding JSON response: {str(e)}")
+        raise RuntimeError(f"Error decoding JSON response: {e!s}") from e
 
 
 @mcp.tool()
 def web_fetch(
     url: str,
-    format: str = "markdown",
-    max_length: Optional[int] = None,
+    format: str = "markdown",  # noqa: A002 — public MCP tool parameter; renaming would break clients
+    max_length: int | None = None,
     with_images: bool = False,
-) -> Union[str, Dict[str, Any]]:
+) -> str | dict[str, Any]:
     """
     Fetch a URL and convert it to markdown or JSON.
 
@@ -223,8 +223,8 @@ def web_fetch(
             max_length = int(max_length)
             if max_length <= 0:
                 raise ValueError("max_length must be a positive integer")
-        except (ValueError, TypeError):
-            raise ValueError("max_length must be a positive integer")
+        except (ValueError, TypeError) as e:
+            raise ValueError("max_length must be a positive integer") from e
 
     return fetch_url(
         url, output_format=format, max_length=max_length, with_images=with_images

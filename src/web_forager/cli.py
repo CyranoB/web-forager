@@ -8,12 +8,12 @@ import argparse
 import json
 import logging
 import sys
-from typing import Callable, Dict, List, Union
+from collections.abc import Callable
 
 from .duckduckgo_news import duckduckgo_news_search
 from .duckduckgo_search import duckduckgo_search
-from .web_fetch import fetch_url
 from .server import mcp
+from .web_fetch import fetch_url
 
 
 def _handle_version(args: argparse.Namespace) -> int:
@@ -22,21 +22,18 @@ def _handle_version(args: argparse.Namespace) -> int:
 
     print(f"Web Forager v{__version__}")
 
-    if not getattr(args, "debug", False):
-        return 0
+    if getattr(args, "debug", False):
+        import platform
 
-    # Show additional version information in debug mode
-    import platform
+        print(f"Python version: {platform.python_version()}")
+        print(f"Platform: {platform.platform()}")
 
-    print(f"Python version: {platform.python_version()}")
-    print(f"Platform: {platform.platform()}")
+        try:
+            from ddgs import __version__ as ddgs_version
 
-    try:
-        from ddgs import __version__ as ddgs_version
-
-        print(f"ddgs version: {ddgs_version}")
-    except ImportError:
-        print("ddgs: not available")
+            print(f"ddgs version: {ddgs_version}")
+        except ImportError:
+            print("ddgs: not available")
 
     return 0
 
@@ -58,8 +55,8 @@ def _handle_search(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
-    except Exception as e:
-        logging.error(f"Search error: {str(e)}")
+    except Exception:
+        logging.exception("Search error")
         return 1
 
 
@@ -80,8 +77,8 @@ def _handle_news(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
-    except Exception as e:
-        logging.error(f"News search error: {str(e)}")
+    except Exception:
+        logging.exception("News search error")
         return 1
 
 
@@ -100,8 +97,8 @@ def _handle_fetch(args: argparse.Namespace) -> int:
         else:
             print(result)
         return 0
-    except Exception as e:
-        logging.error(f"Fetch error: {str(e)}")
+    except Exception:
+        logging.exception("Fetch error")
         return 1
 
 
@@ -120,10 +117,14 @@ def _handle_serve(args: argparse.Namespace) -> int:
         max_results: int = 5,
         safesearch: str = "moderate",
         output_format: str = "json",
-    ) -> Union[List[Dict[str, str]], str]:
+    ) -> list[dict[str, str]] | str:
         """Search DuckDuckGo for the given query."""
         logging.debug(
-            f"Searching for: {query} (max_results: {max_results}, safesearch: {safesearch}, output_format: {output_format})"
+            "Searching for: %s (max_results: %s, safesearch: %s, output_format: %s)",
+            query,
+            max_results,
+            safesearch,
+            output_format,
         )
         results = duckduckgo_search(query, max_results, safesearch, output_format)
         if isinstance(results, list):
@@ -136,8 +137,8 @@ def _handle_serve(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         logging.info("Server stopped by user")
         return 0
-    except Exception as e:
-        logging.error(f"Error running MCP server: {e}")
+    except Exception:
+        logging.exception("Error running MCP server")
         return 1
 
 
@@ -235,7 +236,7 @@ def main() -> int:
     )
 
     # Command dispatch
-    handlers: Dict[str, Callable[[argparse.Namespace], int]] = {
+    handlers: dict[str, Callable[[argparse.Namespace], int]] = {
         "version": _handle_version,
         "search": _handle_search,
         "news": _handle_news,
