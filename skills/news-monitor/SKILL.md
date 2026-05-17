@@ -41,17 +41,24 @@ mcp__web_forager__duckduckgo_news_search(query="your query", max_results=10)
 ```
 Each result includes `title`, `url`, `snippet`, `date`, and `source`.
 
-Without MCP, use the `ddgs` library directly:
-```python
+Without MCP, run the packaged Web Forager CLI with uvx:
+```bash
+uvx --python '>=3.10,<3.14' web-forager news "your query" --max-results 10 --output-format json
+```
+
+If `uvx` cannot run the packaged CLI, use a direct `ddgs` fallback through uv without
+touching the current project environment:
+```bash
+uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python - <<'PY'
 from ddgs import DDGS
 results = DDGS().news(query="your query", max_results=10)
 for r in results:
     print(r["date"], r["title"], r["url"], r["source"])
+PY
 ```
-If `ddgs` isn't installed: `pip install ddgs`
 
-**General search** — use an MCP search tool or `DDGS().text()` only if news
-search returns too few results.
+**General search** — use an MCP search tool, `web-forager search` via uvx, or
+`DDGS().text()` via `uv run --no-project` only if news search returns too few results.
 
 **Fetch** — use an MCP fetch tool or `curl -s "https://r.jina.ai/URL"`
 only when a snippet is too vague to summarize the event. Cap fetches with
