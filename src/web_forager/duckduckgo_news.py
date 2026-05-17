@@ -92,11 +92,11 @@ def search_duckduckgo_news(
             max_results=max_results,
         )
         return [_format_news_result(r) for r in results]
-    except DDGSException as e:
-        logger.error(f"DuckDuckGo news search error: {str(e)}")
+    except DDGSException:
+        logger.exception("DuckDuckGo news search error")
         return []
-    except Exception as e:
-        logger.error(f"Unexpected error during news search: {str(e)}")
+    except Exception:
+        logger.exception("Unexpected error during news search")
         return []
 
 

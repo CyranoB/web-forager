@@ -22,21 +22,18 @@ def _handle_version(args: argparse.Namespace) -> int:
 
     print(f"Web Forager v{__version__}")
 
-    if not getattr(args, "debug", False):
-        return 0
+    if getattr(args, "debug", False):
+        import platform
 
-    # Show additional version information in debug mode
-    import platform
+        print(f"Python version: {platform.python_version()}")
+        print(f"Platform: {platform.platform()}")
 
-    print(f"Python version: {platform.python_version()}")
-    print(f"Platform: {platform.platform()}")
+        try:
+            from ddgs import __version__ as ddgs_version
 
-    try:
-        from ddgs import __version__ as ddgs_version
-
-        print(f"ddgs version: {ddgs_version}")
-    except ImportError:
-        print("ddgs: not available")
+            print(f"ddgs version: {ddgs_version}")
+        except ImportError:
+            print("ddgs: not available")
 
     return 0
 
@@ -58,8 +55,8 @@ def _handle_search(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
-    except Exception as e:
-        logging.error(f"Search error: {str(e)}")
+    except Exception:
+        logging.exception("Search error")
         return 1
 
 
@@ -80,8 +77,8 @@ def _handle_news(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
-    except Exception as e:
-        logging.error(f"News search error: {str(e)}")
+    except Exception:
+        logging.exception("News search error")
         return 1
 
 
@@ -100,8 +97,8 @@ def _handle_fetch(args: argparse.Namespace) -> int:
         else:
             print(result)
         return 0
-    except Exception as e:
-        logging.error(f"Fetch error: {str(e)}")
+    except Exception:
+        logging.exception("Fetch error")
         return 1
 
 
@@ -136,8 +133,8 @@ def _handle_serve(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         logging.info("Server stopped by user")
         return 0
-    except Exception as e:
-        logging.error(f"Error running MCP server: {e}")
+    except Exception:
+        logging.exception("Error running MCP server")
         return 1
 
 

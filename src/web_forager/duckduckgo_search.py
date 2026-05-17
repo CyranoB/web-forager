@@ -117,8 +117,8 @@ def _try_fallback_search(
     logger.info("Retrying with brave backend as fallback")
     try:
         return _execute_search(query, region, safesearch, max_results, timeout, "brave")
-    except Exception as e:
-        logger.error(f"Fallback search failed: {str(e)}")
+    except Exception:
+        logger.exception("Fallback search failed")
         return []
 
 
@@ -180,10 +180,10 @@ def search_duckduckgo(
             query, region, safesearch, max_results, timeout, "duckduckgo"
         )
     except DDGSException as e:
-        logger.error(f"DuckDuckGo search error: {str(e)}")
+        logger.exception("DuckDuckGo search error")
         return _try_fallback_search(query, region, safesearch, max_results, timeout, e)
-    except Exception as e:
-        logger.error(f"Unexpected error during search: {str(e)}")
+    except Exception:
+        logger.exception("Unexpected error during search")
         return []
 
 
