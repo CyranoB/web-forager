@@ -8,24 +8,27 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="${SKILLS_DEST:-$HOME/.claude/skills}"
 
 resolve_path() {
+  local path="$1"
   if command -v realpath >/dev/null 2>&1; then
-    realpath "$1"
+    realpath "$path"
   elif command -v greadlink >/dev/null 2>&1; then
-    greadlink -f "$1"
+    greadlink -f "$path"
   else
-    readlink -f "$1"
+    readlink -f "$path"
   fi
 }
 
 # If the destination directory itself points into this repo, writing per-skill
 # symlinks would pollute the working copy. Stop instead.
-if [ -L "$DEST" ]; then
+if [[ -L "$DEST" ]]; then
   resolved="$(resolve_path "$DEST")"
   case "$resolved" in
     "$REPO"|"$REPO"/*)
       echo "error: $DEST is a symlink into this repo ($resolved)." >&2
       echo "Remove it or set SKILLS_DEST to a real directory, then re-run." >&2
       exit 1
+      ;;
+    *)
       ;;
   esac
 fi
@@ -40,7 +43,7 @@ while IFS= read -r -d '' skill_md; do
   name="$(basename "$(dirname "$skill_md")")"
   target="$DEST/$name"
 
-  if [ -e "$target" ] && [ ! -L "$target" ]; then
+  if [[ -e "$target" ]] && [[ ! -L "$target" ]]; then
     echo "error: $target already exists and is not a symlink." >&2
     echo "Move or remove it before linking $name." >&2
     exit 1

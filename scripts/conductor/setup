@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ─── Link shared env files from Conductor root ──────────────────
+for f in .env .env.local; do
+  src="${CONDUCTOR_ROOT_PATH:-}/$f"
+  if [[ -n "${CONDUCTOR_ROOT_PATH:-}" && -f "$src" && ! -L "$f" && ! -e "$f" ]]; then
+    ln -s "$src" "$f"
+  fi
+done
+
+# ─── Check for uv ───────────────────────────────────────────────
+if ! command -v uv >/dev/null 2>&1; then
+  echo "Error: uv is required but not installed." >&2
+  echo "Install with: curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
+  exit 1
+fi
+
+# ─── Create venv if missing ──────────────────────────────────────
+if [[ ! -d .venv ]]; then
+  uv venv
+fi
+
+# ─── Install project + dev dependencies ─────────────────────────
+uv pip install -e ".[dev]"
+
+# ─── Verify installation ────────────────────────────────────────
+.venv/bin/web-forager version
