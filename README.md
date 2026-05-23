@@ -6,6 +6,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/web-forager?style=flat-square)](https://pypi.org/project/web-forager/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Downloads](https://static.pepy.tech/badge/web-forager/month)](https://pepy.tech/project/web-forager)
+[![skills.sh](https://skills.sh/b/CyranoB/web-forager)](https://skills.sh/CyranoB/web-forager)
 
 *The thing about information on the web is that it doesn't want to be found. It wants to hide behind cookie banners, keep itself to itself, and generally behave like a cat that knows it's time for the vet. Web Forager is the sort of dogged, slightly grubby assistant who goes out there anyway — accompanied by a duck of questionable temperament — rummages through DuckDuckGo, grabs pages directly when it can, and calls in Jina Reader when things get complicated. The results come back neatly converted for LLM consumption, which is to say, in a format that would make a librarian weep with either joy or despair, depending on the librarian.*
 
@@ -14,6 +15,25 @@ The skills search DuckDuckGo, monitor news, fetch pages, and synthesize cited an
 
 Default usage is skill-first. You do not need to configure an MCP server to use the
 research workflows.
+
+## Quickstart
+
+Install all five skills with one command. It works for 50+ coding agents:
+
+```bash
+npx skills@latest add CyranoB/web-forager
+```
+
+The installer detects your agents, asks which skills you want, and places them in
+the right location.
+
+Common variations:
+
+```bash
+npx skills@latest add CyranoB/web-forager --list
+npx skills@latest add CyranoB/web-forager --skill web-research
+npx skills@latest add CyranoB/web-forager --skill '*' -a claude-code -a codex -y
+```
 
 ## Install For Your Coding Tool
 
@@ -33,6 +53,8 @@ Install all five skills from the plugin marketplace:
 
 Restart Claude Code, then check `/skills`.
 
+The Quickstart command above is also available as a cross-agent install path.
+
 MCP-only fallback:
 
 ```bash
@@ -44,12 +66,16 @@ claude mcp add --transport stdio web-forager -- uvx --python ">=3.10,<3.14" web-
 <details>
 <summary><strong>Codex</strong></summary>
 
-Install the skills manually:
+Install the skills for the current project:
 
 ```bash
-git clone https://github.com/CyranoB/web-forager.git
-mkdir -p ~/.codex/skills
-cp -R web-forager/skills/* ~/.codex/skills/
+npx skills@latest add CyranoB/web-forager -a codex
+```
+
+Install globally instead:
+
+```bash
+npx skills@latest add CyranoB/web-forager -a codex -g
 ```
 
 MCP-only fallback:
@@ -76,68 +102,64 @@ MCP-only fallback: configure a local MCP server with the standard config below.
 <details>
 <summary><strong>Gemini CLI</strong></summary>
 
-If you want MCP tools:
+Install the skills for the current project:
+
+```bash
+npx skills@latest add CyranoB/web-forager -a gemini-cli
+```
+
+Install globally instead:
+
+```bash
+npx skills@latest add CyranoB/web-forager -a gemini-cli -g
+```
+
+MCP-only fallback:
 
 ```bash
 gemini mcp add web-forager uvx --python ">=3.10,<3.14" web-forager serve
 ```
-
-For skills, copy the folders from `skills/` into the skills location supported by
-your Gemini environment.
 
 </details>
 
 <details>
 <summary><strong>Pi Coding Agent</strong></summary>
 
-Install globally for Pi:
+Install the skills for the current project:
 
 ```bash
-git clone https://github.com/CyranoB/web-forager.git
-mkdir -p ~/.pi/agent/skills
-cp -R web-forager/skills/* ~/.pi/agent/skills/
+npx skills@latest add CyranoB/web-forager -a pi
 ```
 
-Or install only for the current project:
+Install globally instead:
 
 ```bash
-git clone https://github.com/CyranoB/web-forager.git
-mkdir -p .pi/skills
-cp -R web-forager/skills/* .pi/skills/
+npx skills@latest add CyranoB/web-forager -a pi -g
 ```
 
-Pi also discovers skills from the generic Agent Skills directories:
-
-```bash
-mkdir -p ~/.agents/skills
-cp -R web-forager/skills/* ~/.agents/skills/
-```
-
-For one-off sessions, pass a skill path explicitly:
+For one-off sessions from a local checkout, pass a skill path explicitly:
 
 ```bash
 pi --skill web-forager/skills/web-research
 ```
+
+MCP-only fallback: configure a local MCP server with the standard config below.
 
 </details>
 
 <details>
 <summary><strong>Kiro CLI</strong></summary>
 
-Install globally for all Kiro CLI projects:
+Install the skills for the current workspace:
 
 ```bash
-git clone https://github.com/CyranoB/web-forager.git
-mkdir -p ~/.kiro/skills
-cp -R web-forager/skills/* ~/.kiro/skills/
+npx skills@latest add CyranoB/web-forager -a kiro-cli
 ```
 
-Or install only for the current workspace:
+Install globally instead:
 
 ```bash
-git clone https://github.com/CyranoB/web-forager.git
-mkdir -p .kiro/skills
-cp -R web-forager/skills/* .kiro/skills/
+npx skills@latest add CyranoB/web-forager -a kiro-cli -g
 ```
 
 Kiro's default agent loads skills from both locations automatically. For custom
@@ -168,22 +190,17 @@ https://github.com/CyranoB/web-forager
 
 ### Individual Skills
 
-For any Agent Skills-compatible tool, install one skill folder directly. For example:
+For any Agent Skills-compatible tool, install one skill by name:
 
 ```bash
-claude install-skill github:CyranoB/web-forager/skills/web-research
+npx skills@latest add CyranoB/web-forager --skill web-research
 ```
 
-Or install from a local checkout:
+Direct skill URLs also work:
 
 ```bash
-git clone https://github.com/CyranoB/web-forager.git
-cd web-forager
-claude install-skill ./skills/web-research
+npx skills@latest add https://github.com/CyranoB/web-forager/tree/main/skills/web-research
 ```
-
-For agents without `claude install-skill`, copy a folder from `skills/` into your
-agent's skills directory.
 
 ## Use The Skills
 
