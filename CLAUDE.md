@@ -10,7 +10,7 @@ Web Forager — a search-and-fetch toolkit for AI agents with three MCP capabili
 - URL fetch + conversion via direct HTTP/trafilatura (Jina Reader as fallback)
 
 Also includes five Agent Skills (in `skills/`) that orchestrate search + fetch into
-specialized workflows: web-research, fact-check, news-monitor, competitive-intel, tech-advisor.
+specialized workflows: deep-research, fact-check, news-monitor, competitive-intel, tech-advisor.
 
 Implements MCP over STDIO using FastMCP.
 
