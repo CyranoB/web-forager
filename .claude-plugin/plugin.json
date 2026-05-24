@@ -1,7 +1,7 @@
 {
   "name": "forager-skills",
   "skills": [
-    "./skills/web-research",
+    "./skills/deep-research",
     "./skills/fact-check",
     "./skills/news-monitor",
     "./skills/competitive-intel",

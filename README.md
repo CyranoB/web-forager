@@ -31,7 +31,7 @@ Common variations:
 
 ```bash
 npx skills@latest add CyranoB/web-forager --list
-npx skills@latest add CyranoB/web-forager --skill web-research
+npx skills@latest add CyranoB/web-forager --skill deep-research
 npx skills@latest add CyranoB/web-forager --skill '*' -a claude-code -a codex -y
 ```
 
@@ -140,7 +140,7 @@ npx skills@latest add CyranoB/web-forager -a pi -g
 For one-off sessions from a local checkout, pass a skill path explicitly:
 
 ```bash
-pi --skill web-forager/skills/web-research
+pi --skill web-forager/skills/deep-research
 ```
 
 MCP-only fallback: configure a local MCP server with the standard config below.
@@ -193,13 +193,13 @@ https://github.com/CyranoB/web-forager
 For any Agent Skills-compatible tool, install one skill by name:
 
 ```bash
-npx skills@latest add CyranoB/web-forager --skill web-research
+npx skills@latest add CyranoB/web-forager --skill deep-research
 ```
 
 Direct skill URLs also work:
 
 ```bash
-npx skills@latest add https://github.com/CyranoB/web-forager/tree/main/skills/web-research
+npx skills@latest add https://github.com/CyranoB/web-forager/tree/main/skills/deep-research
 ```
 
 ## Use The Skills
@@ -221,7 +221,7 @@ Should we adopt Bun for a production Node service?
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
-| [web-research](skills/web-research/) | General research, lookups, deep dives | Adaptive report with citations |
+| [deep-research](skills/deep-research/) | General research, lookups, deep dives | Adaptive report with citations |
 | [fact-check](skills/fact-check/) | Verifying a specific claim | Verdict with supporting and contradicting evidence |
 | [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
 | [competitive-intel](skills/competitive-intel/) | Market maps and competitor analysis | Landscape or positioning report |

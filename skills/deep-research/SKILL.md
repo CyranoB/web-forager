@@ -1,5 +1,5 @@
 ---
-name: web-research
+name: deep-research
 license: MIT
 metadata:
   author: CyranoB
@@ -19,7 +19,7 @@ description: >
   sources — unless the user explicitly asks to search the web.
 ---
 
-# Web Research
+# Deep Research
 
 This skill guides you through a structured deep research workflow: multi-angle search,
 selective full-page fetching, and synthesis into a polished, cited report.
@@ -42,14 +42,14 @@ for r in results:
 PY
 ```
 
-**Fetch** — call Jina Reader directly to get a URL as clean markdown:
+**Fetch** — run the packaged Web Forager CLI with uvx:
+```bash
+uvx --python '>=3.10,<3.14' web-forager fetch "https://example.com" --format markdown
+```
+
+If `uvx` cannot run the packaged CLI, call Jina Reader directly:
 ```bash
 curl -s "https://r.jina.ai/https://example.com"
-```
-Or in Python:
-```python
-import requests
-content = requests.get(f"https://r.jina.ai/{url}").text
 ```
 No API key needed.
 
@@ -91,7 +91,7 @@ lets them redirect you if you've chosen poorly.
 
 ### Step 4 — Fetch full content
 
-Fetch each selected URL using the Jina Reader method above. Use markdown format (default).
+Fetch each selected URL using the uvx fetch command above. Use markdown format (default).
 If a fetch fails, skip that URL and note it in your sources section.
 
 For very long pages, focus on the most relevant sections rather than including everything.
