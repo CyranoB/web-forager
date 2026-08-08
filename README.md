@@ -18,7 +18,7 @@ research workflows.
 
 ## Quickstart
 
-Install all five skills with one command. It works for 50+ coding agents:
+Install all six skills with one command. It works for 50+ coding agents:
 
 ```bash
 npx skills@latest add CyranoB/web-forager
@@ -44,7 +44,7 @@ research workflows.
 <details>
 <summary><strong>Claude Code</strong></summary>
 
-Install all five skills from the plugin marketplace:
+Install all six skills from the plugin marketplace:
 
 ```bash
 /plugin marketplace add CyranoB/web-forager
@@ -212,6 +212,7 @@ Examples:
 ```text
 Research the current state of open-source browser agents.
 Fact check: did Apple announce a foldable iPhone?
+Audit this article for accuracy and framing: https://example.com/article
 What's new with Anthropic this month?
 Map the competitive landscape for AI meeting assistants.
 Should we adopt Bun for a production Node service?
@@ -221,11 +222,28 @@ Should we adopt Bun for a production Node service?
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
+| [article-audit](skills/article-audit/) | Auditing a full article's accuracy, omissions, and framing | Per-claim verdicts and framing assessment |
 | [deep-research](skills/deep-research/) | General research, lookups, deep dives | Adaptive report with citations |
 | [fact-check](skills/fact-check/) | Verifying a specific claim | Verdict with supporting and contradicting evidence |
 | [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
 | [competitive-intel](skills/competitive-intel/) | Market maps and competitor analysis | Landscape or positioning report |
 | [tech-advisor](skills/tech-advisor/) | Tech/product evaluation and adoption decisions | Recommendation with evidence |
+
+### Article Audit
+
+Use [`article-audit`](skills/article-audit/) when you want to evaluate an article as a
+whole rather than verify one isolated statement. The skill reads the complete article,
+identifies 4-8 claims that carry its argument, and independently searches for evidence
+that supports and challenges each claim. It also checks whether quoted sources have a
+material interest, looks for credible voices the article omits, and tests important
+numbers or forecasts against denominators, base rates, comparisons, and track records.
+
+The report includes a bottom line, a verdict for every audited claim, missing voices,
+scale and context, an overall framing assessment, and sources annotated by their role.
+Verdicts range from `CONFIRMED` to `FALSE`; the separate framing judgment can identify
+an article whose individual facts are accurate but whose presentation is promotional,
+one-sided, or materially misleading. Use [`fact-check`](skills/fact-check/) instead when
+you only need to verify a single claim.
 
 ## How Search Works
 

@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).parents[1]
 SKILLS_ROOT = ROOT / "skills"
 EXPECTED_SKILLS = {
+    "article-audit",
     "competitive-intel",
     "deep-research",
     "fact-check",
@@ -93,6 +94,7 @@ def test_fast_moving_examples_use_dynamic_years() -> None:
 
 def test_workflows_have_checkable_completion_criteria() -> None:
     workflow_documents = [
+        SKILLS_ROOT / "article-audit" / "SKILL.md",
         SKILLS_ROOT / "deep-research" / "SKILL.md",
         SKILLS_ROOT / "fact-check" / "SKILL.md",
         SKILLS_ROOT / "news-monitor" / "SKILL.md",
@@ -119,6 +121,22 @@ def test_clear_fact_checks_do_not_pause_for_confirmation() -> None:
         r"ask for\s+confirmation only when two plausible interpretations",
         text,
     )
+
+
+def test_article_audit_is_distinct_from_single_claim_fact_check() -> None:
+    text = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    assert "For one isolated claim, use `fact-check`" in text
+    assert "counter-voices" in text
+    assert "Check scale" in text
+
+
+def test_article_audit_enforces_its_evidence_contract() -> None:
+    text = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    assert "Split compound statements" in text
+    assert "Before searching, show a numbered audit scope" in text
+    assert "Search snippets are discovery aids, not verdict evidence" in text
+    assert "Use exactly one label, unchanged" in text
+    assert "support, challenge, baseline, or context" in text
 
 
 def test_router_skills_disclose_each_mode() -> None:
