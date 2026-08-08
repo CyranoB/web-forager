@@ -3,51 +3,34 @@ name: news-monitor
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.1.0"
+  version: "1.2.0"
 description: >
-  Search for recent news and developments on a topic, organize them chronologically,
-  and deliver a concise briefing. Use this skill when the user wants to catch up on
-  recent events, news, or developments around a topic. Trigger on phrases like "what's
-  new with X", "recent news about X", "any updates on X", "what happened with X lately",
-  "catch me up on X", "news roundup for X", "what did I miss about X", "latest
-  developments in X", or "has anything changed with X recently". Also trigger when the
-  user mentions a time frame like "this week", "this month", "since January", or "in
-  the last few days" combined with wanting information. Don't trigger for general
-  research, product comparisons, or fact-checking — only when recency is the point.
+  Monitor recent developments on a topic and produce a chronological, source-read
+  briefing. Use when recency or a stated time window is the core question.
 ---
 
 # News Monitor
 
-This skill finds recent news and developments on a topic and delivers a chronological
-briefing. The focus is on *what's new* — not a general overview.
+Find distinct recent events, read a source for each event described in detail, and
+deliver a chronological briefing.
 
-## Design principle: search results first, fetch sparingly
+## Tools
 
-The news search tool already returns titles, snippets, dates, and sources for each
-result. That's enough to build most of the briefing without fetching any pages. Only
-fetch a page when a snippet is too vague to understand what actually happened and you
-need the full article to write a useful summary. Most of the time, 0–2 fetches is
-plenty. Never fetch more than 3 pages.
+Use an available news-search tool, preferring a callable name ending in
+`duckduckgo_news_search`. Use regular search ending in `duckduckgo_search` only to fill
+coverage gaps. Read pages with a fetch tool ending in `web_fetch`. Client-added prefixes
+vary, so inspect the tools in the session.
 
-## Tools available
+Without session tools, run the packaged CLI in an isolated environment:
 
-**News search** — the primary tool. Returns results sorted by date with timestamps
-and source outlets.
-
-If an MCP news search tool is available (e.g., `mcp__web_forager__duckduckgo_news_search`
-or `mcp__duckduckgo__duckduckgo_news_search`), prefer it:
-```
-mcp__web_forager__duckduckgo_news_search(query="your query", max_results=10)
-```
-Each result includes `title`, `url`, `snippet`, `date`, and `source`.
-
-Without MCP, run the packaged Web Forager CLI with uvx:
 ```bash
 uvx --python '>=3.10,<3.14' web-forager news "your query" --max-results 10 --output-format json
+uvx --python '>=3.10,<3.14' web-forager fetch "https://example.com" --format markdown
 ```
 
-If `uvx` cannot run the packaged CLI, use a direct `ddgs` fallback through uv without
-touching the current project environment:
+If `uvx` cannot run packaged news search, use `ddgs` without touching the current
+project environment:
+
 ```bash
 uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python - <<'PY'
 from ddgs import DDGS
@@ -57,89 +40,63 @@ for r in results:
 PY
 ```
 
-**General search** — use an MCP search tool, `web-forager search` via uvx, or
-`DDGS().text()` via `uv run --no-project` only if news search returns too few results.
+If packaged fetch fails, use Jina Reader:
 
-**Fetch** — use an MCP fetch tool or `curl -s "https://r.jina.ai/URL"`
-only when a snippet is too vague to summarize the event. Cap fetches with
-`max_length=3000` to avoid pulling giant pages.
-
----
-
-## News monitoring workflow
-
-### Step 1 — Determine scope
-
-Before searching, clarify:
-- **Topic**: what exactly are we monitoring?
-- **Time frame**: did the user specify "this week", "last month", "since X"? If not,
-  default to the last 2–4 weeks.
-- **Angle**: are they interested in everything, or a specific aspect (e.g., "funding
-  news about X", "regulatory updates on Y")?
-
-### Step 2 — Search
-
-Run 1–2 news searches with different angles to get good coverage:
-- `"[topic]"` as the base query
-- A second query with a more specific angle if relevant (e.g., "[topic] announcement",
-  "[topic] policy", "[topic] release")
-
-Include the current year in queries to bias toward recent results.
-
-### Step 3 — Deduplicate and filter
-
-From the combined news results:
-- Group articles about the same event (multiple outlets covering the same story)
-- Pick the best source for each event (prefer the one with the most informative snippet)
-- Discard anything outside the relevant time frame
-- Discard duplicates or near-duplicates
-- Aim for 3–7 distinct events
-
-### Step 4 — Selective fetch (only if needed)
-
-Look at your filtered results. For each event, ask: "Can I write a useful 2–4 sentence
-summary from the title + snippet alone?" If yes, don't fetch. If the snippet is cryptic
-or you need key details (numbers, names, outcomes), fetch that one page with
-`max_length=3000`.
-
-### Step 5 — Deliver the briefing
-
-Organize chronologically (most recent first) and present as a news briefing.
-
----
-
-## Output format
-
-```
-# [Topic] — News Briefing
-
-**Period**: [time frame covered]
-**Last updated**: [today's date]
-
-## Headlines
-- [One-line summary of event 1] — [date]
-- [One-line summary of event 2] — [date]
-- [One-line summary of event 3] — [date]
-
-## Details
-
-### [Event 1 title] — [date]
-[2–4 sentences: what happened, why it matters, what's next]
-Source: [Title](url)
-
-### [Event 2 title] — [date]
-[2–4 sentences]
-Source: [Title](url)
-
-### [Event 3 title] — [date]
-[2–4 sentences]
-Source: [Title](url)
-
-## What to watch
-[1–2 sentences about upcoming events, expected announcements, or unresolved threads
-that the user might want to follow up on]
+```bash
+curl -s "https://r.jina.ai/https://example.com"
 ```
 
-Keep it tight. The user wants to catch up quickly, not read essays. If there's genuinely
-no recent news, say so — "No significant developments found in [time frame]" is a valid
-and useful answer.
+The workflow requires both search and fetch; state what is missing if either is
+unavailable.
+
+## Workflow
+
+### 1. Set the window
+
+Identify the topic, time frame, and angle. Use the user's window when supplied;
+otherwise cover the last 2–4 weeks. Ask only when an unresolved ambiguity would
+materially change the search.
+
+**Complete when:** the inclusion window and topic boundaries are explicit.
+
+### 2. Search for events
+
+Run 1–2 news searches with distinct angles and `[current year]` where useful. Combine
+the results before selecting stories.
+
+**Complete when:** the result set covers the topic from more than one query angle, or
+one query demonstrably exhausts the narrow topic.
+
+### 3. Deduplicate and filter
+
+Group coverage of the same event, discard results outside the window, and select the
+best candidate source for each event. Aim for 3–7 distinct events.
+
+**Complete when:** every retained item represents a distinct in-window event with a
+publication date and candidate source.
+
+### 4. Read every detailed event
+
+Fetch at least one authoritative source for each event that will receive a detailed
+summary. Prefer primary announcements and direct reporting. Search snippets may support
+headline discovery only; they are not evidence for explanatory claims. If an event's
+source cannot be read, replace it or omit the detailed event and record the coverage gap.
+
+**Complete when:** every detailed event has at least one fetched source supporting what
+happened, why it matters, and any stated next step.
+
+### 5. Deliver the briefing
+
+Present most recent first:
+
+- period covered and current update date;
+- one-line headline list;
+- 2–4 sourced sentences per detailed event;
+- a short “What to watch” section grounded in sourced upcoming events or unresolved
+  threads.
+
+If no significant developments survive filtering, say so plainly and give the searched
+window.
+
+**Complete when:** all events are distinct and in-window, every detailed claim cites a
+read source, dates are explicit, and inference is labeled.

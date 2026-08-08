@@ -3,32 +3,30 @@ name: fact-check
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.0.0"
+  version: "1.1.0"
 description: >
-  Verify claims and statements by searching for supporting and contradicting evidence,
-  then deliver a clear verdict with confidence level and sources. Use this skill when
-  the user asks to fact-check something, verify a claim, check if something is true,
-  or questions the accuracy of a statement. Trigger on phrases like "is it true that X",
-  "fact check this", "verify this claim", "is X really Y", "I heard that X — is that
-  accurate?", "can you confirm that X", "someone told me X", or "this article says X,
-  is that right?". Don't trigger for general research questions or product comparisons —
-  only when the user has a specific claim they want verified.
+  Fact-check a specific, verifiable claim by seeking supporting and contradicting
+  evidence, weighing source quality, and issuing a calibrated verdict with citations.
 ---
 
 # Fact Check
 
-This skill verifies a specific claim by searching for evidence on both sides,
-evaluating source quality, and delivering a clear verdict.
+Test a specific claim against evidence on both sides and issue a calibrated verdict.
 
-## Tools available
+## Tools
 
-**Search** — run the packaged Web Forager CLI with uvx:
+Use available web search and URL-fetch tools. Prefer callable names ending in
+`duckduckgo_search` and `web_fetch`; client-added prefixes vary, so inspect the tools in
+the session. Without session tools, run the packaged CLI in an isolated environment:
+
 ```bash
 uvx --python '>=3.10,<3.14' web-forager search "your query" --max-results 8 --output-format json
+uvx --python '>=3.10,<3.14' web-forager fetch "https://example.com" --format markdown
 ```
 
-If `uvx` cannot run the packaged CLI, use a direct `ddgs` fallback through uv without
-touching the current project environment:
+If `uvx` cannot run packaged search, use `ddgs` without touching the current project
+environment:
+
 ```bash
 uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python - <<'PY'
 from ddgs import DDGS
@@ -38,103 +36,64 @@ for r in results:
 PY
 ```
 
-**Fetch** — call Jina Reader directly to get a URL as clean markdown:
+If packaged fetch fails, use Jina Reader:
+
 ```bash
 curl -s "https://r.jina.ai/https://example.com"
 ```
-Or in Python:
-```python
-import requests
-content = requests.get(f"https://r.jina.ai/{url}").text
-```
 
-If MCP search/fetch tools are available in the session (e.g., `mcp__web_forager__search`,
-`mcp__duckduckgo__search`, or similar), prefer those over the above.
+The workflow requires both search and fetch. If either capability is unavailable,
+return `UNVERIFIED` and name the missing capability.
 
----
+## Workflow
 
-## Fact-checking workflow
+### 1. Extract the claims
 
-### Step 1 — Extract the claim
+Turn the user's statement into specific, independently verifiable claims. Separate
+compound claims. If wording is subjective, explain that it can be contextualized but
+cannot receive a factual verdict. Continue immediately when the claim is clear; ask for
+confirmation only when two plausible interpretations would change the evidence sought.
 
-Identify the specific, verifiable claim. If the user's statement is vague or compound,
-break it into distinct claims and address each one. Restate the claim back to the user
-so they can confirm you understood it correctly.
+**Complete when:** every factual claim is precise enough that contrary evidence could
+disprove it.
 
-Bad: "AI is taking over" (too vague to verify)
-Good: "OpenAI's revenue exceeded $3 billion in 2024" (specific, verifiable)
+### 2. Seek support
 
-If the claim is inherently subjective or a matter of opinion ("React is better than Vue"),
-say so upfront — opinion claims can't be fact-checked, only contextualized.
+Search for primary evidence that would confirm each claim. Use direct paraphrases,
+official statements, and queries for the exact metric or event.
 
-### Step 2 — Search for supporting evidence
+**Complete when:** each claim has the strongest available supporting evidence, or the
+absence of support is recorded.
 
-Search for sources that would confirm the claim. Frame queries to find the claim stated
-as fact:
-- Direct query: the claim itself in quotes or close paraphrase
-- Source-seeking: "[subject] official statement [topic]"
-- Data query: "[subject] statistics [specific metric]"
+### 3. Seek contradiction
 
-### Step 3 — Search for contradicting evidence
+Actively search for counterevidence, corrections, alternative measurements, and credible
+disagreement. Do not treat failure to find a debunk as confirmation.
 
-Now actively look for the other side. This is the step most people skip, and it's the
-most important one. Frame queries to find disagreement:
-- "[claim subject] debunked" or "[claim subject] false"
-- "[claim subject] criticism" or "[claim subject] controversy"
-- Alternative framing that would surface opposing data
+**Complete when:** every claim has received a genuine adversarial search, not merely a
+second confirming query.
 
-### Step 4 — Fetch key sources
+### 4. Read and weigh sources
 
-From both searches, pick the 2–4 most authoritative sources to fetch in full.
-Prioritize:
-- Primary sources (official announcements, papers, data sets) over commentary
-- Established publications over random blogs
-- Sources with specific data points over vague assertions
+Read 2–4 of the most authoritative sources across both sides. Evaluate authority,
+specificity, recency, independence, and conflicts of interest.
 
-### Step 5 — Evaluate and deliver verdict
+**Complete when:** the decisive evidence addresses the exact claim and all material
+source limitations are known.
 
-Weigh the evidence. Consider:
-- **Source authority**: who published this? Do they have expertise or a conflict of interest?
-- **Specificity**: does the evidence address the exact claim, or something adjacent?
-- **Recency**: is the evidence current enough to be relevant?
-- **Consensus**: do multiple independent sources agree?
+### 5. Deliver the verdict
 
----
+Use this scale:
 
-## Output format
+- **CONFIRMED:** multiple authoritative sources agree and no credible contradiction
+  survives review.
+- **LIKELY TRUE:** strong support remains, with minor gaps or caveats.
+- **UNVERIFIED:** strong evidence is unavailable in either direction.
+- **DISPUTED:** credible sources materially disagree.
+- **FALSE:** strong evidence contradicts the claim and support is weak or absent.
 
-```
-## Claim
-> [The claim being checked, stated clearly]
+Report the claim, verdict, short rationale, supporting evidence, contradicting evidence,
+caveats, and annotated sources. State explicitly when one side produced no evidence.
 
-## Verdict: [CONFIRMED / LIKELY TRUE / UNVERIFIED / DISPUTED / FALSE]
-
-[2–3 sentence explanation of the verdict — why this rating, what the key evidence is]
-
-## Evidence supporting the claim
-- [Specific finding with source citation] — [Source Name](url)
-- ...
-
-## Evidence against the claim
-- [Specific finding with source citation] — [Source Name](url)
-- ...
-(If no contradicting evidence was found, say so explicitly)
-
-## Caveats
-[Anything that limits confidence: old data, limited sources, nuance the binary
-verdict doesn't capture]
-
-## Sources
-1. [Title](url) — [brief note on what this source is]
-```
-
-### Verdict scale
-
-- **CONFIRMED**: Multiple authoritative sources agree; no credible contradiction found
-- **LIKELY TRUE**: Good evidence supports it, but with minor gaps or caveats
-- **UNVERIFIED**: Couldn't find strong evidence either way
-- **DISPUTED**: Credible sources disagree with each other
-- **FALSE**: Strong evidence contradicts the claim; supporting sources are weak or absent
-
-Be honest about uncertainty. "Unverified" is a perfectly valid result — it's better than
-guessing. If the evidence is mixed, say so and explain why.
+**Complete when:** every extracted claim has a verdict, both search directions are
+accounted for, decisive evidence is cited, and confidence matches the limitations.
