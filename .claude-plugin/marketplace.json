@@ -11,10 +11,11 @@
   "plugins": [
     {
       "name": "forager-skills",
-      "description": "Five research skills powered by DuckDuckGo search and Jina Reader: web research, fact-checking, news monitoring, competitive intelligence, and technology evaluation (maturity assessments + product comparisons)",
+      "description": "Six research skills powered by DuckDuckGo search and Jina Reader: article auditing, web research, fact-checking, news monitoring, competitive intelligence, and technology evaluation (maturity assessments + product comparisons)",
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/article-audit",
         "./skills/deep-research",
         "./skills/fact-check",
         "./skills/news-monitor",

@@ -18,7 +18,7 @@ research workflows.
 
 ## Quickstart
 
-Install all five skills with one command. It works for 50+ coding agents:
+Install all six skills with one command. It works for 50+ coding agents:
 
 ```bash
 npx skills@latest add CyranoB/web-forager
@@ -44,7 +44,7 @@ research workflows.
 <details>
 <summary><strong>Claude Code</strong></summary>
 
-Install all five skills from the plugin marketplace:
+Install all six skills from the plugin marketplace:
 
 ```bash
 /plugin marketplace add CyranoB/web-forager
@@ -221,6 +221,7 @@ Should we adopt Bun for a production Node service?
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
+| [article-audit](skills/article-audit/) | Auditing a full article's accuracy, omissions, and framing | Per-claim verdicts and framing assessment |
 | [deep-research](skills/deep-research/) | General research, lookups, deep dives | Adaptive report with citations |
 | [fact-check](skills/fact-check/) | Verifying a specific claim | Verdict with supporting and contradicting evidence |
 | [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
