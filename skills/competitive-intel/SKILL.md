@@ -3,7 +3,7 @@ name: competitive-intel
 license: MIT
 metadata:
   author: CyranoB
-  version: "2.1.0"
+  version: "2.2.0"
 description: >
   Map a competitive market or position the user's product against competitors.
   Use for builders and sellers evaluating market players, gaps, differentiation,

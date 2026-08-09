@@ -3,7 +3,7 @@ name: deep-research
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.1.0"
+  version: "1.2.0"
 description: >
   Research broad, current questions through multi-angle web search, selective
   full-page reading, and cited synthesis. Use for a general investigation or deep
@@ -82,6 +82,12 @@ Scale the answer to the question:
 - **Standard report:** summary, key findings, and annotated sources.
 - **Deep dive:** summary, key findings, 2–4 topic sections, limitations, and annotated
   sources.
+
+Use a quick answer for a narrow factual question. A standard report is the default. Use
+a deep dive when the user requests depth or the question has multiple independently
+necessary angles that cannot be synthesized clearly in the standard report. Research
+depth stays high across all three formats; expose only the findings and sources needed
+to answer the question.
 
 Cite specific claims near the text they support. Prefer concrete dates, numbers, names,
 and versions. Separate sourced facts from inference.

@@ -148,3 +148,49 @@ def test_router_skills_disclose_each_mode() -> None:
             if target.name != "SKILL.md"
         }
         assert len(references) == 2
+
+
+def test_direct_workflows_right_size_their_output() -> None:
+    article_audit = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    deep_research = (SKILLS_ROOT / "deep-research" / "SKILL.md").read_text()
+    fact_check = (SKILLS_ROOT / "fact-check" / "SKILL.md").read_text()
+    news_monitor = (SKILLS_ROOT / "news-monitor" / "SKILL.md").read_text()
+
+    assert "The default full audit is long-form" in article_audit
+    assert "The ledger is working state, not an output template" in article_audit
+    assert "A standard report is the default" in deep_research
+    assert re.search(
+        r"Research\s+depth stays high across all three formats",
+        deep_research,
+    )
+    assert "Default to a compact verdict for one claim" in fact_check
+    assert re.search(r"source-by-source\s+account only when", fact_check)
+    assert "default briefing uses a single event list" in news_monitor
+    assert "expanded briefing" in news_monitor
+
+
+def test_router_modes_keep_tables_as_the_output_source_of_truth() -> None:
+    market_landscape = (
+        SKILLS_ROOT / "competitive-intel" / "market-landscape.md"
+    ).read_text()
+    competitive_positioning = (
+        SKILLS_ROOT / "competitive-intel" / "competitive-positioning.md"
+    ).read_text()
+    maturity_assessment = (
+        SKILLS_ROOT / "tech-advisor" / "maturity-assessment.md"
+    ).read_text()
+    product_comparison = (
+        SKILLS_ROOT / "tech-advisor" / "product-comparison.md"
+    ).read_text()
+
+    assert "Default to a long-form map" in market_landscape
+    assert "player tables as the single source of truth" in market_landscape
+    assert "Default to a long-form comparison" in competitive_positioning
+    assert "competitive matrix as the single source of truth" in competitive_positioning
+    assert "Default to a medium-length assessment" in maturity_assessment
+    assert "scorecard as the single source of truth" in maturity_assessment
+    assert "Default to a compact decision brief" in product_comparison
+    assert re.search(
+        r"comparison table as the single source of\s+truth",
+        product_comparison,
+    )
