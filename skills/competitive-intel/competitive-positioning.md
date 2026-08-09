@@ -37,17 +37,20 @@ rationale, and feature differences are translated into strategic consequences.
 
 ## 4. Deliver
 
+Default to a long-form comparison for 3–5 competitors and a compact comparison for two.
+Use the competitive matrix as the single source of truth for capabilities, audience,
+price, and threat level. Reserve prose for the few differences that change strategy;
+add full competitor profiles only when the user requests an expanded report.
+
 Include:
 
 1. an executive summary stating the strongest differentiator and most important gap;
-2. a competitive matrix covering decisive capabilities, price, and audience;
-3. a per-competitor breakdown of positioning, relative strengths, complaints, recent
-   moves, and threat level;
-4. pricing comparison and strategic interpretation;
-5. evidence-backed differentiators;
-6. prioritized gaps to address;
-7. three actionable recommendations;
-8. annotated sources.
+2. a competitive matrix covering decisive capabilities, audience, price, and threat;
+3. brief competitor notes only for a material strength, exploitable weakness, recent
+   move, or threat rationale that the matrix cannot express;
+4. evidence-backed differentiators and prioritized gaps to address;
+5. three actionable recommendations;
+6. annotated sources.
 
 Adapt the matrix to the product; omit irrelevant enterprise or consumer fields.
 

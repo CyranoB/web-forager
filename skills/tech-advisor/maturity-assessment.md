@@ -43,16 +43,20 @@ user's risk tolerance.
 
 ## 4. Deliver
 
+Default to a medium-length assessment. Use the scorecard as the single source of truth
+for the six maturity dimensions, and reserve prose for the evidence and risks that drive
+the recommendation. Add dimension-by-dimension evidence notes only when the user asks
+for an expanded assessment.
+
 Include:
 
 1. the ADOPT/TRIAL/ASSESS/HOLD recommendation and direct rationale;
-2. a scorecard for adoption, ecosystem, community, stability, documentation, and
-   trajectory;
-3. named production evidence;
-4. concrete strengths and risks;
-5. alternatives and when to prefer them;
-6. the conditions that would change the rating;
-7. annotated sources.
+2. an evidenced scorecard for adoption, ecosystem, community, stability,
+   documentation, and trajectory;
+3. named production evidence and the decisive strengths and risks;
+4. alternatives and when to prefer them;
+5. the conditions that would change the rating;
+6. annotated sources.
 
 **Complete when:** every scorecard signal is evidenced, risks are specific to the user's
 context, alternatives are actionable, and material factual claims are cited.

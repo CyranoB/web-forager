@@ -32,6 +32,11 @@ tradeoffs are acknowledged rather than hidden.
 
 ## 4. Deliver
 
+Default to a compact decision brief. Use the comparison table as the single source of
+truth for price and decisive factors, then explain only the 2–4 differences that drive
+the recommendation. Add product-by-product profiles or a broad specification inventory
+only when the user requests an expanded comparison.
+
 Include:
 
 1. a direct recommendation for the stated use case;

@@ -3,7 +3,7 @@ name: fact-check
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.1.0"
+  version: "1.2.0"
 description: >
   Fact-check a specific, verifiable claim by seeking supporting and contradicting
   evidence, weighing source quality, and issuing a calibrated verdict with citations.
@@ -92,8 +92,16 @@ Use this scale:
 - **DISPUTED:** credible sources materially disagree.
 - **FALSE:** strong evidence contradicts the claim and support is weak or absent.
 
-Report the claim, verdict, short rationale, supporting evidence, contradicting evidence,
-caveats, and annotated sources. State explicitly when one side produced no evidence.
+Default to a compact verdict for one claim:
+
+1. state the claim and verdict first;
+2. explain the decisive support and contradiction in 2–4 sentences;
+3. add only caveats that could change how the verdict is understood;
+4. cite 2–4 decisive sources, annotated by role.
+
+For multiple extracted claims, repeat the compact block for each. Use a source-by-source
+account only when the user requests it or a material conflict cannot be explained
+compactly. State explicitly when one side produced no evidence.
 
 **Complete when:** every extracted claim has a verdict, both search directions are
 accounted for, decisive evidence is cited, and confidence matches the limitations.

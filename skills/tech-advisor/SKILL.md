@@ -3,7 +3,7 @@ name: tech-advisor
 license: MIT
 metadata:
   author: CyranoB
-  version: "2.1.0"
+  version: "2.2.0"
 description: >
   Advise a technology choice through current evidence. Use for choosing tech
   products for a concrete use case, or assessing whether a technology is mature

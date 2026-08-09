@@ -3,7 +3,7 @@ name: article-audit
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.1.0"
+  version: "1.2.0"
 description: >
   Audit a full article for factual accuracy, missing counter-voices, numerical
   context, and promotional or one-sided framing. Use when a user shares an
@@ -73,7 +73,7 @@ its position, not independent confirmation. Read the decisive pages in full and 
 when qualifiers, ranges, dates, or uncertainty differ from the article's wording.
 Search snippets are discovery aids, not verdict evidence: fetch and read every source
 used to decide a claim. Keep a claim ledger recording support, challenge, source
-interests, and gaps.
+interests, and gaps. The ledger is working state, not an output template.
 
 **Complete when:** every claim has received genuine supporting and adversarial searches,
 every verdict source has been read in full, and its ledger records evidence on both
@@ -127,6 +127,12 @@ Use exactly one label, unchanged; put qualifications in the rationale.
 
 ## Report
 
+The default full audit is long-form because every scoped claim needs an accountable
+verdict. Keep it dense: reuse the numbered claims from the initial scope, and give each
+claim only its verdict, concise rationale, and decisive supporting and challenging
+evidence. Keep source-by-source notes in the ledger unless the user requests an expanded
+audit.
+
 Write in the user's language and use this structure:
 
 1. **Bottom line:** two or three sentences on factual reliability and framing.
@@ -136,11 +142,14 @@ Write in the user's language and use this structure:
 4. **Scale and context:** denominators, base rates, comparisons, or precedents that
    change how the claims should be read.
 5. **Framing assessment:** the overall judgment and its strongest reason.
-6. **Sources:** annotate every link as support, challenge, baseline, or context; disclose
-   material interests.
+6. **Sources:** annotate links as support, challenge, baseline, or context. Keep the
+   list short and deduplicated; disclose material interests without repeating the
+   claim rationales.
 
 Separate sourced findings from inference. State when a search produced no independent
 evidence, and keep confidence proportional to the evidence.
 
 **Complete when:** the report accounts for every scoped claim, both search directions,
-every missing or interested voice, the applicable scale check, and every source's role.
+every missing or interested voice, the applicable scale check, and every source's role,
+with expanded research notes included only when they change the judgment or the user
+asks for them.
