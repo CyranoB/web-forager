@@ -55,7 +55,9 @@ def test_frontmatter_names_and_descriptions_are_tight() -> None:
 
 def test_top_level_skills_stay_legible() -> None:
     for path in skill_files().values():
-        assert len(path.read_text().splitlines()) <= 180, f"Disclose branches from {path}"
+        assert (
+            len(path.read_text().splitlines()) <= 180
+        ), f"Disclose branches from {path}"
 
 
 def test_relative_markdown_references_ship_with_each_skill() -> None:
@@ -132,11 +134,30 @@ def test_article_audit_is_distinct_from_single_claim_fact_check() -> None:
 
 def test_article_audit_enforces_its_evidence_contract() -> None:
     text = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    reporting = (SKILLS_ROOT / "article-audit" / "reporting.md").read_text()
     assert "Split compound statements" in text
     assert "Before searching, show a numbered audit scope" in text
+    assert "temporal frame" in text
+    assert "one underlying record" in text
+    assert "quotation provenance" in text
+    assert "documented trace gap" in text
     assert "Search snippets are discovery aids, not verdict evidence" in text
+    assert "Evidence budget and stopping rule" in text
+    assert "Stop when additional searches repeat" in text
+    assert "**Uncertainty:**" in text
+    assert "**Forecast horizon:**" in text
     assert "Use exactly one label, unchanged" in text
-    assert "support, challenge, baseline, or context" in text
+    assert "support, challenge, baseline, or context" in reporting
+    for section in (
+        "**Article in brief:**",
+        "**Bottom line:**",
+        "**Why this is the judgment:**",
+        "**Claims audited:**",
+        "**Missing voices and interests:**",
+        "**Numbers in perspective:**",
+        "**Limits and sources:**",
+    ):
+        assert section in reporting
 
 
 def test_router_skills_disclose_each_mode() -> None:
@@ -151,13 +172,16 @@ def test_router_skills_disclose_each_mode() -> None:
 
 
 def test_direct_workflows_right_size_their_output() -> None:
-    article_audit = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    article_audit_skill = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    article_audit_reporting = (
+        SKILLS_ROOT / "article-audit" / "reporting.md"
+    ).read_text()
     deep_research = (SKILLS_ROOT / "deep-research" / "SKILL.md").read_text()
     fact_check = (SKILLS_ROOT / "fact-check" / "SKILL.md").read_text()
     news_monitor = (SKILLS_ROOT / "news-monitor" / "SKILL.md").read_text()
 
-    assert "The default full audit is long-form" in article_audit
-    assert "The ledger is working state, not an output template" in article_audit
+    assert "The default full audit is long-form" in article_audit_reporting
+    assert "The ledger is working state, not an output template" in article_audit_skill
     assert "A standard report is the default" in deep_research
     assert re.search(
         r"Research\s+depth stays high across all three formats",

@@ -52,7 +52,9 @@ Write in the user's language and use this structure:
    decisive evidence nearby.
 4. **Claims audited:** number each atomic claim, put its unchanged verdict label on the
    next line, then give the concise rationale, supporting evidence, and contradicting
-   evidence or `none found after search`. Use this pattern:
+   evidence or `none found after search`. For a material quotation, cite the earliest
+   source found and state any surrounding context or wording difference that affects
+   the verdict. Use this pattern:
 
    ```text
    1. Claim text
@@ -65,14 +67,16 @@ Write in the user's language and use this structure:
 6. **Numbers in perspective:** show the denominators, base rates, comparisons,
    precedents, uncertainty, and forecast horizons that change how the article's numbers
    or predictions should be read.
-7. **Limits and sources:** state unresolved evidence gaps and temporal limits. Then give
-   a short, deduplicated source list with links annotated as support, challenge,
-   baseline, or context. Cite material interests without repeating claim rationales.
+7. **Limits and sources:** state unresolved evidence gaps, including documented
+   quotation-tracing failures, and temporal limits. Then give a short, deduplicated
+   source list with links annotated as support, challenge, baseline, or context. Cite
+   material interests without repeating claim rationales.
 
 Separate sourced findings from inference. State when a search produced no independent
 evidence, and keep confidence proportional to the evidence.
 
 **Complete when:** the report accounts for every scoped claim, both search directions,
 every material missing or interested voice, the numerical context and uncertainty that
-could change the reading, every unresolved limit, and every source's role. Include
-expanded research notes only when they change the judgment or the user asks for them.
+could change the reading, every material quotation's provenance or documented trace
+gap, every unresolved limit, and every source's role. Include expanded research notes
+only when they change the judgment or the user asks for them.

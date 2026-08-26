@@ -93,12 +93,15 @@ plus the methodology, limitations, and definitions needed to interpret it. Note 
 qualifiers, ranges, dates, uncertainty, or the evidence available at the chosen temporal
 frame differ from the article's wording.
 Search snippets are discovery aids, not verdict evidence. Record support, challenge,
-source relationships, evidenced interests, dates, and gaps in a claim ledger.
+source relationships, evidenced interests, dates, and quotation provenance and context
+in a claim ledger. When the original quotation source cannot be located after a
+deliberate search, record a documented trace gap.
 The ledger is working state, not an output template.
 
 **Complete when:** every claim has received genuine supporting and adversarial searches,
 every verdict source has been read to the depth required above, and its ledger records
-evidence on both sides—or explicitly records that a deliberate search found none.
+evidence on both sides—or explicitly records that a deliberate search found none—and
+every quotation has provenance and context or a documented trace gap.
 
 ### Evidence budget and stopping rule
 
@@ -169,9 +172,5 @@ rationale.
 
 ## Report
 
-The default full audit is long-form because every scoped claim needs an accountable
-verdict. Keep it dense unless the user requests an expanded audit.
-
-Before writing the audit, read [reporting.md](reporting.md) and follow its structure,
-writing guidance, and completion criterion.
-Annotate source roles as support, challenge, baseline, or context.
+Before writing the audit, read [reporting.md](reporting.md) completely and follow its
+structure, writing guidance, and completion criteria.
