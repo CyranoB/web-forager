@@ -12,10 +12,10 @@ RUN python -m pip install --no-cache-dir --only-binary=:all: uv==0.11.6
 COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --locked --no-dev --no-install-project --no-build
 COPY src/ ./src/
-# This installs only the wheel built in the preceding command. --no-deps prevents
-# dependency resolution, so the external dependencies remain governed by uv.lock.
+# The project produces a pure-Python wheel. Extract that local artifact directly
+# into the locked environment without invoking another dependency resolver.
 RUN uv build --wheel \
-    && uv pip install --python .venv/bin/python --no-deps --only-binary=:all: dist/*.whl  # NOSONAR
+    && python -m zipfile -e dist/*.whl .venv/lib/python3.12/site-packages
 
 FROM python:3.12-slim AS runtime
 
@@ -28,4 +28,4 @@ RUN useradd --create-home --shell /bin/bash appuser
 USER appuser
 
 # Run the MCP server
-ENTRYPOINT ["/app/.venv/bin/web-forager", "serve"]
+ENTRYPOINT ["/app/.venv/bin/python", "-m", "web_forager.cli", "serve"]
