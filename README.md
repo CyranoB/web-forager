@@ -222,7 +222,7 @@ Should we adopt Bun for a production Node service?
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
-| [article-audit](skills/article-audit/) | Auditing a full article's accuracy, omissions, and framing | Per-claim verdicts and framing assessment |
+| [article-audit](skills/article-audit/) | Auditing a full article's accuracy, omissions, and framing | Reader-first audit with per-claim verdicts |
 | [deep-research](skills/deep-research/) | General research, lookups, deep dives | Adaptive report with citations |
 | [fact-check](skills/fact-check/) | Verifying a specific claim | Verdict with supporting and contradicting evidence |
 | [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
@@ -238,12 +238,13 @@ that supports and challenges each claim. It also checks whether quoted sources h
 material interest, looks for credible voices the article omits, and tests important
 numbers or forecasts against denominators, base rates, comparisons, and track records.
 
-The report includes a bottom line, a verdict for every audited claim, missing voices,
-scale and context, an overall framing assessment, and sources annotated by their role.
-Verdicts range from `CONFIRMED` to `FALSE`; the separate framing judgment can identify
-an article whose individual facts are accurate but whose presentation is promotional,
-one-sided, or materially misleading. Use [`fact-check`](skills/fact-check/) instead when
-you only need to verify a single claim.
+The report opens with a neutral article summary, the bottom line, and the decisive
+reasons for the judgment. It then gives a verdict for every audited claim, material
+missing voices and interests, numerical context, unresolved limits, and sources
+annotated by their role. Verdicts range from `CONFIRMED` to `FALSE`; the separate
+framing judgment can identify an article whose individual facts are accurate but whose
+presentation is promotional, one-sided, or materially misleading. Use
+[`fact-check`](skills/fact-check/) instead when you only need to verify a single claim.
 
 ## How Search Works
 
