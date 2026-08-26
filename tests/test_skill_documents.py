@@ -24,7 +24,8 @@ def skill_files() -> dict[str, Path]:
 def frontmatter(path: Path) -> str:
     text = path.read_text()
     parts = text.split("---", 2)
-    assert len(parts) == 3 and not parts[0].strip(), f"Invalid frontmatter in {path}"
+    assert len(parts) == 3, f"Invalid frontmatter in {path}"
+    assert not parts[0].strip(), f"Unexpected content before frontmatter in {path}"
     return parts[1]
 
 
