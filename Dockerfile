@@ -12,8 +12,10 @@ RUN python -m pip install --no-cache-dir --only-binary=:all: uv==0.11.6
 COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --locked --no-dev --no-install-project --no-build
 COPY src/ ./src/
+# This installs only the wheel built in the preceding command. --no-deps prevents
+# dependency resolution, so the external dependencies remain governed by uv.lock.
 RUN uv build --wheel \
-    && uv pip install --python .venv/bin/python --no-deps --only-binary=:all: dist/*.whl
+    && uv pip install --python .venv/bin/python --no-deps --only-binary=:all: dist/*.whl  # NOSONAR
 
 FROM python:3.12-slim AS runtime
 
