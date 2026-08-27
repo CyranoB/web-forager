@@ -18,7 +18,7 @@ research workflows.
 
 ## Quickstart
 
-Install all six skills with one command. It works for 50+ coding agents:
+Install all seven skills with one command. It works for 50+ coding agents:
 
 ```bash
 npx skills@latest add CyranoB/web-forager
@@ -44,7 +44,7 @@ research workflows.
 <details>
 <summary><strong>Claude Code</strong></summary>
 
-Install all six skills from the plugin marketplace:
+Install all seven skills from the plugin marketplace:
 
 ```bash
 /plugin marketplace add CyranoB/web-forager
@@ -216,6 +216,7 @@ Audit this article for accuracy and framing: https://example.com/article
 What's new with Anthropic this month?
 Map the competitive landscape for AI meeting assistants.
 Should we adopt Bun for a production Node service?
+Analyze whether Russia and NATO are already in a hybrid conflict.
 ```
 
 ## Available Skills
@@ -228,6 +229,7 @@ Should we adopt Bun for a production Node service?
 | [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
 | [competitive-intel](skills/competitive-intel/) | Market maps and competitor analysis | Landscape or positioning report |
 | [tech-advisor](skills/tech-advisor/) | Tech/product evaluation and adoption decisions | Recommendation with evidence |
+| [geopolitical-analyst](skills/geopolitical-analyst/) | Geopolitical assessments, conflicts, policies, scenarios, and narrative audits | Sourced assessment with calibrated confidence |
 
 ### Article Audit
 
@@ -244,6 +246,20 @@ Verdicts range from `CONFIRMED` to `FALSE`; the separate framing judgment can id
 an article whose individual facts are accurate but whose presentation is promotional,
 one-sided, or materially misleading. Use [`fact-check`](skills/fact-check/) instead when
 you only need to verify a single claim.
+
+### Geopolitical Analyst
+
+Use [`geopolitical-analyst`](skills/geopolitical-analyst/) for current assessments of
+countries, conflicts, alliances, foreign policy, geoeconomics, and disputed geopolitical
+claims. It establishes a factual baseline, tests consequential claims through independent
+evidence, and uses the smallest useful set of international-relations or strategic
+frameworks. Material inferences and forecasts include calibrated confidence, the strongest
+competing explanation, and the evidence that would change the assessment.
+
+The skill puts the judgment first, followed by its decisive evidence and causal mechanism,
+uncertainty, implications, essential context, and reassessment indicators. It can also audit
+an article's geopolitical argument or build conditional scenarios when future paths are
+central to the question.
 
 ## How Search Works
 
