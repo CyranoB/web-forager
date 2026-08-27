@@ -8,7 +8,7 @@
 [![Downloads](https://static.pepy.tech/badge/web-forager/month)](https://pepy.tech/project/web-forager)
 [![skills.sh](https://skills.sh/b/CyranoB/web-forager)](https://skills.sh/CyranoB/web-forager)
 
-*The thing about information on the web is that it doesn't want to be found. It wants to hide behind cookie banners, keep itself to itself, and generally behave like a cat that knows it's time for the vet. Web Forager is the sort of dogged, slightly grubby assistant who goes out there anyway — accompanied by a duck of questionable temperament — rummages through DuckDuckGo, grabs pages directly when it can, and calls in Jina Reader when things get complicated. The results come back neatly converted for LLM consumption, which is to say, in a format that would make a librarian weep with either joy or despair, depending on the librarian.*
+*The thing about information on the web is that it doesn't want to be found. It wants to hide behind cookie banners, keep itself to itself, and generally behave like a cat that knows it's time for the vet. Web Forager is the sort of dogged, slightly grubby assistant who goes out there anyway, accompanied by a duck of questionable temperament, rummages through DuckDuckGo, grabs pages directly when it can, and calls in Jina Reader when things get complicated. The results come back neatly converted for LLM consumption, which is to say, in a format that would make a librarian weep with either joy or despair, depending on the librarian.*
 
 Web Forager gives AI agents practical web research workflows as **Agent Skills**.
 The skills search DuckDuckGo, monitor news, fetch pages, and synthesize cited answers.
@@ -35,7 +35,7 @@ npx skills@latest add CyranoB/web-forager --skill deep-research
 npx skills@latest add CyranoB/web-forager --skill '*' -a claude-code -a codex -y
 ```
 
-## Install For Your Coding Tool
+## Install for your coding tool
 
 Install as skills/plugins when your agent supports them. Use MCP only when your tool
 does not support skills, or when you want raw search/fetch tools instead of guided
@@ -188,7 +188,7 @@ https://github.com/CyranoB/web-forager
 
 </details>
 
-### Individual Skills
+### Individual skills
 
 For any Agent Skills-compatible tool, install one skill by name:
 
@@ -202,7 +202,7 @@ Direct skill URLs also work:
 npx skills@latest add https://github.com/CyranoB/web-forager/tree/main/skills/deep-research
 ```
 
-## Use The Skills
+## Use the skills
 
 After installing, ask your agent naturally. The matching skill should be selected
 automatically by skill metadata.
@@ -219,7 +219,7 @@ Should we adopt Bun for a production Node service?
 Analyze whether Russia and NATO are already in a hybrid conflict.
 ```
 
-## Available Skills
+## Available skills
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
@@ -231,7 +231,7 @@ Analyze whether Russia and NATO are already in a hybrid conflict.
 | [tech-advisor](skills/tech-advisor/) | Tech/product evaluation and adoption decisions | Recommendation with evidence |
 | [geopolitical-analyst](skills/geopolitical-analyst/) | Geopolitical assessments, conflicts, policies, scenarios, and narrative audits | Sourced assessment with calibrated confidence |
 
-### Article Audit
+### Article audit
 
 Use [`article-audit`](skills/article-audit/) when you want to evaluate an article as a
 whole rather than verify one isolated statement. The skill reads the complete article,
@@ -247,7 +247,7 @@ an article whose individual facts are accurate but whose presentation is promoti
 one-sided, or materially misleading. Use [`fact-check`](skills/fact-check/) instead when
 you only need to verify a single claim.
 
-### Geopolitical Analyst
+### Geopolitical analyst
 
 Use [`geopolitical-analyst`](skills/geopolitical-analyst/) for current assessments of
 countries, conflicts, alliances, foreign policy, geoeconomics, and disputed geopolitical
@@ -261,7 +261,7 @@ uncertainty, implications, essential context, and reassessment indicators. It ca
 an article's geopolitical argument or build conditional scenarios when future paths are
 central to the question.
 
-## How Search Works
+## How search works
 
 The skills prefer tools in this order:
 
@@ -273,7 +273,7 @@ The skills prefer tools in this order:
 Python 3.10-3.13 is supported. Python 3.14 is not supported yet, so all documented
 `uvx` commands pin `--python ">=3.10,<3.14"`.
 
-## Optional: MCP Server
+## Optional: MCP server
 
 Use the MCP server only if you want reusable search/fetch tools exposed directly to
 an MCP-compatible client. Skills work without this setup.
@@ -313,7 +313,7 @@ web-forager news "your topic"
 web-forager fetch "https://example.com"
 ```
 
-## MCP Tools
+## MCP tools
 
 The MCP server exposes:
 
