@@ -1,0 +1,4 @@
+interface:
+  display_name: "Geopolitical Analyst"
+  short_description: "Brief, sourced geopolitical analysis"
+  default_prompt: "Use $geopolitical-analyst to give a brief, current assessment using the smallest useful set of recognized frameworks."
