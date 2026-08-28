@@ -66,8 +66,8 @@ identified.
 Scale the answer to the question:
 
 - **Quick answer:** 2–4 direct sentences with inline source links.
-- **Standard report:** summary, key findings, and annotated sources.
-- **Deep dive:** summary, key findings, 2–4 topic sections, limitations, and annotated
+- **Standard report:** answer, key findings, limitations, and annotated sources.
+- **Deep dive:** answer, key findings, 2–4 topic sections, limitations, and annotated
   sources.
 
 Use a quick answer for a narrow factual question. A standard report is the default. Use
@@ -76,8 +76,14 @@ necessary angles that cannot be synthesized clearly in the standard report. Rese
 depth stays high across all three formats; expose only the findings and sources needed
 to answer the question.
 
-Match the length to the task. Do not pad reports with filler sections, repeated
-summaries, or boilerplate.
+Use an inverted pyramid at every depth. Lead with the answer and why it matters, then
+present findings and evidence in descending order of importance, followed by context
+and limitations. Apply the same order within each deep-dive section.
+
+Write plain, concrete sentences. Prefer short common words and active voice. Cut
+cliches, padding, repeated ideas, and vague praise or criticism. Keep technical terms
+when they are more precise, and define unfamiliar ones once. Let accuracy, attribution,
+and nuance override any style rule.
 
 Cite specific claims near the text they support. Prefer concrete dates, numbers, names,
 and versions. Separate sourced facts from inference.

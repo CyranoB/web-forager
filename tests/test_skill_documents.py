@@ -218,6 +218,20 @@ def test_deep_research_uses_adaptive_evidence_budgets() -> None:
     assert re.search(r"sends the complete\s+URL to a third party", fallbacks)
 
 
+def test_deep_research_uses_clear_inverted_pyramid_reporting() -> None:
+    text = (SKILLS_ROOT / "deep-research" / "SKILL.md").read_text()
+
+    assert "Use an inverted pyramid at every depth" in text
+    assert "Lead with the answer and why it matters" in text
+    assert "descending order of importance" in text
+    assert "Write plain, concrete sentences" in text
+    assert re.search(r"Keep technical terms\s+when they are more precise", text)
+    assert re.search(
+        r"accuracy, attribution,\s+and nuance override any style rule",
+        text,
+    )
+
+
 def test_deep_research_cross_model_evaluations_cover_failure_modes() -> None:
     evaluations = json.loads((EVALS_ROOT / "deep_research.json").read_text())[
         "evaluations"
@@ -233,6 +247,8 @@ def test_deep_research_cross_model_evaluations_cover_failure_modes() -> None:
         "adaptive-depth",
         "conflicting-evidence",
         "fast-moving",
+        "inverted-pyramid",
+        "plain-language",
         "prompt-injection",
         "source-failure",
         "right-sized-output",

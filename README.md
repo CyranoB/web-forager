@@ -256,8 +256,11 @@ repeat known evidence, and records important disagreements or gaps. Retrieved co
 is treated as untrusted evidence rather than workflow instructions.
 
 The skill can return a short cited answer, a standard report, or a deep dive with topic
-sections and limitations. It cites material facts where they appear and labels its own
-inferences.
+sections and limitations. Reports use an inverted pyramid: the answer and its
+significance come first, followed by findings in descending order of importance,
+context, and limitations. The prose stays plain and concrete without sacrificing
+technical precision. Material facts are cited where they appear, and inferences are
+labeled.
 
 ### Fact check
 
