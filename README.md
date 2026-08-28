@@ -8,7 +8,7 @@
 [![Downloads](https://static.pepy.tech/badge/web-forager/month)](https://pepy.tech/project/web-forager)
 [![skills.sh](https://skills.sh/b/CyranoB/web-forager)](https://skills.sh/CyranoB/web-forager)
 
-*The thing about information on the web is that it doesn't want to be found. It wants to hide behind cookie banners, keep itself to itself, and generally behave like a cat that knows it's time for the vet. Web Forager is the sort of dogged, slightly grubby assistant who goes out there anyway, accompanied by a duck of questionable temperament, rummages through DuckDuckGo, grabs pages directly when it can, and calls in Jina Reader when things get complicated. The results come back neatly converted for LLM consumption, which is to say, in a format that would make a librarian weep with either joy or despair, depending on the librarian.*
+*The thing about information on the web is that it doesn't want to be found. It hides behind cookie banners, contradicts itself across twelve tabs, and occasionally insists that a press release counts as independent evidence. Web Forager goes looking anyway, accompanied by a duck of questionable temperament. It searches, reads, checks claims, follows the news, maps competitors, evaluates technology, and attempts to explain why governments are glaring at one another. It reads the links and brings back a cited answer.*
 
 Web Forager gives AI agents practical web research workflows as **Agent Skills**.
 The skills search DuckDuckGo, monitor news, fetch pages, and synthesize cited answers.
