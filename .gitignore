@@ -156,3 +156,9 @@ logs/
 .claude_settings.json
 .worktrees/
 .security-key
+
+# Local agent tooling
+.agents/
+.claude/
+.codex/
+skills-lock.json
