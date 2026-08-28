@@ -11,6 +11,7 @@ EXPECTED_SKILLS = {
     "competitive-intel",
     "deep-research",
     "fact-check",
+    "geopolitical-analyst",
     "news-monitor",
     "tech-advisor",
 }

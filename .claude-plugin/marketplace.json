@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "forager-skills",
-      "description": "Six research skills powered by DuckDuckGo search and Jina Reader: article auditing, web research, fact-checking, news monitoring, competitive intelligence, and technology evaluation (maturity assessments + product comparisons)",
+      "description": "Seven research skills powered by DuckDuckGo search and Jina Reader: article auditing, web research, fact-checking, news monitoring, competitive intelligence, technology evaluation, and geopolitical analysis",
       "source": "./",
       "strict": false,
       "skills": [
@@ -20,7 +20,8 @@
         "./skills/fact-check",
         "./skills/news-monitor",
         "./skills/competitive-intel",
-        "./skills/tech-advisor"
+        "./skills/tech-advisor",
+        "./skills/geopolitical-analyst"
       ],
       "version": "1.0.0",
       "author": {
@@ -29,7 +30,7 @@
       "homepage": "https://github.com/CyranoB/web-forager",
       "repository": "https://github.com/CyranoB/web-forager",
       "license": "MIT",
-      "keywords": ["search", "news", "research", "fact-check", "web-forager"]
+      "keywords": ["search", "news", "research", "fact-check", "geopolitics", "web-forager"]
     }
   ]
 }

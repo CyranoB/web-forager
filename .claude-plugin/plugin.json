@@ -6,6 +6,7 @@
     "./skills/fact-check",
     "./skills/news-monitor",
     "./skills/competitive-intel",
-    "./skills/tech-advisor"
+    "./skills/tech-advisor",
+    "./skills/geopolitical-analyst"
   ]
 }

@@ -8,7 +8,7 @@
 [![Downloads](https://static.pepy.tech/badge/web-forager/month)](https://pepy.tech/project/web-forager)
 [![skills.sh](https://skills.sh/b/CyranoB/web-forager)](https://skills.sh/CyranoB/web-forager)
 
-*The thing about information on the web is that it doesn't want to be found. It wants to hide behind cookie banners, keep itself to itself, and generally behave like a cat that knows it's time for the vet. Web Forager is the sort of dogged, slightly grubby assistant who goes out there anyway — accompanied by a duck of questionable temperament — rummages through DuckDuckGo, grabs pages directly when it can, and calls in Jina Reader when things get complicated. The results come back neatly converted for LLM consumption, which is to say, in a format that would make a librarian weep with either joy or despair, depending on the librarian.*
+*The thing about information on the web is that it doesn't want to be found. It hides behind cookie banners, contradicts itself across twelve tabs, and occasionally insists that a press release counts as independent evidence. Web Forager goes looking anyway, accompanied by a duck of questionable temperament. It searches, reads, checks claims, follows the news, maps competitors, evaluates technology, and attempts to explain why governments are glaring at one another. It reads the links and brings back a cited answer.*
 
 Web Forager gives AI agents practical web research workflows as **Agent Skills**.
 The skills search DuckDuckGo, monitor news, fetch pages, and synthesize cited answers.
@@ -18,7 +18,7 @@ research workflows.
 
 ## Quickstart
 
-Install all six skills with one command. It works for 50+ coding agents:
+Install all seven skills with one command. It works for 50+ coding agents:
 
 ```bash
 npx skills@latest add CyranoB/web-forager
@@ -35,7 +35,7 @@ npx skills@latest add CyranoB/web-forager --skill deep-research
 npx skills@latest add CyranoB/web-forager --skill '*' -a claude-code -a codex -y
 ```
 
-## Install For Your Coding Tool
+## Install for your coding tool
 
 Install as skills/plugins when your agent supports them. Use MCP only when your tool
 does not support skills, or when you want raw search/fetch tools instead of guided
@@ -44,7 +44,7 @@ research workflows.
 <details>
 <summary><strong>Claude Code</strong></summary>
 
-Install all six skills from the plugin marketplace:
+Install all seven skills from the plugin marketplace:
 
 ```bash
 /plugin marketplace add CyranoB/web-forager
@@ -188,7 +188,7 @@ https://github.com/CyranoB/web-forager
 
 </details>
 
-### Individual Skills
+### Individual skills
 
 For any Agent Skills-compatible tool, install one skill by name:
 
@@ -202,7 +202,7 @@ Direct skill URLs also work:
 npx skills@latest add https://github.com/CyranoB/web-forager/tree/main/skills/deep-research
 ```
 
-## Use The Skills
+## Use the skills
 
 After installing, ask your agent naturally. The matching skill should be selected
 automatically by skill metadata.
@@ -216,9 +216,10 @@ Audit this article for accuracy and framing: https://example.com/article
 What's new with Anthropic this month?
 Map the competitive landscape for AI meeting assistants.
 Should we adopt Bun for a production Node service?
+Analyze whether Russia and NATO are already in a hybrid conflict.
 ```
 
-## Available Skills
+## Available skills
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
@@ -228,25 +229,97 @@ Should we adopt Bun for a production Node service?
 | [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
 | [competitive-intel](skills/competitive-intel/) | Market maps and competitor analysis | Landscape or positioning report |
 | [tech-advisor](skills/tech-advisor/) | Tech/product evaluation and adoption decisions | Recommendation with evidence |
+| [geopolitical-analyst](skills/geopolitical-analyst/) | Geopolitical assessments, conflicts, policies, scenarios, and narrative audits | Sourced assessment with calibrated confidence |
 
-### Article Audit
+### Article audit
 
-Use [`article-audit`](skills/article-audit/) when you want to evaluate an article as a
-whole rather than verify one isolated statement. The skill reads the complete article,
-identifies 4-8 claims that carry its argument, and independently searches for evidence
-that supports and challenges each claim. It also checks whether quoted sources have a
-material interest, looks for credible voices the article omits, and tests important
-numbers or forecasts against denominators, base rates, comparisons, and track records.
+Use [`article-audit`](skills/article-audit/) to check an article's facts, omissions, and
+framing. It selects the 4-8 claims on which the argument depends and searches for
+independent evidence on both sides. It checks quoted sources for material interests,
+looks for credible voices the article leaves out, and tests important numbers or
+forecasts against denominators, base rates, comparisons, and past results.
 
-The report opens with a neutral article summary, the bottom line, and the decisive
-reasons for the judgment. It then gives a verdict for every audited claim, material
-missing voices and interests, numerical context, unresolved limits, and sources
-annotated by their role. Verdicts range from `CONFIRMED` to `FALSE`; the separate
-framing judgment can identify an article whose individual facts are accurate but whose
-presentation is promotional, one-sided, or materially misleading. Use
-[`fact-check`](skills/fact-check/) instead when you only need to verify a single claim.
+The report opens with a neutral summary, the bottom line, and the main reasons for its
+judgment. It then gives a verdict for each claim, notes missing voices and interests,
+adds numerical context, lists unresolved limits, and annotates each source by role.
+Verdicts range from `CONFIRMED` to `FALSE`. It rates facts and framing separately, so it
+can show when accurate claims create a one-sided or misleading picture. To check one
+claim, use [`fact-check`](skills/fact-check/).
 
-## How Search Works
+### Deep research
+
+Use [`deep-research`](skills/deep-research/) for a broad, current question that needs
+several sources or points of view. It frames the question, searches 2-3 different angles,
+and reads the 3-5 strongest pages. It favors primary and authoritative sources and
+records important disagreements or gaps.
+
+The skill can return a short cited answer, a standard report, or a deep dive with topic
+sections and limitations. It cites material facts where they appear and labels its own
+inferences.
+
+### Fact check
+
+Use [`fact-check`](skills/fact-check/) to test a specific claim. It splits compound
+statements into testable parts and searches for support and counterevidence. It weighs
+each source by its authority, specificity, recency, independence, and conflicts of
+interest. A missing rebuttal is not proof.
+
+Each claim receives one verdict: `CONFIRMED`, `LIKELY TRUE`, `UNVERIFIED`, `DISPUTED`,
+or `FALSE`. The response explains the verdict, presents evidence from both sides, and
+lists caveats and sources. To assess a whole article, use
+[`article-audit`](skills/article-audit/).
+
+### News monitor
+
+Use [`news-monitor`](skills/news-monitor/) when the answer depends on recent events or a
+set time period. Unless the user chooses a period, it covers the previous 2-4 weeks. It
+searches from more than one angle, groups reports of the same event, and removes stories
+outside the window. It reads at least one authoritative source for every event it
+describes in detail.
+
+The briefing puts the newest events first and gives dates, short summaries, and stated
+next steps. It also explains why each event matters. Its watch list covers sourced
+upcoming events and unresolved threads. Search snippets help find stories; they do not
+support the briefing's claims.
+
+### Competitive intelligence
+
+Use [`competitive-intel`](skills/competitive-intel/) in one of two modes. Market
+landscape maps the players, prices, barriers, and gaps in a market. Competitive
+positioning compares a user's product with its closest rivals, including their
+capabilities, prices, customer complaints, recent moves, and threat level.
+
+The skill checks current product and pricing pages, then uses independent reviews and
+community sources for complaints and customer perception. The report contains a market
+map or competitive matrix, gaps, recommended next steps, and annotated sources. Claims
+supplied by the user remain unverified until a source supports them.
+
+### Technology advisor
+
+Use [`tech-advisor`](skills/tech-advisor/) to decide whether to adopt a technology or
+which product to buy. A maturity assessment checks the exact technology and version for
+production use, ecosystem support, governance, release stability, documentation, and
+the roadmap. It ends with an `ADOPT`, `TRIAL`, `ASSESS`, or `HOLD` rating and states what
+would change that rating.
+
+A product comparison checks current models against the user's region, budget,
+must-haves, compatibility needs, and risk tolerance. It verifies specifications and
+prices, chooses a winner, explains the tradeoffs and total cost, and names the best
+alternative for a different priority.
+
+### Geopolitical analyst
+
+Use [`geopolitical-analyst`](skills/geopolitical-analyst/) to assess a country, conflict,
+alliance, policy, or disputed geopolitical claim. It checks the basic facts, tests key
+claims against independent sources, and applies only the frameworks that help explain
+the case. It marks important judgments and forecasts with confidence levels, gives the
+strongest competing explanation, and states what evidence would change its conclusion.
+
+The answer leads with the judgment and the evidence behind it. It then explains the
+causal mechanism, uncertainty, implications, needed context, and signs to watch. The
+skill can also audit an article's geopolitical argument or build conditional scenarios.
+
+## How search works
 
 The skills prefer tools in this order:
 
@@ -258,7 +331,7 @@ The skills prefer tools in this order:
 Python 3.10-3.13 is supported. Python 3.14 is not supported yet, so all documented
 `uvx` commands pin `--python ">=3.10,<3.14"`.
 
-## Optional: MCP Server
+## Optional: MCP server
 
 Use the MCP server only if you want reusable search/fetch tools exposed directly to
 an MCP-compatible client. Skills work without this setup.
@@ -298,7 +371,7 @@ web-forager news "your topic"
 web-forager fetch "https://example.com"
 ```
 
-## MCP Tools
+## MCP tools
 
 The MCP server exposes:
 
