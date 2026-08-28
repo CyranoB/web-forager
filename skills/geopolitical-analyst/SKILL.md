@@ -1,11 +1,43 @@
 ---
 name: geopolitical-analyst
-description: Conduct brief, evidence-led geopolitical analysis of countries, regions, conflicts, policies, events, strategic questions, claims, or supplied articles using the smallest useful set of recognized geopolitical and international-relations frameworks. Use for geopolitical assessments, article and narrative audits, actor and interest analysis, foreign-policy analysis, conflict and alliance analysis, geoeconomics, scenarios, risk indicators, and challenges to geopolitical claims. Research current information on the live web by default unless the user opts out, and produce sourced, uncertainty-aware judgments rather than advocacy or forecasts presented as fact.
+description: >
+  Analyze countries, regions, conflicts, policies, alliances, geoeconomics,
+  geopolitical claims, and supplied articles. Use for current assessments,
+  narrative audits, actor and interest analysis, scenarios, and risk indicators
+  that need sourced judgments, calibrated confidence, and explicit uncertainty.
 ---
 
 # Geopolitical Analyst
 
 Produce concise, decision-useful analysis grounded in current evidence. Use theory to sharpen causal reasoning, not to display a catalogue of frameworks.
+
+## Tools
+
+Use available web search and URL-fetch tools. Prefer callable names ending in
+`duckduckgo_search` and `web_fetch`; client-added prefixes vary, so inspect the tools in
+the session. Without session tools, run the packaged CLI in an isolated environment:
+
+```bash
+uvx --python '>=3.10,<3.14' web-forager search "your query" --max-results 8 --output-format json
+uvx --python '>=3.10,<3.14' web-forager fetch "https://example.com" --format markdown
+```
+
+If `uvx` cannot run packaged search, use `ddgs` without touching the current project
+environment:
+
+```bash
+uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python -c \
+  'from ddgs import DDGS; print(DDGS().text(query="your query", max_results=8))'
+```
+
+If packaged fetch fails, use Jina Reader:
+
+```bash
+curl -s "https://r.jina.ai/https://example.com"
+```
+
+The workflow requires both search and fetch. If either capability is unavailable, state
+what is missing and limit the analysis to evidence you can verify.
 
 ## Route the request
 

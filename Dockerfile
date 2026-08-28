@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
@@ -7,19 +7,25 @@ WORKDIR /app
 ARG VERSION=0.0.0
 ENV SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy project files
-COPY pyproject.toml README.md ./
+# Install uv as a pinned wheel, then install only locked binary dependencies.
+RUN python -m pip install --no-cache-dir --only-binary=:all: uv==0.11.6
+COPY pyproject.toml uv.lock README.md ./
+RUN uv sync --locked --no-dev --no-install-project --no-build
 COPY src/ ./src/
+# The project produces a pure-Python wheel. Extract that local artifact directly
+# into the locked environment without invoking another dependency resolver.
+RUN uv build --wheel \
+    && python -m zipfile -e dist/*.whl .venv/lib/python3.12/site-packages
 
-# Install the package and create non-root user for security
-RUN pip install --no-cache-dir . \
-    && useradd --create-home --shell /bin/bash appuser
+FROM python:3.12-slim AS runtime
+
+WORKDIR /app
+
+COPY --from=builder /app/.venv /app/.venv
+
+# Create a non-root user for security.
+RUN useradd --create-home --shell /bin/bash appuser
 USER appuser
 
 # Run the MCP server
-ENTRYPOINT ["web-forager", "serve"]
+ENTRYPOINT ["/app/.venv/bin/python", "-m", "web_forager.cli", "serve"]

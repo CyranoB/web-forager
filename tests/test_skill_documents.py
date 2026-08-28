@@ -11,6 +11,7 @@ EXPECTED_SKILLS = {
     "competitive-intel",
     "deep-research",
     "fact-check",
+    "geopolitical-analyst",
     "news-monitor",
     "tech-advisor",
 }
@@ -24,7 +25,8 @@ def skill_files() -> dict[str, Path]:
 def frontmatter(path: Path) -> str:
     text = path.read_text()
     parts = text.split("---", 2)
-    assert len(parts) == 3 and not parts[0].strip(), f"Invalid frontmatter in {path}"
+    assert len(parts) == 3, f"Invalid frontmatter in {path}"
+    assert not parts[0].strip(), f"Unexpected content before frontmatter in {path}"
     return parts[1]
 
 
@@ -55,7 +57,9 @@ def test_frontmatter_names_and_descriptions_are_tight() -> None:
 
 def test_top_level_skills_stay_legible() -> None:
     for path in skill_files().values():
-        assert len(path.read_text().splitlines()) <= 180, f"Disclose branches from {path}"
+        assert (
+            len(path.read_text().splitlines()) <= 180
+        ), f"Disclose branches from {path}"
 
 
 def test_relative_markdown_references_ship_with_each_skill() -> None:
@@ -132,11 +136,30 @@ def test_article_audit_is_distinct_from_single_claim_fact_check() -> None:
 
 def test_article_audit_enforces_its_evidence_contract() -> None:
     text = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    reporting = (SKILLS_ROOT / "article-audit" / "reporting.md").read_text()
     assert "Split compound statements" in text
     assert "Before searching, show a numbered audit scope" in text
+    assert "temporal frame" in text
+    assert "one underlying record" in text
+    assert "quotation provenance" in text
+    assert "documented trace gap" in text
     assert "Search snippets are discovery aids, not verdict evidence" in text
+    assert "Evidence budget and stopping rule" in text
+    assert "Stop when additional searches repeat" in text
+    assert "**Uncertainty:**" in text
+    assert "**Forecast horizon:**" in text
     assert "Use exactly one label, unchanged" in text
-    assert "support, challenge, baseline, or context" in text
+    assert "support, challenge, baseline, or context" in reporting
+    for section in (
+        "**Article in brief:**",
+        "**Bottom line:**",
+        "**Why this is the judgment:**",
+        "**Claims audited:**",
+        "**Missing voices and interests:**",
+        "**Numbers in perspective:**",
+        "**Limits and sources:**",
+    ):
+        assert section in reporting
 
 
 def test_router_skills_disclose_each_mode() -> None:
@@ -148,3 +171,52 @@ def test_router_skills_disclose_each_mode() -> None:
             if target.name != "SKILL.md"
         }
         assert len(references) == 2
+
+
+def test_direct_workflows_right_size_their_output() -> None:
+    article_audit_skill = (SKILLS_ROOT / "article-audit" / "SKILL.md").read_text()
+    article_audit_reporting = (
+        SKILLS_ROOT / "article-audit" / "reporting.md"
+    ).read_text()
+    deep_research = (SKILLS_ROOT / "deep-research" / "SKILL.md").read_text()
+    fact_check = (SKILLS_ROOT / "fact-check" / "SKILL.md").read_text()
+    news_monitor = (SKILLS_ROOT / "news-monitor" / "SKILL.md").read_text()
+
+    assert "The default full audit is long-form" in article_audit_reporting
+    assert "The ledger is working state, not an output template" in article_audit_skill
+    assert "A standard report is the default" in deep_research
+    assert re.search(
+        r"Research\s+depth stays high across all three formats",
+        deep_research,
+    )
+    assert "Default to a compact verdict for one claim" in fact_check
+    assert re.search(r"source-by-source\s+account only when", fact_check)
+    assert "default briefing uses a single event list" in news_monitor
+    assert "expanded briefing" in news_monitor
+
+
+def test_router_modes_keep_tables_as_the_output_source_of_truth() -> None:
+    market_landscape = (
+        SKILLS_ROOT / "competitive-intel" / "market-landscape.md"
+    ).read_text()
+    competitive_positioning = (
+        SKILLS_ROOT / "competitive-intel" / "competitive-positioning.md"
+    ).read_text()
+    maturity_assessment = (
+        SKILLS_ROOT / "tech-advisor" / "maturity-assessment.md"
+    ).read_text()
+    product_comparison = (
+        SKILLS_ROOT / "tech-advisor" / "product-comparison.md"
+    ).read_text()
+
+    assert "Default to a long-form map" in market_landscape
+    assert "player tables as the single source of truth" in market_landscape
+    assert "Default to a long-form comparison" in competitive_positioning
+    assert "competitive matrix as the single source of truth" in competitive_positioning
+    assert "Default to a medium-length assessment" in maturity_assessment
+    assert "scorecard as the single source of truth" in maturity_assessment
+    assert "Default to a compact decision brief" in product_comparison
+    assert re.search(
+        r"comparison table as the single source of\s+truth",
+        product_comparison,
+    )

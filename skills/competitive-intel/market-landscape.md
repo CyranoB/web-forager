@@ -44,16 +44,21 @@ the market rather than decorate it, and claimed white space follows from evidenc
 
 ## 5. Deliver
 
+Default to a long-form map because the decision depends on coverage across player
+categories. Use the player tables as the single source of truth for each company's
+position, audience, pricing model, and defensible scale. Reserve prose for cross-market
+patterns, implications, and opportunities. Add individual company profiles or detailed
+methodology only when the user requests an expanded report.
+
 Include:
 
 1. an executive summary of the market, trends, and strongest opportunity;
-2. player tables grouped by category;
+2. player tables grouped by category, including audience, positioning, pricing model,
+   and defensible scale;
 3. the 2×2 positioning map with named axes;
-4. pricing patterns;
-5. evidence-backed gaps and opportunities;
-6. barriers to entry;
-7. 2–3 actionable takeaways;
-8. annotated sources.
+4. cross-market pricing patterns, evidence-backed gaps, and barriers to entry;
+5. 2–3 actionable takeaways;
+6. annotated sources.
 
 Adapt sections to the market instead of filling irrelevant template rows.
 

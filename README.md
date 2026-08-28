@@ -223,7 +223,7 @@ Analyze whether Russia and NATO are already in a hybrid conflict.
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
-| [article-audit](skills/article-audit/) | Auditing a full article's accuracy, omissions, and framing | Per-claim verdicts and framing assessment |
+| [article-audit](skills/article-audit/) | Auditing a full article's accuracy, omissions, and framing | Reader-first audit with per-claim verdicts |
 | [deep-research](skills/deep-research/) | General research, lookups, deep dives | Adaptive report with citations |
 | [fact-check](skills/fact-check/) | Verifying a specific claim | Verdict with supporting and contradicting evidence |
 | [news-monitor](skills/news-monitor/) | Recent news and updates | Chronological briefing |
@@ -239,11 +239,12 @@ independent evidence on both sides. It checks quoted sources for material intere
 looks for credible voices the article leaves out, and tests important numbers or
 forecasts against denominators, base rates, comparisons, and past results.
 
-The report gives a bottom line, a verdict for each claim, missing evidence and context,
-a framing judgment, and annotated sources. It rates facts and framing separately, so it
-can show when accurate claims create a one-sided or misleading picture. Verdicts range
-from `CONFIRMED` to `FALSE`. To check one claim, use
-[`fact-check`](skills/fact-check/).
+The report opens with a neutral summary, the bottom line, and the main reasons for its
+judgment. It then gives a verdict for each claim, notes missing voices and interests,
+adds numerical context, lists unresolved limits, and annotates each source by role.
+Verdicts range from `CONFIRMED` to `FALSE`. It rates facts and framing separately, so it
+can show when accurate claims create a one-sided or misleading picture. To check one
+claim, use [`fact-check`](skills/fact-check/).
 
 ### Deep research
 

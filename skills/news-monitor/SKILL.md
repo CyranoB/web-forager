@@ -3,7 +3,7 @@ name: news-monitor
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.2.0"
+  version: "1.3.0"
 description: >
   Monitor recent developments on a topic and produce a chronological, source-read
   briefing. Use when recency or a stated time window is the core question.
@@ -87,13 +87,19 @@ happened, why it matters, and any stated next step.
 
 ### 5. Deliver the briefing
 
-Present most recent first:
+Present most recent first. The default briefing uses a single event list:
 
-- period covered and current update date;
-- one-line headline list;
-- 2–4 sourced sentences per detailed event;
+- period covered, current update date, and a one-sentence bottom line;
+- 3–5 priority events, each with a headline and 1–2 sourced sentences covering what
+  happened and why it matters;
+- remaining significant events, when present, as one-line additional developments;
 - a short “What to watch” section grounded in sourced upcoming events or unresolved
   threads.
+
+Use an expanded briefing with 2–4 sentences per event only when the user asks for
+comprehensive coverage or an event needs that detail to avoid a misleading summary.
+Each event headline serves as both navigation and detail heading, so the event appears
+once.
 
 If no significant developments survive filtering, say so plainly and give the searched
 window.
