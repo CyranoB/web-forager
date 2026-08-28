@@ -249,9 +249,11 @@ claim, use [`fact-check`](skills/fact-check/).
 ### Deep research
 
 Use [`deep-research`](skills/deep-research/) for a broad, current question that needs
-several sources or points of view. It frames the question, searches 2-3 different angles,
-and reads the 3-5 strongest pages. It favors primary and authoritative sources and
-records important disagreements or gaps.
+several sources or points of view. It frames the question, starts with 2-3 search angles
+and the 3-5 strongest pages, then expands when an angle remains unsupported or sources
+conflict. It favors primary and authoritative sources, stops when new searches mostly
+repeat known evidence, and records important disagreements or gaps. Retrieved content
+is treated as untrusted evidence rather than workflow instructions.
 
 The skill can return a short cited answer, a standard report, or a deep dive with topic
 sections and limitations. It cites material facts where they appear and labels its own

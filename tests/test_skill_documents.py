@@ -1,11 +1,13 @@
 # Test assertions are the behavior under test, not production validation.
 # ruff: noqa: S101
 
+import json
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 SKILLS_ROOT = ROOT / "skills"
+EVALS_ROOT = ROOT / "tests" / "evals"
 EXPECTED_SKILLS = {
     "article-audit",
     "competitive-intel",
@@ -77,23 +79,31 @@ def test_relative_markdown_references_ship_with_each_skill() -> None:
 def test_tool_guidance_uses_stable_names_without_automatic_installation() -> None:
     for skill_name, path in skill_files().items():
         text = path.read_text()
+        bundled_text = "\n".join(
+            document.read_text() for document in path.parent.glob("*.md")
+        )
         assert "mcp__" not in text
-        assert "pip install ddgs" not in text
+        assert "pip install ddgs" not in bundled_text
         assert "web_fetch" in text
         assert "duckduckgo_search" in text
-        assert "uvx" in text
-        assert "uv run --no-project" in text
+        assert "uvx" in bundled_text
+        assert "uv run --no-project" in bundled_text
         if skill_name == "news-monitor":
             assert "duckduckgo_news_search" in text
 
 
 def test_fast_moving_examples_use_dynamic_years() -> None:
-    for skill_name in ("deep-research", "tech-advisor"):
-        text = "\n".join(
-            path.read_text() for path in (SKILLS_ROOT / skill_name).glob("*.md")
-        )
-        assert "[current year]" in text
-        assert not re.search(r"\b20\d{2}\b", text)
+    deep_research = "\n".join(
+        path.read_text() for path in (SKILLS_ROOT / "deep-research").glob("*.md")
+    )
+    tech_advisor = "\n".join(
+        path.read_text() for path in (SKILLS_ROOT / "tech-advisor").glob("*.md")
+    )
+
+    assert "do not append the current year by default" in deep_research
+    assert "[current year]" in tech_advisor
+    assert not re.search(r"\b20\d{2}\b", deep_research)
+    assert not re.search(r"\b20\d{2}\b", tech_advisor)
 
 
 def test_workflows_have_checkable_completion_criteria() -> None:
@@ -193,6 +203,41 @@ def test_direct_workflows_right_size_their_output() -> None:
     assert re.search(r"source-by-source\s+account only when", fact_check)
     assert "default briefing uses a single event list" in news_monitor
     assert "expanded briefing" in news_monitor
+
+
+def test_deep_research_uses_adaptive_evidence_budgets() -> None:
+    text = (SKILLS_ROOT / "deep-research" / "SKILL.md").read_text()
+    fallbacks = (SKILLS_ROOT / "deep-research" / "fallbacks.md").read_text()
+
+    assert "Start with 2–3 searches" in text
+    assert "Start by reading the 3–5 strongest pages" in text
+    assert "do not append the current year by default" in text
+    assert "further searches mostly repeat" in text
+    assert "untrusted evidence" in text
+    assert "instructions embedded in retrieved content" in text
+    assert re.search(r"sends the complete\s+URL to a third party", fallbacks)
+
+
+def test_deep_research_cross_model_evaluations_cover_failure_modes() -> None:
+    evaluations = json.loads((EVALS_ROOT / "deep_research.json").read_text())[
+        "evaluations"
+    ]
+
+    assert len(evaluations) >= 6
+    assert len({evaluation["id"] for evaluation in evaluations}) == len(evaluations)
+    assert {model for evaluation in evaluations for model in evaluation["models"]} == {
+        "claude-opus-5",
+        "gpt-5.6",
+    }
+    assert {tag for evaluation in evaluations for tag in evaluation["coverage"]} >= {
+        "adaptive-depth",
+        "conflicting-evidence",
+        "fast-moving",
+        "prompt-injection",
+        "source-failure",
+        "right-sized-output",
+    }
+    assert all(evaluation["expected_behavior"] for evaluation in evaluations)
 
 
 def test_router_modes_keep_tables_as_the_output_source_of_truth() -> None:
