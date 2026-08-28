@@ -233,92 +233,90 @@ Analyze whether Russia and NATO are already in a hybrid conflict.
 
 ### Article audit
 
-Use [`article-audit`](skills/article-audit/) when you want to evaluate an article as a
-whole rather than verify one isolated statement. The skill reads the complete article,
-identifies 4-8 claims that carry its argument, and independently searches for evidence
-that supports and challenges each claim. It also checks whether quoted sources have a
-material interest, looks for credible voices the article omits, and tests important
-numbers or forecasts against denominators, base rates, comparisons, and track records.
+Use [`article-audit`](skills/article-audit/) to check an article's facts, omissions, and
+framing. It selects the 4-8 claims on which the argument depends and searches for
+independent evidence on both sides. It checks quoted sources for material interests,
+looks for credible voices the article leaves out, and tests important numbers or
+forecasts against denominators, base rates, comparisons, and past results.
 
-The report includes a bottom line, a verdict for every audited claim, missing voices,
-scale and context, an overall framing assessment, and sources annotated by their role.
-Verdicts range from `CONFIRMED` to `FALSE`; the separate framing judgment can identify
-an article whose individual facts are accurate but whose presentation is promotional,
-one-sided, or materially misleading. Use [`fact-check`](skills/fact-check/) instead when
-you only need to verify a single claim.
+The report gives a bottom line, a verdict for each claim, missing evidence and context,
+a framing judgment, and annotated sources. It rates facts and framing separately, so it
+can show when accurate claims create a one-sided or misleading picture. Verdicts range
+from `CONFIRMED` to `FALSE`. To check one claim, use
+[`fact-check`](skills/fact-check/).
 
 ### Deep research
 
-Use [`deep-research`](skills/deep-research/) for broad, current questions whose answer
-depends on several sources or points of view. The skill defines the decision the research
-should support, searches the topic from 2-3 distinct angles, and reads the strongest pages
-before drawing conclusions. It favors primary and authoritative sources while recording
-important disagreement or missing evidence.
+Use [`deep-research`](skills/deep-research/) for a broad, current question that needs
+several sources or points of view. It frames the question, searches 2-3 different angles,
+and reads the 3-5 strongest pages. It favors primary and authoritative sources and
+records important disagreements or gaps.
 
-The response scales with the question: a short cited answer for a focused lookup, a
-standard report with findings and sources, or a deep dive with topic sections and
-limitations. Material facts are cited where they appear, and inference is labeled.
+The skill can return a short cited answer, a standard report, or a deep dive with topic
+sections and limitations. It cites material facts where they appear and labels its own
+inferences.
 
 ### Fact check
 
-Use [`fact-check`](skills/fact-check/) to verify a specific claim. It separates compound
-statements into testable parts, searches for both confirmation and contradiction, and
-weighs sources by authority, specificity, recency, independence, and conflicts of
-interest. A failed search for a rebuttal does not count as proof.
+Use [`fact-check`](skills/fact-check/) to test a specific claim. It splits compound
+statements into testable parts and searches for support and counterevidence. It weighs
+each source by its authority, specificity, recency, independence, and conflicts of
+interest. A missing rebuttal is not proof.
 
-Each claim receives one of five verdicts: `CONFIRMED`, `LIKELY TRUE`, `UNVERIFIED`,
-`DISPUTED`, or `FALSE`. The response gives the rationale, evidence on both sides,
-caveats, and annotated sources. Use [`article-audit`](skills/article-audit/) when the
-claim belongs to a larger article whose omissions and framing also matter.
+Each claim receives one verdict: `CONFIRMED`, `LIKELY TRUE`, `UNVERIFIED`, `DISPUTED`,
+or `FALSE`. The response explains the verdict, presents evidence from both sides, and
+lists caveats and sources. To assess a whole article, use
+[`article-audit`](skills/article-audit/).
 
 ### News monitor
 
-Use [`news-monitor`](skills/news-monitor/) when the time window is central to the
-question. It searches recent coverage from more than one angle, groups duplicate reports
-of the same event, and reads at least one authoritative source for every event it
-describes in detail. Unless the user sets a period, it covers the previous 2-4 weeks.
+Use [`news-monitor`](skills/news-monitor/) when the answer depends on recent events or a
+set time period. Unless the user chooses a period, it covers the previous 2-4 weeks. It
+searches from more than one angle, groups reports of the same event, and removes stories
+outside the window. It reads at least one authoritative source for every event it
+describes in detail.
 
-The briefing lists the newest developments first, with explicit dates and a short account
-of what happened, why it matters, and any stated next step. A final watch list identifies
-sourced upcoming events or unresolved threads rather than speculating from headlines.
+The briefing puts the newest events first and gives dates, short summaries, and stated
+next steps. It also explains why each event matters. Its watch list covers sourced
+upcoming events and unresolved threads. Search snippets help find stories; they do not
+support the briefing's claims.
 
 ### Competitive intelligence
 
 Use [`competitive-intel`](skills/competitive-intel/) in one of two modes. Market
-landscape maps the relevant players, pricing patterns, barriers, and underserved space.
-Competitive positioning compares a user's product with its closest substitutes, including
-their capabilities, pricing, complaints, recent moves, and threat level.
+landscape maps the players, prices, barriers, and gaps in a market. Competitive
+positioning compares a user's product with its closest rivals, including their
+capabilities, prices, customer complaints, recent moves, and threat level.
 
-The skill checks current product and pricing pages, then balances company claims with
-independent reviews and community evidence. Depending on the mode, the report includes a
-market map or competitive matrix, strategic gaps, actionable recommendations, and
-annotated sources. Claims supplied by the user remain separate from verified facts.
+The skill checks current product and pricing pages, then uses independent reviews and
+community sources for complaints and customer perception. The report contains a market
+map or competitive matrix, gaps, recommended next steps, and annotated sources. Claims
+supplied by the user remain unverified until a source supports them.
 
 ### Technology advisor
 
-Use [`tech-advisor`](skills/tech-advisor/) to decide whether a technology is ready for
-adoption or which product best fits a concrete use case. A maturity assessment examines
+Use [`tech-advisor`](skills/tech-advisor/) to decide whether to adopt a technology or
+which product to buy. A maturity assessment checks the exact technology and version for
 production use, ecosystem support, governance, release stability, documentation, and
-trajectory. A product comparison weighs current models against the user's region, budget,
-must-haves, compatibility needs, and risk tolerance.
+the roadmap. It ends with an `ADOPT`, `TRIAL`, `ASSESS`, or `HOLD` rating and states what
+would change that rating.
 
-Maturity reports end with an `ADOPT`, `TRIAL`, `ASSESS`, or `HOLD` rating and state what
-would change it. Product comparisons choose a winner, explain the tradeoffs and total
-cost, and name the best alternative when another priority matters more.
+A product comparison checks current models against the user's region, budget,
+must-haves, compatibility needs, and risk tolerance. It verifies specifications and
+prices, chooses a winner, explains the tradeoffs and total cost, and names the best
+alternative for a different priority.
 
 ### Geopolitical analyst
 
-Use [`geopolitical-analyst`](skills/geopolitical-analyst/) for current assessments of
-countries, conflicts, alliances, foreign policy, geoeconomics, and disputed geopolitical
-claims. It establishes a factual baseline, tests consequential claims through independent
-evidence, and uses the smallest useful set of international-relations or strategic
-frameworks. Material inferences and forecasts include calibrated confidence, the strongest
-competing explanation, and the evidence that would change the assessment.
+Use [`geopolitical-analyst`](skills/geopolitical-analyst/) to assess a country, conflict,
+alliance, policy, or disputed geopolitical claim. It checks the basic facts, tests key
+claims against independent sources, and applies only the frameworks that help explain
+the case. It marks important judgments and forecasts with confidence levels, gives the
+strongest competing explanation, and states what evidence would change its conclusion.
 
-The skill puts the judgment first, followed by its decisive evidence and causal mechanism,
-uncertainty, implications, essential context, and reassessment indicators. It can also audit
-an article's geopolitical argument or build conditional scenarios when future paths are
-central to the question.
+The answer leads with the judgment and the evidence behind it. It then explains the
+causal mechanism, uncertainty, implications, needed context, and signs to watch. The
+skill can also audit an article's geopolitical argument or build conditional scenarios.
 
 ## How search works
 
