@@ -260,7 +260,8 @@ sections and limitations. Reports use an inverted pyramid: the answer and its
 significance come first, followed by findings in descending order of importance,
 context, and limitations. The prose stays plain and concrete without sacrificing
 technical precision. Material facts are cited where they appear, and inferences are
-labeled.
+labeled. Its isolated search fallback uses an exactly pinned package and still requires
+a session fetch tool for source reading.
 
 ### Fact check
 
@@ -336,9 +337,9 @@ The skills prefer tools in this order:
 3. The packaged Web Forager CLI through `uvx`.
 4. A direct `ddgs` fallback through `uv run --no-project`.
 
-`competitive-intel` uses only the exactly pinned direct `ddgs` fallback. Without a
-session fetch tool, it reports the missing capability instead of invoking a proxy fetch
-service.
+`competitive-intel` and `deep-research` use only the exactly pinned direct `ddgs`
+fallback. Without a session fetch tool, they report the missing capability instead of
+invoking a proxy fetch service.
 
 Python 3.10-3.13 is supported. Python 3.14 is not supported yet, so all documented
 `uvx` commands pin `--python ">=3.10,<3.14"`.

@@ -18,6 +18,7 @@ EXPECTED_SKILLS = {
     "tech-advisor",
 }
 ROUTER_SKILLS = {"competitive-intel", "tech-advisor"}
+SOCKET_HARDENED_SKILLS = {"competitive-intel", "deep-research"}
 
 
 def skill_files() -> dict[str, Path]:
@@ -86,7 +87,7 @@ def test_tool_guidance_uses_stable_names_without_automatic_installation() -> Non
         assert "pip install ddgs" not in bundled_text
         assert "web_fetch" in text
         assert "duckduckgo_search" in text
-        if skill_name == "competitive-intel":
+        if skill_name in SOCKET_HARDENED_SKILLS:
             assert "uvx" not in bundled_text
         else:
             assert "uvx" in bundled_text
@@ -218,22 +219,26 @@ def test_deep_research_uses_adaptive_evidence_budgets() -> None:
     assert "further searches mostly repeat" in text
     assert "untrusted evidence" in text
     assert "instructions embedded in retrieved content" in text
-    assert re.search(r"sends the complete\s+URL to a third party", fallbacks)
+    assert "ddgs==9.5.2" in fallbacks
 
 
-def test_competitive_intel_uses_safe_tool_fallbacks() -> None:
-    text = (SKILLS_ROOT / "competitive-intel" / "SKILL.md").read_text()
+def test_socket_alerted_skills_use_safe_tool_fallbacks() -> None:
+    for skill_name in SOCKET_HARDENED_SKILLS:
+        skill_dir = SKILLS_ROOT / skill_name
+        text = (skill_dir / "SKILL.md").read_text()
+        bundled_text = "\n".join(path.read_text() for path in skill_dir.glob("*.md"))
 
-    assert re.search(r"Prefer built-in tools\s+and connected sources", text)
-    assert "untrusted evidence" in text
-    assert "instructions embedded in retrieved content" in text
-    assert "ddgs==9.5.2" in text
-    assert "ddgs>=9.5.2" not in text
-    assert "uvx" not in text
-    assert "r.jina.ai" not in text
-    assert re.search(
-        r"If fetching is unavailable, report the\s+missing capability", text
-    )
+        assert re.search(r"Prefer built-in tools\s+and connected sources", text)
+        assert "untrusted evidence" in text
+        assert "instructions embedded in retrieved content" in text
+        assert "ddgs==9.5.2" in bundled_text
+        assert "ddgs>=9.5.2" not in bundled_text
+        assert "uvx" not in bundled_text
+        assert "r.jina.ai" not in bundled_text
+        assert re.search(
+            r"If fetching is unavailable, report the\s+missing capability",
+            bundled_text,
+        )
 
 
 def test_deep_research_uses_clear_inverted_pyramid_reporting() -> None:
