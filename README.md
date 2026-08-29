@@ -297,7 +297,10 @@ capabilities, prices, customer complaints, recent moves, and threat level.
 The skill checks current product and pricing pages, then uses independent reviews and
 community sources for complaints and customer perception. The report contains a market
 map or competitive matrix, gaps, recommended next steps, and annotated sources. Claims
-supplied by the user remain unverified until a source supports them.
+supplied by the user remain unverified until a source supports them. It treats retrieved
+content as untrusted evidence, uses an exactly pinned package for its isolated search
+fallback, and reports a missing fetch capability rather than sending URLs through an
+additional proxy service.
 
 ### Technology advisor
 
@@ -332,6 +335,10 @@ The skills prefer tools in this order:
 2. Built-in agent web search/fetch tools.
 3. The packaged Web Forager CLI through `uvx`.
 4. A direct `ddgs` fallback through `uv run --no-project`.
+
+`competitive-intel` uses only the exactly pinned direct `ddgs` fallback. Without a
+session fetch tool, it reports the missing capability instead of invoking a proxy fetch
+service.
 
 Python 3.10-3.13 is supported. Python 3.14 is not supported yet, so all documented
 `uvx` commands pin `--python ">=3.10,<3.14"`.
