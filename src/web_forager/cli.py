@@ -181,7 +181,10 @@ def _setup_parser() -> argparse.ArgumentParser:
     news_parser = subparsers.add_parser("news", help="Search DuckDuckGo news directly")
     news_parser.add_argument("query", nargs="+", help="News search query")
     news_parser.add_argument(
-        "--max-results", type=int, default=10, help="Maximum number of results to return"
+        "--max-results",
+        type=int,
+        default=10,
+        help="Maximum number of results to return",
     )
     news_parser.add_argument(
         "--safesearch",
