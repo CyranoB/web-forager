@@ -26,6 +26,15 @@ def test_published_skills_match_manifest():
     assert {Path(path).name for path in manifest["skills"]} == actual
 
 
+def test_marketplace_plugin_version_is_consistent_and_semver():
+    marketplace = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
+    marketplace_version = marketplace["metadata"]["version"]
+    plugin = next(plugin for plugin in marketplace["plugins"] if plugin["name"] == "forager-skills")
+
+    assert re.fullmatch(r"\d+\.\d+\.\d+", marketplace_version)
+    assert plugin["version"] == marketplace_version
+
+
 def test_frontmatter_and_entrypoints():
     for name in EXPECTED_SKILLS:
         path = SKILLS_ROOT / name / "SKILL.md"
