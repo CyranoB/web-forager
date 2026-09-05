@@ -435,6 +435,10 @@ uv pip install -e ".[dev]"
 pytest
 ```
 
+CI installs the committed `uv.lock` with `uv sync --frozen --extra dev`. Use the same
+command locally for reproducible development dependencies; run `uv lock` deliberately
+when changing dependencies and include the updated lockfile in the change.
+
 Skill packaging checks and deterministic regressions run with `pytest`; they do not
 prove model behavior. Run fixture-based agent evaluations separately using an installed,
 authenticated Codex or Claude CLI:
