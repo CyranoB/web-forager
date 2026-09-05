@@ -99,7 +99,8 @@ def _handle_fetch(args: argparse.Namespace) -> int:
             print(result)
         return 0
     except Exception as error:
-        logging.error("Fetch failed: %s", error)
+        # Chained request exceptions can contain signed URLs; omit the traceback.
+        logging.exception("Fetch failed: %s", error, exc_info=False)
         return 1
 
 
