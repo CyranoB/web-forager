@@ -3,7 +3,7 @@ name: news-monitor
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.3.2"
+  version: "1.4.0"
 description: >
   Monitor recent developments on a topic and produce a chronological, source-read
   briefing. Use when recency or a stated time window is the core question.
@@ -11,7 +11,7 @@ description: >
 
 # News Monitor
 
-Find distinct recent events, read a source for each event described in detail, and
+Find distinct recent events, read a source for every published event, and
 deliver a chronological briefing.
 
 ## Tools
@@ -63,11 +63,17 @@ materially change the search.
 
 ### 2. Search for events
 
-Run 1–2 news searches with distinct angles and `[current year]` where useful. Combine
-the results before selecting stories.
+Start with 1–2 news searches with distinct angles and `[current year]` where useful.
+Combine the results before selecting stories. Check their distribution across the
+requested period, relevant subtopics, and independent outlets. If results cluster on
+one date, outlet, or subtopic, expand with narrower subperiods, focused queries, and
+primary announcements. Use regular search to recover coverage gaps, including a failed
+news provider. Keep failed searches separate from successful searches with no matches.
+Event counts are presentation targets, not evidence that discovery is complete.
 
-**Complete when:** the result set covers the topic from more than one query angle, or
-one query demonstrably exhausts the narrow topic.
+**Complete when:** relevant subperiods and subtopics have been searched, additional
+queries mostly repeat known events, and any remaining coverage gaps or tool failures
+are explicit. One query suffices only when it demonstrably exhausts a narrow topic.
 
 ### 3. Deduplicate and filter
 
@@ -83,14 +89,14 @@ development date, separate publication date, and candidate source. Unknown dates
 marked explicitly; items without a supported in-window development remain candidates
 until source reading resolves the date, or are omitted with a coverage gap.
 
-### 4. Read every detailed event
+### 4. Read every published event
 
-Fetch at least one authoritative source for each event that will receive a detailed
-summary. Prefer primary announcements and direct reporting. Search snippets may support
+Fetch at least one authoritative source for every event included in the briefing,
+including headlines and one-line additional developments. Prefer primary announcements and direct reporting. Search snippets may support
 headline discovery only; they are not evidence for explanatory claims. If an event's
-source cannot be read, replace it or omit the detailed event and record the coverage gap.
+source cannot be read, replace it or omit that event and record the coverage gap.
 
-**Complete when:** every detailed event has at least one fetched source supporting what
+**Complete when:** every published event has at least one fetched source supporting what
 happened, its development date, why it matters, and any stated next step. Recheck window
 eligibility against the read source before retaining the event.
 
@@ -103,7 +109,7 @@ The default briefing uses a single event list:
 - period covered, current update date, and a one-sentence bottom line;
 - 3–5 priority events, each with a headline and 1–2 sourced sentences covering what
   happened and why it matters;
-- remaining significant events, when present, as one-line additional developments;
+- remaining significant events, when present, as cited one-line additional developments;
 - a short “What to watch” section grounded in sourced upcoming events or unresolved
   threads.
 
@@ -112,8 +118,9 @@ comprehensive coverage or an event needs that detail to avoid a misleading summa
 Each event headline serves as both navigation and detail heading, so the event appears
 once.
 
-If no significant developments survive filtering, say so plainly and give the searched
-window.
+If successful discovery and filtering find no significant developments, say so and give
+the searched window. If failures or unread sources prevent adequate coverage, report
+that coverage is incomplete rather than asserting a quiet period.
 
-**Complete when:** all events are distinct and in-window, every detailed claim cites a
+**Complete when:** all events are distinct and in-window, every event and explanatory claim cites a
 read source, dates are explicit, and inference is labeled.

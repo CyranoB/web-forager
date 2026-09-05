@@ -287,8 +287,10 @@ set time period. Unless the user chooses a period, it covers the previous 2-4 we
 searches from more than one angle, groups reports of the same event, and removes stories
 outside the window using development dates, recorded separately from publication dates.
 New disclosures about historical events are labeled and dated separately from the
-underlying events. It reads at least one authoritative source for every event it
-describes in detail and verifies its date before inclusion.
+underlying events. It reads at least one authoritative source for every included event,
+even one-line items, and verifies its development date. If discovery clusters on one
+date, source, or subtopic, it expands the search across the window and primary sources.
+Failed searches produce a coverage gap rather than a claim that the period was quiet.
 
 The briefing puts the newest events first and gives dates, short summaries, and stated
 next steps. It also explains why each event matters. Its watch list covers sourced

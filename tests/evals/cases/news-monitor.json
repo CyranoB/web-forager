@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "news-provider-failure",
+      "skill": "news-monitor",
+      "prompt": "Brief me on developments in Riverton between 2030-04-01 and 2030-04-10.",
+      "failed_tools": [
+        "duckduckgo_news_search",
+        "duckduckgo_search"
+      ],
+      "sources": [],
+      "rubric": [
+        {
+          "id": "failure-not-empty",
+          "description": "Reports that provider failures prevent coverage, rather than saying there were no significant developments."
+        }
+      ]
+    },
+    {
+      "id": "news-short-item-reading",
+      "skill": "news-monitor",
+      "prompt": "Give a compact briefing on Riverton policy developments from 2030-04-01 through 2030-04-10. Include only sourced events; short additional items are fine.",
+      "sources": [
+        {
+          "url": "https://council.test/a",
+          "title": "Water policy adopted",
+          "content": "Council adopted the water policy on April 9, 2030; implementation starts May 1.",
+          "date": "2030-04-09"
+        },
+        {
+          "url": "https://news.test/b",
+          "title": "Transport vote",
+          "content": "Published April 8, 2030. This is a retrospective of the transport vote on April 8, 2028; there has been no new development.",
+          "date": "2030-04-08"
+        },
+        {
+          "url": "https://news.test/c",
+          "title": "Major budget approved",
+          "content": "",
+          "snippet": "Budget approved April 7, 2030.",
+          "unavailable": true,
+          "date": "2030-04-07"
+        }
+      ],
+      "required_reads": [
+        "https://council.test/a"
+      ],
+      "rubric": [
+        {
+          "id": "all-items-read",
+          "description": "Includes the water-policy event with its read source; excludes the unavailable budget claim even as a short additional item."
+        },
+        {
+          "id": "event-date",
+          "description": "Excludes the old transport vote because recent publication is not a new event; mentions coverage gaps where appropriate."
+        }
+      ]
+    },
+    {
+      "id": "news-window-coverage",
+      "skill": "news-monitor",
+      "prompt": "Brief me on Riverton policy developments across the full period 2030-04-01 through 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://news.test/latest",
+          "title": "Water vote",
+          "content": "The council adopted a water policy April 10, 2030.",
+          "date": "2030-04-10"
+        },
+        {
+          "url": "https://wire.test/latest",
+          "title": "Water vote reprint",
+          "content": "Wire reprint of the same April 10 council water-policy vote.",
+          "date": "2030-04-10"
+        },
+        {
+          "url": "https://council.test/earlier",
+          "title": "Housing measure",
+          "content": "Council adopted a separate housing measure April 2, 2030.",
+          "date": "2030-04-02"
+        }
+      ],
+      "default_results": [
+        "https://news.test/latest",
+        "https://wire.test/latest"
+      ],
+      "search_routes": [
+        {
+          "terms": [
+            "april 1",
+            "april 2",
+            "2030-04-01",
+            "2030-04-02",
+            "earlier",
+            "housing",
+            "council.test",
+            "primary",
+            "first week"
+          ],
+          "urls": [
+            "https://council.test/earlier"
+          ]
+        }
+      ],
+      "required_reads": [
+        "https://council.test/earlier",
+        "https://news.test/latest"
+      ],
+      "rubric": [
+        {
+          "id": "expanded-discovery",
+          "description": "Expands discovery beyond duplicate latest-day reports and includes the distinct earlier housing development."
+        },
+        {
+          "id": "deduplication",
+          "description": "Groups the two reports of the same water vote into one event."
+        }
+      ]
+    }
+  ]
+}
