@@ -3,7 +3,7 @@ name: deep-research
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.4.1"
+  version: "1.5.0"
 description: >
   Research broad, current questions through multi-angle web search, selective source
   reading, and cited synthesis. Use for a general investigation or deep dive whose
@@ -36,14 +36,17 @@ pinned search route. A session fetch tool remains required for source reading.
 
 Identify the core question, the decisions the answer should support, and the distinct
 angles needed for coverage. Ask only when an unresolved ambiguity would materially
-change the research.
+change the research. For current-status questions, establish an explicit research cutoff
+and preserve the effective dates or measurement periods of changing facts.
 
 **Complete when:** the question and every necessary research angle are explicit.
 
 ### 2. Search multiple angles
 
 Start with 2–3 searches using meaningfully different framings: direct, specific, and an
-alternative perspective. Add a date, date range, or event term only when it materially
+alternative perspective. Deliberately test the leading conclusion with disconfirming
+queries rather than treating diverse wording as a challenge. Add a date, date range,
+or event term only when it materially
 constrains the question; do not append the current year by default. Evaluate all
 snippets before choosing pages. Expand the search when an angle remains unsupported,
 sources materially disagree, or new results continue adding distinct evidence.
@@ -55,7 +58,10 @@ known evidence or the remaining gap is recorded.
 ### 3. Read the evidence
 
 Start by reading the 3–5 strongest pages. Prefer primary and authoritative sources,
-then reputable secondary analysis. Diversify domains. Read more when a material angle
+then reputable secondary analysis. Trace central findings to their underlying records,
+studies, or observations. Different domains repeating one release, study, or wire report
+are one evidence chain, not independent corroboration. Separate original evidence from
+commentary about it. Read more when a material angle
 remains unsupported, sources conflict, or a new source adds distinct evidence. If a
 page fails, replace it or record the gap.
 
@@ -63,7 +69,21 @@ page fails, replace it or record the gap.
 its retrieved primary form, and important disagreements or missing evidence are
 identified.
 
-### 4. Synthesize
+### 4. Reconcile material disagreement
+
+Before combining figures or describing a conflict, compare definitions, populations,
+units, methods, measurement periods, and publication versus effective dates. Determine
+whether the sources measure the same thing. Keep incompatible quantities separate;
+normalize only when a defensible conversion exists and state the assumptions.
+Explain whether disagreement reflects different scope or methods, or survives a
+like-for-like comparison. Prefer the evidence best matched to the question, explaining
+that choice. Do not average incompatible findings or manufacture a consensus.
+
+**Complete when:** every consequential disagreement is reconciled, explained as a scope
+or methodological difference, or retained as an unresolved conflict with implications
+for the conclusion and confidence.
+
+### 5. Synthesize
 
 Scale the answer to the question:
 
@@ -88,7 +108,8 @@ when they are more precise, and define unfamiliar ones once. Let accuracy, attri
 and nuance override any style rule.
 
 Cite specific claims near the text they support. Prefer concrete dates, numbers, names,
-and versions. Separate sourced facts from inference.
+and versions. Separate sourced facts from inference. For current-status answers, state
+the cutoff and distinguish publication dates from when a rule, product, or figure applies.
 
 **Complete when:** the core question is answered directly, every material factual claim
 is cited, uncertainty is visible, and repetitive or irrelevant material has been cut.
