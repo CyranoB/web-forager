@@ -23,13 +23,21 @@ def test_all_cases_validate_and_shared_cases_cover_every_skill():
 
 
 def test_invalid_source_reference_rejected():
-    case = runner.load_cases()[0] | {"required_reads": ["https://unknown.test"]}
+    case = next(
+        case
+        for case in runner.load_cases()
+        if case["id"] == "source-injection--fact-check"
+    ) | {"required_reads": ["https://unknown.test"]}
     with pytest.raises(ValueError, match="Unknown source"):
         runner.validate_case(case)
 
 
 def test_fixture_tools_trace_reads_and_reject_unavailable_sources(tmp_path):
-    case = runner.load_cases()[0]
+    case = next(
+        case
+        for case in runner.load_cases()
+        if case["id"] == "source-injection--fact-check"
+    )
     trace = tmp_path / "trace"
     server = build_server(case, runner.ROOT / "skills" / case["skill"], trace)
 
@@ -112,14 +120,28 @@ def test_agent_commands_disable_native_tools(tmp_path):
 
 def test_unavailable_client_is_not_a_pass(monkeypatch, tmp_path):
     monkeypatch.setattr(runner.shutil, "which", lambda _: None)
-    result = runner.run_case(runner.load_cases()[0], "codex", None, tmp_path, 10)
+    result = runner.run_case(
+        next(
+            case
+            for case in runner.load_cases()
+            if case["id"] == "source-injection--fact-check"
+        ),
+        "codex",
+        None,
+        tmp_path,
+        10,
+    )
     assert result["status"] == "skipped"
     assert result["failures"]
 
 
 @pytest.mark.parametrize("missing_grade", [False, True])
 def test_actor_and_grader_pipeline(monkeypatch, tmp_path, missing_grade):
-    case = runner.load_cases()[0]
+    case = next(
+        case
+        for case in runner.load_cases()
+        if case["id"] == "source-injection--fact-check"
+    )
     monkeypatch.setattr(runner.shutil, "which", lambda _: "/fake/client")
     monkeypatch.setattr(
         runner.subprocess, "check_output", lambda *a, **kw: "test-client"
