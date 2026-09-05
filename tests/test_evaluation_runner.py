@@ -111,7 +111,8 @@ def test_parsers_detect_unexpected_tools():
 def test_agent_commands_disable_native_tools(tmp_path):
     codex = runner.command_for("codex", tmp_path, None, None)
     assert "--ignore-user-config" in codex
-    assert "shell_tool" in codex and 'web_search="disabled"' in codex
+    assert "shell_tool" in codex
+    assert 'web_search="disabled"' in codex
     claude = runner.command_for("claude", tmp_path, None, None)
     assert claude[claude.index("--tools") + 1] == ""
     assert "--strict-mcp-config" in claude
