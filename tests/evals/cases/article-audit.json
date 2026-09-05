@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "article-preview",
+      "skill": "article-audit",
+      "prompt": "Audit https://journal.test/article as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://journal.test/article",
+          "title": "Partial article",
+          "content": "Article preview. A pilot cut water use by 50%. The article continues with the full study methods and limitations. Subscribe to read the remaining sections. Complete text is unavailable."
+        }
+      ],
+      "required_reads": [
+        "https://journal.test/article"
+      ],
+      "rubric": [
+        {
+          "id": "completeness",
+          "description": "Recognizes missing material and labels the result excerpt-only or otherwise explicitly limited to the preview."
+        },
+        {
+          "id": "no-whole-verdict",
+          "description": "Withholds a whole-article reliability/framing verdict rather than judging the entire unseen article."
+        }
+      ]
+    },
+    {
+      "id": "article-nine-claims",
+      "skill": "article-audit",
+      "prompt": "Give a full audit of https://journal.test/spending. All nine program costs are central to its thesis that the programs were inexpensive. As of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://journal.test/spending",
+          "title": "Nine-program spending review",
+          "content": "Complete article published 2030-04-09. Program 1 cost 1 million dollars. Program 2 cost 2 million dollars. Program 3 cost 3 million dollars. Program 4 cost 4 million dollars. Program 5 cost 5 million dollars. Program 6 cost 6 million dollars. Program 7 cost 7 million dollars. Program 8 cost 8 million dollars. Program 9 cost 9 million dollars. All nine programs were inexpensive; these are the nine pillars of the argument."
+        },
+        {
+          "url": "https://records.test/budget",
+          "title": "Audited budget",
+          "content": "Program 1 cost 1 million dollars. Program 2 cost 2 million dollars. Program 3 cost 3 million dollars. Program 4 cost 4 million dollars. Program 5 cost 5 million dollars. Program 6 cost 6 million dollars. Program 7 cost 7 million dollars. Program 8 cost 8 million dollars. Program 9 cost 90 million dollars, not 9 million; it accounts for most spending. Audited original budget dated 2030-04-08."
+        }
+      ],
+      "required_reads": [
+        "https://journal.test/spending",
+        "https://records.test/budget"
+      ],
+      "rubric": [
+        {
+          "id": "expanded-scope",
+          "description": "Accounts for all nine consequential cost claims rather than stopping at eight."
+        },
+        {
+          "id": "material-error",
+          "description": "Identifies the false Program 9 cost and explains its material effect on the article conclusion."
+        }
+      ]
+    }
+  ]
+}
