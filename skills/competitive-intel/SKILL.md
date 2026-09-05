@@ -3,7 +3,7 @@ name: competitive-intel
 license: MIT
 metadata:
   author: CyranoB
-  version: "2.3.0"
+  version: "2.3.1"
 description: >
   Map a competitive market or position the user's product against competitors.
   Use for builders and sellers evaluating market players, gaps, differentiation,
@@ -27,6 +27,8 @@ Use market landscape for “what exists?” and competitive positioning for “w
 stand?” If the user's intent does not settle the mode, ask one focused question.
 
 ## Tools and evidence
+
+Before using tools, read [source-access.md](source-access.md) completely.
 
 Use the highest-quality available web search and URL-fetch tools. Prefer built-in tools
 and connected sources. When Web Forager tools are available, prefer callable names

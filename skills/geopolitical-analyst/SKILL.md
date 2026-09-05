@@ -13,6 +13,8 @@ Produce concise, decision-useful analysis grounded in current evidence. Use theo
 
 ## Tools
 
+Before using tools, read [source-access.md](source-access.md) completely.
+
 Use available web search and URL-fetch tools. Prefer callable names ending in
 `duckduckgo_search` and `web_fetch`; client-added prefixes vary, so inspect the tools in
 the session. Without session tools, run the packaged CLI in an isolated environment:

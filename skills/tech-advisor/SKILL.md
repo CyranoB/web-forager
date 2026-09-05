@@ -3,7 +3,7 @@ name: tech-advisor
 license: MIT
 metadata:
   author: CyranoB
-  version: "2.2.1"
+  version: "2.2.2"
 description: >
   Advise a technology choice through current evidence. Use for choosing tech
   products for a concrete use case, or assessing whether a technology is mature
@@ -26,6 +26,8 @@ Use maturity assessment for “is this ready?” and product comparison for “w
 choose?” If intent does not settle the mode, ask one focused question.
 
 ## Tools and evidence
+
+Before using tools, read [source-access.md](source-access.md) completely.
 
 Use available web search and URL-fetch tools. Prefer callable names ending in
 `duckduckgo_search` and `web_fetch`; client-added prefixes vary, so inspect the tools in

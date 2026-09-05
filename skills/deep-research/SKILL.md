@@ -3,7 +3,7 @@ name: deep-research
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.4.0"
+  version: "1.4.1"
 description: >
   Research broad, current questions through multi-angle web search, selective source
   reading, and cited synthesis. Use for a general investigation or deep dive whose
@@ -16,6 +16,8 @@ Answer broad, current questions with multi-angle search, source reading, and cit
 synthesis.
 
 ## Tools
+
+Before using tools, read [source-access.md](source-access.md) completely.
 
 Use the highest-quality available web search and URL-fetch tools. Prefer built-in tools
 and connected sources. When Web Forager tools are available, prefer callable names
