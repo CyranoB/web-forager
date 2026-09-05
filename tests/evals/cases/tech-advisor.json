@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "tech-unresolved-eligibility",
+      "skill": "tech-advisor",
+      "prompt": "Choose Alpha or Beta for a US team. SSO is mandatory; budget is $200/month. Alpha costs $100/month and Beta $120/month. Do not relax SSO. As of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://alpha.test/docs",
+          "title": "Alpha official docs",
+          "content": "Alpha costs $100/month. Official documentation says SSO is not supported in any plan."
+        },
+        {
+          "url": "https://beta.test/docs",
+          "title": "Beta official docs",
+          "content": "Beta costs $120/month. The official docs do not state whether SSO is supported; the vendor has not answered the question."
+        }
+      ],
+      "required_reads": [
+        "https://alpha.test/docs",
+        "https://beta.test/docs"
+      ],
+      "rubric": [
+        {
+          "id": "unresolved",
+          "description": "Rejects Alpha for verified SSO failure and labels Beta unresolved rather than a verified qualifying winner."
+        },
+        {
+          "id": "no-false-none",
+          "description": "Distinguishes no verified qualifying option from proof that both fail; asks for Beta SSO verification before recommending purchase."
+        }
+      ]
+    },
+    {
+      "id": "tech-adoption-blocker",
+      "skill": "tech-advisor",
+      "prompt": "Assess adopting AtlasDB 3.0 for our commercial production service. Permitted commercial licensing is mandatory. As of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://atlas.test/license",
+          "title": "AtlasDB 3.0 license",
+          "content": "The license permits noncommercial research only and prohibits commercial service deployment. There is no commercial license option."
+        },
+        {
+          "url": "https://ops.test/case",
+          "title": "Independent production experience",
+          "content": "AtlasDB 3.0 is stable and popular in noncommercial research labs. Operations, support, docs and ecosystem are strong."
+        }
+      ],
+      "required_reads": [
+        "https://atlas.test/license"
+      ],
+      "rubric": [
+        {
+          "id": "mandatory-gate",
+          "description": "Recommends HOLD for this commercial use because of the verified licensing blocker, regardless of the positive maturity signals."
+        }
+      ]
+    },
+    {
+      "id": "tech-bounded-trial",
+      "skill": "tech-advisor",
+      "prompt": "Assess AtlasDB 3.0 for our internal service. Commercial use is licensed; backups and security are verified. Performance under our 1000 requests/second workload is unknown. We can test safely in staging for one week. We require p99 latency under 100ms, zero data loss, and an export back to our current database before adoption. As of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://atlas.test/release",
+          "title": "AtlasDB release",
+          "content": "AtlasDB 3.0 is commercially licensed and security-maintained. It supports export and backup. No benchmark matches 1000 requests/second."
+        },
+        {
+          "url": "https://ops.test/case",
+          "title": "Independent operations report",
+          "content": "Stable at 100 requests/second. Backups and export worked; no evidence for the proposed 1000 requests/second workload."
+        }
+      ],
+      "required_reads": [
+        "https://atlas.test/release",
+        "https://ops.test/case"
+      ],
+      "rubric": [
+        {
+          "id": "trial",
+          "description": "Recommends TRIAL rather than immediate ADOPT because the representative workload remains unverified."
+        },
+        {
+          "id": "concrete-plan",
+          "description": "Defines a one-week staging trial at 1000 requests/second, p99 below 100ms, zero data loss and verified export/rollback; describes adoption versus rejection conditions."
+        }
+      ]
+    }
+  ]
+}

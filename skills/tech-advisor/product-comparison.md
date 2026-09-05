@@ -23,17 +23,24 @@ and missing or conflicting evidence is explicit.
 
 ## 3. Decide
 
-Rank options against the user's priorities. Disqualify products that miss must-haves.
-If none qualify, report "none qualify" and explain each option's blocking constraints.
+Rank options against the user's priorities. Record every must-have as **verified pass**, **verified fail**, or **unresolved** for
+each option. Missing or conflicting evidence is unresolved, not a pass or a proven failure.
+Disqualify products with a verified failure; keep unresolved options outside the verified
+qualifying set and name the evidence needed to resolve them.
+If every option has a verified failure, report "none qualify" and explain its blockers.
+If no option is verified to qualify but an option remains unresolved without a known
+failure, report **eligibility unresolved** and the missing verification; do not recommend
+it as satisfying the requirements.
 Keep the user's must-haves intact; describe any possible constraint changes as
 conditional options, not an adopted decision. If exactly one qualifies, recommend it
-and state that there is no qualifying alternative. If two or more qualify, choose the
+and state that there is no other verified qualifying alternative. If two or more qualify, choose the
 strongest and identify the best qualifying alternative for the most plausible different
 priority.
 
 **Complete when:** the recommendation follows from the stated priorities, and the losing
 tradeoffs are acknowledged rather than hidden, or no qualifying option is explicitly
-reported with the evidence for its blockers.
+reported with the evidence for its blockers, or eligibility remains explicitly unresolved.
+Any conditional suggestion to investigate an unresolved option is not a purchase recommendation.
 
 ## 4. Deliver
 
@@ -44,8 +51,9 @@ only when the user requests an expanded comparison.
 
 Include:
 
-1. a direct recommendation for the stated use case, or "none qualify" with blockers;
-2. a quick comparison of price and decisive factors;
+1. a recommendation from verified qualifying options, "none qualify" with verified
+   blockers, or "eligibility unresolved" with the missing evidence;
+2. a comparison of price, decisive factors, and every must-have's verification state;
 3. analysis of the 2–4 factors that matter most;
 4. total cost of ownership, including essential accessories or services;
 5. what the user gives up by choosing the recommendation, when one qualifies;
