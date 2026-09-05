@@ -234,10 +234,14 @@ Analyze whether Russia and NATO are already in a hybrid conflict.
 ### Article audit
 
 Use [`article-audit`](skills/article-audit/) to check an article's facts, omissions, and
-framing. It selects the 4-8 claims on which the argument depends and searches for
+framing. It starts with 4-8 claims, expands when further claims could change the
+assessment, and searches for
 independent evidence on both sides. It checks quoted sources for material interests,
 looks for credible voices the article leaves out, and tests important numbers or
-forecasts against denominators, base rates, comparisons, and past results.
+forecasts against denominators, base rates, comparisons, and past results. It checks
+article completeness before assigning a whole-article verdict. If material sections
+remain inaccessible, it provides an excerpt-only assessment; abbreviated audits identify
+their narrower coverage.
 
 The report opens with a neutral summary, the bottom line, and the main reasons for its
 judgment. It then gives a verdict for each claim, notes missing voices and interests,

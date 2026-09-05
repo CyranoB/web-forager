@@ -39,6 +39,10 @@ statement has a nearby source or is clearly marked as inference.
 reasons; trace every important claim to evidence; distinguish fact from inference; and
 understand the audit without specialist language that the subject does not require.
 
+State whether coverage is full, abbreviated, or excerpt-only. An excerpt-only assessment
+may judge the available atomic claims but must not assign a whole-article framing or
+reliability verdict. Explain what missing material prevents that judgment.
+
 Write in the user's language and use this structure:
 
 1. **Article in brief:** two or three neutral sentences stating the article's subject,
