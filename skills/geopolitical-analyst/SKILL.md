@@ -100,7 +100,10 @@ Attribute allegations and contested characterizations. Do not infer dishonesty o
 
 ## Audit an article
 
-When the article itself is the object of review:
+When the article itself is the object of review, apply the completeness and temporal
+checks in [source-standards.md](references/source-standards.md) before assigning a
+whole-article verdict:
+
 
 - State its thesis and apparent audience. Infer audience, incentives, or motive only from evidence and label the inference.
 - Test the most consequential factual, causal, normative, and predictive claims. Use a claim table only when several claims benefit from side-by-side comparison or the user requests a comprehensive audit.
@@ -115,7 +118,9 @@ Do not assume bias makes a claim false. Verify the claim independently.
 
 Build scenarios only when requested or when uncertainty about future paths is central. Use 2–4 distinct pathways with conditions, indicators, time horizons, and qualitative likelihoods. Include a challenge to the baseline. Add beneficiaries or exposed actors only when relevant, and do not imply that scenarios are exhaustive.
 
-For a monitoring request, report the baseline and cutoff, material changes since the prior cutoff, indicator status, thresholds that would trigger reassessment, and any change in confidence. Do not repeat unchanged background.
+For a monitoring request, read [monitoring.md](references/monitoring.md) completely.
+Establish a dated baseline before reporting changes, and distinguish new developments
+from newly discovered historical reporting.
 
 ## Shape the output
 

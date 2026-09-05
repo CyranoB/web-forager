@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "geopolitical-historical-audit",
+      "skill": "geopolitical-analyst",
+      "prompt": "Audit https://journal.test/treaty, published on 2028-01-01. Assess what was supportable then and note later changes. As of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://journal.test/treaty",
+          "title": "Treaty article",
+          "content": "Complete article published 2028-01-01. Riverton and Lakeport are treaty allies; the treaty remains in force. The alliance supports current cooperation, though future withdrawal is possible."
+        },
+        {
+          "url": "https://records.test/treaty",
+          "title": "Treaty registry",
+          "content": "Original registry: treaty in force on 2028-01-01. Lakeport withdrew effective 2029-06-01."
+        }
+      ],
+      "required_reads": [
+        "https://journal.test/treaty",
+        "https://records.test/treaty"
+      ],
+      "rubric": [
+        {
+          "id": "no-hindsight",
+          "description": "Finds the treaty-in-force claim supportable at publication, while separately noting withdrawal in 2029 rather than condemning the 2028 article as false."
+        }
+      ]
+    },
+    {
+      "id": "geopolitical-preview",
+      "skill": "geopolitical-analyst",
+      "prompt": "Audit https://journal.test/preview as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://journal.test/preview",
+          "title": "Article preview",
+          "content": "Preview: Riverton may leave its alliance. Remaining evidence, qualifications and analysis are behind a paywall and cannot be accessed."
+        }
+      ],
+      "required_reads": [
+        "https://journal.test/preview"
+      ],
+      "rubric": [
+        {
+          "id": "excerpt-only",
+          "description": "Limits the assessment to the excerpt and withholds a whole-article reliability/framing verdict because material content is missing."
+        }
+      ]
+    },
+    {
+      "id": "geopolitical-first-baseline",
+      "skill": "geopolitical-analyst",
+      "prompt": "Give the first monitoring assessment of Riverton-Lakeport negotiations as of 2030-04-10. No prior baseline exists. Track talks and treaty status in this conversation; do not schedule anything.",
+      "sources": [
+        {
+          "url": "https://records.test/status",
+          "title": "Current negotiation record",
+          "content": "As of 2030-04-10, treaty talks are ongoing and no withdrawal notice has been filed. A signed withdrawal notice would materially change the outlook; the next meeting is April 20."
+        }
+      ],
+      "required_reads": [
+        "https://records.test/status"
+      ],
+      "rubric": [
+        {
+          "id": "first-baseline",
+          "description": "Establishes a first-run dated baseline with judgments, evidence, confidence and indicators rather than inventing changes since an earlier assessment."
+        },
+        {
+          "id": "threshold",
+          "description": "Defines an observable reassessment threshold such as a filed withdrawal notice, and keeps monitoring state in the conversation without claiming a scheduled job."
+        }
+      ]
+    },
+    {
+      "id": "geopolitical-baseline-update",
+      "skill": "geopolitical-analyst",
+      "prompt": "Update our Riverton-Lakeport baseline. Prior cutoff 2030-04-01: talks ongoing, no withdrawal notice; moderate confidence; reassess if a signed notice is filed. Current cutoff 2030-04-10. Separate developments since the cutoff from older events newly discovered in research.",
+      "sources": [
+        {
+          "url": "https://records.test/notice",
+          "title": "Withdrawal notice",
+          "content": "Original signed withdrawal notice filed on 2030-04-08. This meets the specified notice threshold."
+        },
+        {
+          "url": "https://archive.test/meeting",
+          "title": "Older meeting record",
+          "content": "Meeting occurred March 15, 2030; published March 16, 2030. Found by the analyst today, but neither the meeting nor its publication is a new development."
+        }
+      ],
+      "required_reads": [
+        "https://records.test/notice",
+        "https://archive.test/meeting"
+      ],
+      "rubric": [
+        {
+          "id": "threshold-crossed",
+          "description": "Reports the April 8 notice as a new event crossing the recorded threshold and explains the resulting judgment/confidence update."
+        },
+        {
+          "id": "old-evidence",
+          "description": "Treats the March meeting as newly discovered historical evidence, not an event or disclosure occurring after April 1."
+        }
+      ]
+    }
+  ]
+}

@@ -64,3 +64,15 @@ Confidence describes support for the assessment, not the severity or probability
 ## Audit articles proportionately
 
 Test the most consequential claims, prioritizing those that are central, surprising, disputed, quantitative, causal, or predictive. Check whether cited sources support the wording. Examine omitted base rates, denominators, time windows, counterexamples, and alternative causal explanations. Use a claim table only when comparison improves clarity or the user requests a comprehensive audit.
+
+
+Before judging a whole article, establish that material sections, continuations, charts,
+and captions are available. Check previews, paywalls, and truncation; successful text
+extraction alone is insufficient. Recover missing material with suitable tools when
+possible. Otherwise provide an explicitly excerpt-only assessment of available claims
+and withhold a whole-article reliability or framing verdict.
+
+Record publication and material update dates. Unless the user chooses another frame,
+assess what was supportable at publication and separately explain later developments.
+Do not use hindsight to condemn a claim that the evidence supported when it was made.
+Apply this distinction to causal and predictive arguments as well as changing facts.
