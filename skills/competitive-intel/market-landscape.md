@@ -36,11 +36,16 @@ source, and uncertainty around scale or private-company data is explicit.
 
 Classify relevant players as leaders, challengers, niche players, or emerging entrants.
 For each, capture positioning, target audience, pricing model, and scale when defensible.
-Choose two evidence-backed axes that explain meaningful differentiation; use them for a
-2×2 positioning map and identify genuinely underserved space.
+Use a 2×2 map only when two evidence-backed axes explain meaningful differentiation;
+otherwise use a segment table. An empty quadrant is an observation, not demonstrated
+demand. Call a gap a demonstrated opportunity only when evidence supports unmet need,
+willingness to pay, and delivery feasibility. Label other gaps as hypotheses and specify
+the customer or feasibility validation needed before investment.
 
-**Complete when:** every selected player has a justified category, the axes distinguish
-the market rather than decorate it, and claimed white space follows from evidence.
+**Complete when:** every selected player has a justified category; any map axes distinguish
+the market; and opportunities are either supported across demand, payment, and feasibility
+or explicitly labeled hypotheses with validation needs. Market estimates retain their
+category, geography, year, and method.
 
 ## 5. Deliver
 
@@ -55,7 +60,7 @@ Include:
 1. an executive summary of the market, trends, and strongest opportunity;
 2. player tables grouped by category, including audience, positioning, pricing model,
    and defensible scale;
-3. the 2×2 positioning map with named axes;
+3. a 2×2 positioning map with justified axes when useful, otherwise a segment table;
 4. cross-market pricing patterns, evidence-backed gaps, and barriers to entry;
 5. 2–3 actionable takeaways;
 6. annotated sources.

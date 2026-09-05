@@ -3,7 +3,7 @@ name: competitive-intel
 license: MIT
 metadata:
   author: CyranoB
-  version: "2.3.1"
+  version: "2.4.0"
 description: >
   Map a competitive market or position the user's product against competitors.
   Use for builders and sellers evaluating market players, gaps, differentiation,
@@ -65,3 +65,18 @@ label estimates and inference.
 - Use independent reviews and community discussions for perception and pain points.
 - Separate the user's claims about their product from independently verified facts.
 - Cite material claims near the text they support.
+
+## Comparable evidence
+
+Represent decisive capabilities as **verified available**, **verified unavailable**,
+**unknown**, or **announced**. Missing documentation is unknown, not proof of absence;
+a roadmap is announced, not shipped. Record the plan/version and observation date
+where they affect availability. Apply the same standard to the user's product.
+
+Compare prices on a stated common basis: currency and exchange-rate date when converted,
+billing period, commitment, seats or usage, and mandatory add-ons. Show original units
+and assumptions. When a defensible conversion is unavailable, keep offers separate and
+withhold a cheapest-option claim. Distinguish list prices, estimates, and negotiated terms.
+
+For market-size estimates, preserve category, geography, reference year, and methodology.
+Do not combine incompatible market definitions into a single total or growth claim.

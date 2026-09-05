@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "competitive-capabilities-and-price",
+      "skill": "competitive-intel",
+      "prompt": "Position our Acme team software against Beta and Gamma for a US team of 10 users buying one year. SSO and export matter. Compare evidence fairly as of 2030-04-10; two competitors suffice.",
+      "sources": [
+        {
+          "url": "https://acme.test/pricing",
+          "title": "Acme pricing",
+          "content": "Acme is $10 per user per month, annual commitment. SSO and export are included in this plan. Current 2030-04-10."
+        },
+        {
+          "url": "https://beta.test/pricing",
+          "title": "Beta pricing",
+          "content": "Beta is $80 per workspace per month, includes 10 users, annual commitment. SSO requires a mandatory $40 per workspace per month add-on. Export is not mentioned. Current 2030-04-10."
+        },
+        {
+          "url": "https://gamma.test/pricing",
+          "title": "Gamma pricing",
+          "content": "Gamma is $8 per user per month annually. Export is available. SSO is announced for next year and is not yet available. Current 2030-04-10."
+        }
+      ],
+      "required_reads": [
+        "https://acme.test/pricing",
+        "https://beta.test/pricing",
+        "https://gamma.test/pricing"
+      ],
+      "rubric": [
+        {
+          "id": "unknown-and-announced",
+          "description": "Marks Beta export unknown and Gamma SSO announced/not currently shipped; does not invent competitor weaknesses from missing docs."
+        },
+        {
+          "id": "price-normalization",
+          "description": "Compares Acme $1200/year, Beta $1440/year including SSO, and Gamma $960/year with its SSO limitation; states the 10-user annual basis."
+        }
+      ]
+    },
+    {
+      "id": "competitive-unproven-white-space",
+      "skill": "competitive-intel",
+      "prompt": "Map the market for underwater enterprise CRMs in North America and assess the opportunity as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://market.test/landscape",
+          "title": "Market survey",
+          "content": "No underwater-specific enterprise CRM sellers were identified. Only three hobbyists requested such a product; none agreed to pay. Underwater communications reliability makes delivery feasibility unresolved."
+        },
+        {
+          "url": "https://market.test/global",
+          "title": "Global CRM estimate",
+          "content": "Global CRM software revenue: $100 billion in 2029. Includes all industries and company sizes; vendor revenue survey."
+        },
+        {
+          "url": "https://market.test/local",
+          "title": "North American enterprise estimate",
+          "content": "North American enterprise CRM implementation services: $20 billion in 2028. Services only; sampled consulting firms, excluding software revenue."
+        }
+      ],
+      "required_reads": [
+        "https://market.test/landscape",
+        "https://market.test/global",
+        "https://market.test/local"
+      ],
+      "rubric": [
+        {
+          "id": "hypothesis-not-opportunity",
+          "description": "Does not call the empty category demonstrated demand; labels it unproven and identifies willingness-to-pay and feasibility validation."
+        },
+        {
+          "id": "incompatible-markets",
+          "description": "Keeps global software revenue and regional implementation services estimates separate, preserving geography, year and methodology rather than adding them."
+        },
+        {
+          "id": "optional-map",
+          "description": "Uses only defensible market segmentation or axes; does not fabricate a populated 2x2 map."
+        }
+      ]
+    }
+  ]
+}

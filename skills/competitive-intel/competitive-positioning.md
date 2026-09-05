@@ -24,13 +24,16 @@ Read 4–6 sources per competitor when available, prioritizing first-party evide
 facts and independent sources for perception.
 
 **Complete when:** every competitor has evidence for capabilities, pricing, strengths,
-weaknesses, and trajectory, or a named evidence gap.
+weaknesses, and trajectory, or a named evidence gap; capability states and plan/version
+conditions are explicit and prices retain their comparison basis.
 
 ## 3. Analyze strategically
 
 Assess positioning overlap, strengths to respect, weaknesses to exploit, trajectory,
 and pricing position. Compare only capabilities that affect the user's target customer.
 Rate threat as High, Medium, or Low and explain the rating using overlap and trajectory.
+Keep unknown capabilities out of asserted competitor weaknesses and announced features
+out of shipped-feature comparisons. Normalize pricing before judging pricing position.
 
 **Complete when:** every comparison criterion has evidence, every threat rating has a
 rationale, and feature differences are translated into strategic consequences.
@@ -45,7 +48,8 @@ add full competitor profiles only when the user requests an expanded report.
 Include:
 
 1. an executive summary stating the strongest differentiator and most important gap;
-2. a competitive matrix covering decisive capabilities, audience, price, and threat;
+2. a competitive matrix covering decisive capabilities with evidence states and relevant
+   plan/version/date, audience, comparable price and its basis, and threat;
 3. brief competitor notes only for a material strength, exploitable weakness, recent
    move, or threat rationale that the matrix cannot express;
 4. evidence-backed differentiators and prioritized gaps to address;

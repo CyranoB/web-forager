@@ -315,7 +315,11 @@ support the briefing's claims.
 Use [`competitive-intel`](skills/competitive-intel/) in one of two modes. Market
 landscape maps the players, prices, barriers, and gaps in a market. Competitive
 positioning compares a user's product with its closest rivals, including their
-capabilities, prices, customer complaints, recent moves, and threat level.
+capabilities, prices, customer complaints, recent moves, and threat level. Capabilities
+are marked available, unavailable, unknown, or announced, with relevant plan/version and
+date. Prices use a common billing, commitment, seat/usage, and add-on basis; incompatible
+market estimates remain separate. A positioning map is optional. Empty market space
+is a hypothesis until unmet demand, willingness to pay, and feasibility support it.
 
 The skill checks current product and pricing pages, then uses independent reviews and
 community sources for complaints and customer perception. The report contains a market
