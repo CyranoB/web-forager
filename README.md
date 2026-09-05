@@ -273,10 +273,15 @@ a session fetch tool for source reading.
 Use [`fact-check`](skills/fact-check/) to test a specific claim. It splits compound
 statements into testable parts and searches for support and counterevidence. It weighs
 each source by its authority, specificity, recency, independence, and conflicts of
-interest. A missing rebuttal is not proof.
+interest. It records each claim's scope and relevant date, distinguishes historical
+assessment from later developments, and traces repeated reporting to its underlying
+evidence. Source reading expands until each atomic claim is covered or a gap is named.
+A missing rebuttal is not proof; an unexpired forecast is not false merely because it
+is unlikely.
 
-Each claim receives one verdict: `CONFIRMED`, `LIKELY TRUE`, `UNVERIFIED`, `DISPUTED`,
-or `FALSE`. The response explains the verdict, presents evidence from both sides, and
+Each factual claim receives one verdict: `CONFIRMED`, `LIKELY TRUE`, `NEEDS CONTEXT`,
+`UNVERIFIED`, `DISPUTED`, or `FALSE`. `NEEDS CONTEXT` applies when the core fact holds
+but its scope, certainty, or significance is overstated. The response explains the verdict, presents evidence from both sides, and
 lists caveats and sources. To assess a whole article, use
 [`article-audit`](skills/article-audit/).
 

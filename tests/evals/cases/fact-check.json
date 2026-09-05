@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "fact-relative-risk",
+      "skill": "fact-check",
+      "prompt": "Fact-check this health headline: \"The treatment cuts illness risk by 50%, a dramatic benefit.\" Explain the practical magnitude as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://trial.test/results",
+          "title": "Original randomized trial",
+          "content": "In the randomized trial, 2 of 1000 control participants became ill versus 1 of 1000 treated participants. Relative risk reduction: 50%. Absolute risk reduction: 0.1 percentage points. Trial authors caution that absolute benefit is small in this population."
+        }
+      ],
+      "required_reads": [
+        "https://trial.test/results"
+      ],
+      "rubric": [
+        {
+          "id": "context-label",
+          "description": "Uses NEEDS CONTEXT for the exaggerated implication or separates the supported relative-risk fact from the overstated magnitude, without an unqualified confirmation."
+        },
+        {
+          "id": "absolute-risk",
+          "description": "Reports both 50% relative reduction and 0.1 percentage-point absolute reduction (or one fewer case per 1000)."
+        }
+      ]
+    },
+    {
+      "id": "fact-temporal-forecast",
+      "skill": "fact-check",
+      "prompt": "Assess whether this statement was supportable when published on 2028-01-01: \"The legal cap is 10 units. It will fall to 5 by 2031.\" Today is 2030-04-10; distinguish the two claims.",
+      "sources": [
+        {
+          "url": "https://law.test/2028",
+          "title": "2028 original law",
+          "content": "In force January 1, 2028: the cap is 10 units. The government has proposed, but not enacted, a reduction to 5 units in 2031."
+        },
+        {
+          "url": "https://law.test/2030",
+          "title": "2030 amendment",
+          "content": "Effective March 1, 2030: the cap is now 8 units. The proposed 2031 cap of 5 remains unresolved."
+        }
+      ],
+      "required_reads": [
+        "https://law.test/2028",
+        "https://law.test/2030"
+      ],
+      "rubric": [
+        {
+          "id": "historical-frame",
+          "description": "Finds the 10-unit statement supportable at publication and separates the later 8-unit amendment."
+        },
+        {
+          "id": "forecast",
+          "description": "Treats the 2031 forecast as unresolved or conditional, not FALSE merely because the current cap is 8."
+        }
+      ]
+    },
+    {
+      "id": "fact-independent-coverage",
+      "skill": "fact-check",
+      "prompt": "Check both claims: Acme saved 50% water across all farms, and its pilot cost 4 million. As of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://vendor.test/release",
+          "title": "Acme release",
+          "content": "Acme says it saved 50% water. Pilot cost was 4 million."
+        },
+        {
+          "url": "https://news.test/reprint",
+          "title": "Release reprint",
+          "content": "Reprinted from Acme press release: Acme saved 50% water."
+        },
+        {
+          "url": "https://blog.test/reprint",
+          "title": "Another reprint",
+          "content": "Source: Acme press release. Saved 50% water."
+        },
+        {
+          "url": "https://registry.test/study",
+          "title": "Original study",
+          "content": "Across all farms water use fell 10%; 50% was one selected farm. Independent registry record."
+        },
+        {
+          "url": "https://budget.test/filing",
+          "title": "Audited budget",
+          "content": "Original audited filing: final pilot cost was 7 million. The 4 million figure was an initial estimate."
+        }
+      ],
+      "required_reads": [
+        "https://registry.test/study",
+        "https://budget.test/filing"
+      ],
+      "rubric": [
+        {
+          "id": "independence",
+          "description": "Does not count the two release reprints as independent corroboration; identifies the 10% overall result."
+        },
+        {
+          "id": "both-claims",
+          "description": "Assesses both claims and identifies final cost of 7 million rather than the initial 4 million estimate."
+        }
+      ]
+    }
+  ]
+}
