@@ -12,6 +12,7 @@ import logging
 from ddgs import DDGS
 from ddgs.exceptions import DDGSException
 
+from .errors import SearchError
 from .server import mcp
 
 logger = logging.getLogger(__name__)
@@ -40,8 +41,7 @@ def _format_results_as_text(results: list[dict[str, str]], query: str) -> str:
     if not results:
         return (
             f"No results found for '{query}'. "
-            "This could be due to DuckDuckGo rate limiting, the query returning no matches, "
-            "or network issues. Try rephrasing your search or try again in a few minutes."
+            "Try broadening or rephrasing your search."
         )
 
     lines = [f"Found {len(results)} search results:\n"]
@@ -108,18 +108,21 @@ def _try_fallback_search(
         original_error: The original exception that triggered the fallback
 
     Returns:
-        List of formatted search results, or empty list on failure
+        List of formatted search results; raises SearchError on provider failure
     """
     # Don't retry if the error was already about the backend
     if "backend" in str(original_error).lower():
-        return []
+        raise SearchError(
+            "Search backend unavailable. Try another search tool."
+        ) from None
 
     logger.info("Retrying with brave backend as fallback")
     try:
         return _execute_search(query, region, safesearch, max_results, timeout, "brave")
     except Exception:
-        logger.exception("Fallback search failed")
-        return []
+        raise SearchError(
+            "Search providers failed. Try another search tool; coverage is incomplete."
+        ) from None
 
 
 def _validate_search_params(query: str, max_results: int, safesearch: str) -> str:
@@ -180,11 +183,10 @@ def search_duckduckgo(
             query, region, safesearch, max_results, timeout, "duckduckgo"
         )
     except DDGSException as e:
-        logger.exception("DuckDuckGo search error")
+        logger.info("Primary search provider failed; trying fallback")
         return _try_fallback_search(query, region, safesearch, max_results, timeout, e)
     except Exception:
-        logger.exception("Unexpected error during search")
-        return []
+        raise SearchError("Search failed. Try another search tool.") from None
 
 
 @mcp.tool()

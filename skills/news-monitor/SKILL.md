@@ -3,7 +3,7 @@ name: news-monitor
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.3.1"
+  version: "1.3.2"
 description: >
   Monitor recent developments on a topic and produce a chronological, source-read
   briefing. Use when recency or a stated time window is the core question.
@@ -15,6 +15,8 @@ Find distinct recent events, read a source for each event described in detail, a
 deliver a chronological briefing.
 
 ## Tools
+
+Before using tools, read [source-access.md](source-access.md) completely.
 
 Use an available news-search tool, preferring a callable name ending in
 `duckduckgo_news_search`. Use regular search ending in `duckduckgo_search` only to fill

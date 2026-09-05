@@ -3,7 +3,7 @@ name: fact-check
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.2.0"
+  version: "1.2.1"
 description: >
   Fact-check a specific, verifiable claim by seeking supporting and contradicting
   evidence, weighing source quality, and issuing a calibrated verdict with citations.
@@ -14,6 +14,8 @@ description: >
 Test a specific claim against evidence on both sides and issue a calibrated verdict.
 
 ## Tools
+
+Before using tools, read [source-access.md](source-access.md) completely.
 
 Use available web search and URL-fetch tools. Prefer callable names ending in
 `duckduckgo_search` and `web_fetch`; client-added prefixes vary, so inspect the tools in

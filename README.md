@@ -247,7 +247,7 @@ can show when accurate claims create a one-sided or misleading picture. To check
 claim, use [`fact-check`](skills/fact-check/).
 
 Before fetching, the audit checks whether the URL is suitable for third-party services.
-Web Forager's fetch tool and CLI can automatically send URLs to Jina Reader. For signed
+Web Forager's fetch tool and CLI use Jina Reader only for eligible public URLs. For signed
 or private URLs, the audit uses supplied text or an authorized direct-only tool, or
 reports the access limit.
 
@@ -403,7 +403,28 @@ The MCP server exposes:
 | `web_fetch` | Fetch a URL and return markdown or JSON |
 
 Search and news tools return JSON by default and support `output_format="text"` for
-LLM-friendly formatted results.
+LLM-friendly formatted results. Successful searches with no matches return an empty
+list. Provider failures raise `SearchError`, surface as MCP tool errors, and make CLI
+search/news commands exit with status 1; they do not represent an empty news period.
+
+Fetching tries direct HTTP first. Jina fallback remains automatic for eligible public
+URLs: no user information, query string, or fragment, and only publicly resolved hosts.
+Private/internal hosts, unresolved or mixed public/private DNS, and ineligible observed
+redirect destinations prevent forwarding. This checks observed destinations; it cannot
+prove that every URL path is non-sensitive or predict a different redirect seen by Jina.
+
+For confidential links, use `web_fetch(..., allow_jina=False)` or:
+
+```bash
+web-forager fetch "https://example.com/document" --direct-only
+```
+
+`fetch_url` also accepts `allow_jina=False`. The default is `True`, subject to the
+eligibility checks above. If direct fetching fails and forwarding is disabled or
+ineligible, the tool reports an access error. It never removes query parameters to
+retry a different URL. With older tools that lack direct-only support, supply the
+content or use another authorized direct-fetch tool. A successful extraction still
+needs checking for previews, paywalls, missing sections, and truncation.
 
 ## Development
 
@@ -413,6 +434,29 @@ cd web-forager
 uv pip install -e ".[dev]"
 pytest
 ```
+
+CI installs the committed `uv.lock` with `uv sync --frozen --extra dev`. Use the same
+command locally for reproducible development dependencies; run `uv lock` deliberately
+when changing dependencies and include the updated lockfile in the change.
+
+Skill packaging checks and deterministic regressions run with `pytest`; they do not
+prove model behavior. Run fixture-based agent evaluations separately using an installed,
+authenticated Codex or Claude CLI:
+
+```bash
+python tests/evals/run.py --list
+python tests/evals/run.py --agent both
+python tests/evals/run.py --agent codex --skill fact-check
+```
+
+The runner supplies synthetic search/fetch sources, disables unrelated tools, records
+source reads, and uses a separate rubric grader. Each case has a five-minute limit
+per actor or grader and no automatic retries. Use `--model` for a single-client model
+override, `--case` to rerun an affected scenario, and `--output` to retain a run in a
+chosen directory. Results include passed, behavioral failure, infrastructure failure,
+and skipped states; only passed counts as success. Model runs consume your configured
+client usage and are not part of ordinary CI. Review the saved answer, tool trace, and
+grader evidence; automated grading is not a guarantee of real-world research quality.
 
 Useful local commands:
 
@@ -424,8 +468,8 @@ web-forager version --debug
 ## Notes
 
 - Search and news search use the `ddgs` package.
-- Fetch tries direct HTTP plus `trafilatura` first, then falls back to Jina Reader
-  for JavaScript-heavy or bot-protected pages.
+- Fetch tries direct HTTP plus `trafilatura` first, then uses Jina Reader for eligible
+  public URLs when fallback is enabled.
 - The plugin marketplace manifest lives in `.claude-plugin/marketplace.json`.
 
 ## License

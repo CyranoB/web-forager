@@ -90,6 +90,7 @@ def _handle_fetch(args: argparse.Namespace) -> int:
             output_format=args.format,
             max_length=args.max_length,
             with_images=args.with_images,
+            allow_jina=not getattr(args, "direct_only", False),
         )
 
         if args.format == "json":
@@ -97,8 +98,9 @@ def _handle_fetch(args: argparse.Namespace) -> int:
         else:
             print(result)
         return 0
-    except Exception:
-        logging.exception("Fetch error")
+    except Exception as error:
+        # Chained request exceptions can contain signed URLs; omit the traceback.
+        logging.exception("Fetch failed: %s", error, exc_info=False)
         return 1
 
 
@@ -205,6 +207,11 @@ def _setup_parser() -> argparse.ArgumentParser:
         "fetch", help="Fetch and convert content from a URL"
     )
     fetch_parser.add_argument("url", help="URL to fetch content from")
+    fetch_parser.add_argument(
+        "--direct-only",
+        action="store_true",
+        help="Fetch directly without Jina forwarding",
+    )
     fetch_parser.add_argument(
         "--format",
         choices=["markdown", "json"],
