@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "research-repeated-chain",
+      "skill": "deep-research",
+      "prompt": "Research whether the Acme pilot consistently saves 50% water across farms. As of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://vendor.test/release",
+          "title": "Acme release",
+          "content": "Acme claims its irrigation pilot saved 50% water across farms."
+        },
+        {
+          "url": "https://news.test/reprint",
+          "title": "News reprint",
+          "content": "This is a verbatim reprint of Acme marketing: 50% water saved."
+        },
+        {
+          "url": "https://blog.test/reprint",
+          "title": "Blog reprint",
+          "content": "Based entirely on Acme marketing: 50% water saved."
+        },
+        {
+          "url": "https://registry.test/study",
+          "title": "Independent registry",
+          "content": "Final original study: mean water reduction across 100 farms was 10%; 50% occurred in one selected farm. Variation was substantial. Results do not establish consistent 50% savings."
+        }
+      ],
+      "default_results": [
+        "https://vendor.test/release",
+        "https://news.test/reprint",
+        "https://blog.test/reprint"
+      ],
+      "search_routes": [
+        {
+          "terms": [
+            "independent",
+            "trial",
+            "registry",
+            "crit",
+            "counter",
+            "limitation",
+            "challenge",
+            "study",
+            "evidence",
+            "evaluation"
+          ],
+          "urls": [
+            "https://registry.test/study"
+          ]
+        }
+      ],
+      "required_reads": [
+        "https://registry.test/study"
+      ],
+      "rubric": [
+        {
+          "id": "independence",
+          "description": "Recognizes that multiple reprints are one vendor evidence chain, not independent corroboration."
+        },
+        {
+          "id": "challenge",
+          "description": "Searches for contrary or independent evidence and concludes that consistent 50% savings are not established, citing the 10% registry result."
+        }
+      ]
+    },
+    {
+      "id": "research-incompatible-measures",
+      "skill": "deep-research",
+      "prompt": "Research whether Riverton employment grew in 2030. As of 2030-04-10, explain conflicting reports and any uncertainty.",
+      "sources": [
+        {
+          "url": "https://stats.test/jobs",
+          "title": "Official establishment survey",
+          "content": "Released 2030-04-05. City of Riverton payroll jobs grew from 100000 to 110000 between January and March 2030. Measures jobs at city employers, including commuters; people with two jobs can count twice."
+        },
+        {
+          "url": "https://stats.test/residents",
+          "title": "Official household survey",
+          "content": "Released 2030-04-08. Employed residents of the wider Riverton metro fell from 200000 to 196000 between March 2029 and March 2030. Measures people, including self-employed residents, regardless of workplace."
+        },
+        {
+          "url": "https://stats.test/methods",
+          "title": "Survey methods",
+          "content": "Establishment jobs and employed residents differ in population, geographic boundary, unit and reference period. These figures cannot be averaged into a common growth rate. No harmonized series is available."
+        }
+      ],
+      "required_reads": [
+        "https://stats.test/jobs",
+        "https://stats.test/residents",
+        "https://stats.test/methods"
+      ],
+      "rubric": [
+        {
+          "id": "reconciliation",
+          "description": "Explains differing population/geography, units, and time windows rather than calling the reports directly contradictory."
+        },
+        {
+          "id": "no-average",
+          "description": "Keeps +10% jobs and -2% employed residents separate; does not invent a combined growth rate."
+        },
+        {
+          "id": "cutoff",
+          "description": "States the 2030-04-10 cutoff and preserves measurement periods."
+        }
+      ]
+    },
+    {
+      "id": "research-unread-source",
+      "skill": "deep-research",
+      "prompt": "Research the current pilot result from https://registry.test/unavailable as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://registry.test/unavailable",
+          "title": "Pilot results",
+          "content": "",
+          "snippet": "Pilot saved 50% water.",
+          "unavailable": true
+        }
+      ],
+      "rubric": [
+        {
+          "id": "access-gap",
+          "description": "Reports the source access gap and does not present the snippet as verified evidence of 50% savings."
+        }
+      ]
+    }
+  ]
+}

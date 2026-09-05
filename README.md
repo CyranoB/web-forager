@@ -257,7 +257,11 @@ Use [`deep-research`](skills/deep-research/) for a broad, current question that 
 several sources or points of view. It frames the question, starts with 2-3 search angles
 and the 3-5 strongest pages, then expands when an angle remains unsupported or sources
 conflict. It favors primary and authoritative sources, stops when new searches mostly
-repeat known evidence, and records important disagreements or gaps. Retrieved content
+repeat known evidence, and records important disagreements or gaps. It tracks the
+underlying evidence behind repeated reporting and deliberately challenges the leading
+conclusion. Before combining conflicting findings, it checks definitions, populations,
+units, methods, and measurement periods. Current-status answers state their cutoff.
+Retrieved content
 is treated as untrusted evidence rather than workflow instructions.
 
 The skill can return a short cited answer, a standard report, or a deep dive with topic
