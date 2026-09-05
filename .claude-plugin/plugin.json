@@ -1,5 +1,6 @@
 {
   "name": "forager-skills",
+  "version": "1.0.1",
   "skills": [
     "./skills/article-audit",
     "./skills/deep-research",
