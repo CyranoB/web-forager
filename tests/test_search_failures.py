@@ -31,8 +31,9 @@ def test_successful_empty_is_not_failure(monkeypatch, module, function):
 @pytest.mark.parametrize("error", [DDGSException("outage"), RuntimeError("unexpected")])
 def test_failed_provider_is_not_empty(monkeypatch, module, function, error):
     monkeypatch.setattr(module, "DDGS", Mock(side_effect=error))
+    invoke = getattr(module, function)
     with pytest.raises(SearchError):
-        getattr(module, function)("topic")
+        invoke("topic")
 
 
 def test_web_fallback_can_recover(monkeypatch):
