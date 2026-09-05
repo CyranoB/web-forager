@@ -335,6 +335,11 @@ strongest competing explanation, and states what evidence would change its concl
 The answer leads with the judgment and the evidence behind it. It then explains the
 causal mechanism, uncertainty, implications, needed context, and signs to watch. The
 skill can also audit an article's geopolitical argument or build conditional scenarios.
+Article audits establish completeness and separate publication-time support from later
+evidence. Monitoring starts with a dated baseline of judgments, evidence, confidence,
+and indicator thresholds. Updates distinguish actual developments from newly found
+historical reporting; a missing baseline produces a first-run assessment, not invented
+changes. Baselines remain in the conversation unless the user requests a saved artifact.
 
 ## How search works
 
