@@ -246,6 +246,11 @@ Verdicts range from `CONFIRMED` to `FALSE`. It rates facts and framing separatel
 can show when accurate claims create a one-sided or misleading picture. To check one
 claim, use [`fact-check`](skills/fact-check/).
 
+Before fetching, the audit checks whether the URL is suitable for third-party services.
+Web Forager's fetch tool and CLI can automatically send URLs to Jina Reader. For signed
+or private URLs, the audit uses supplied text or an authorized direct-only tool, or
+reports the access limit.
+
 ### Deep research
 
 Use [`deep-research`](skills/deep-research/) for a broad, current question that needs
@@ -280,8 +285,10 @@ lists caveats and sources. To assess a whole article, use
 Use [`news-monitor`](skills/news-monitor/) when the answer depends on recent events or a
 set time period. Unless the user chooses a period, it covers the previous 2-4 weeks. It
 searches from more than one angle, groups reports of the same event, and removes stories
-outside the window. It reads at least one authoritative source for every event it
-describes in detail.
+outside the window using development dates, recorded separately from publication dates.
+New disclosures about historical events are labeled and dated separately from the
+underlying events. It reads at least one authoritative source for every event it
+describes in detail and verifies its date before inclusion.
 
 The briefing puts the newest events first and gives dates, short summaries, and stated
 next steps. It also explains why each event matters. Its watch list covers sourced
@@ -313,8 +320,9 @@ would change that rating.
 
 A product comparison checks current models against the user's region, budget,
 must-haves, compatibility needs, and risk tolerance. It verifies specifications and
-prices, chooses a winner, explains the tradeoffs and total cost, and names the best
-alternative for a different priority.
+prices, chooses a qualifying winner, and explains the tradeoffs and total cost. It
+names an alternative only when another option meets the must-haves. If none qualify,
+it explains the blocking constraints without silently relaxing the requirements.
 
 ### Geopolitical analyst
 

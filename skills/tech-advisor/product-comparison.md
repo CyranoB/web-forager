@@ -9,7 +9,7 @@ ecosystem compatibility, and essential accessories or services. Continue immedia
 when the user supplied enough context.
 
 **Complete when:** must-haves, weighted priorities, and disqualifying constraints are
-clear enough to select a winner.
+clear enough to determine which options qualify.
 
 ## 2. Research through the user's lens
 
@@ -24,11 +24,16 @@ and missing or conflicting evidence is explicit.
 ## 3. Decide
 
 Rank options against the user's priorities. Disqualify products that miss must-haves.
-Choose the strongest remaining option, then identify the best alternative for the most
-plausible different priority.
+If none qualify, report "none qualify" and explain each option's blocking constraints.
+Keep the user's must-haves intact; describe any possible constraint changes as
+conditional options, not an adopted decision. If exactly one qualifies, recommend it
+and state that there is no qualifying alternative. If two or more qualify, choose the
+strongest and identify the best qualifying alternative for the most plausible different
+priority.
 
 **Complete when:** the recommendation follows from the stated priorities, and the losing
-tradeoffs are acknowledged rather than hidden.
+tradeoffs are acknowledged rather than hidden, or no qualifying option is explicitly
+reported with the evidence for its blockers.
 
 ## 4. Deliver
 
@@ -39,12 +44,12 @@ only when the user requests an expanded comparison.
 
 Include:
 
-1. a direct recommendation for the stated use case;
+1. a direct recommendation for the stated use case, or "none qualify" with blockers;
 2. a quick comparison of price and decisive factors;
 3. analysis of the 2–4 factors that matter most;
 4. total cost of ownership, including essential accessories or services;
-5. what the user gives up by choosing the recommendation;
-6. the best alternative and when it wins;
+5. what the user gives up by choosing the recommendation, when one qualifies;
+6. the best qualifying alternative and when it wins, when another option qualifies;
 7. annotated sources.
 
 Adapt the factors to the category instead of filling a generic specification sheet.

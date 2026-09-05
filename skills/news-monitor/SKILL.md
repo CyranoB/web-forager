@@ -3,7 +3,7 @@ name: news-monitor
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.3.0"
+  version: "1.3.1"
 description: >
   Monitor recent developments on a topic and produce a chronological, source-read
   briefing. Use when recency or a stated time window is the core question.
@@ -69,11 +69,17 @@ one query demonstrably exhausts the narrow topic.
 
 ### 3. Deduplicate and filter
 
-Group coverage of the same event, discard results outside the window, and select the
-best candidate source for each event. Aim for 3–7 distinct events.
+Group coverage of the same event and record both the event date and publication date.
+Filter by the date of the actual development, then select the best candidate source
+for each event. A recent republication or retrospective does not make an old event new.
+Include newly reported historical events only when the disclosure itself is a material
+in-window development; label it as a new disclosure and distinguish its date from the
+underlying event date. Aim for 3–7 distinct events.
 
 **Complete when:** every retained item represents a distinct in-window event with a
-publication date and candidate source.
+development date, separate publication date, and candidate source. Unknown dates are
+marked explicitly; items without a supported in-window development remain candidates
+until source reading resolves the date, or are omitted with a coverage gap.
 
 ### 4. Read every detailed event
 
@@ -83,11 +89,14 @@ headline discovery only; they are not evidence for explanatory claims. If an eve
 source cannot be read, replace it or omit the detailed event and record the coverage gap.
 
 **Complete when:** every detailed event has at least one fetched source supporting what
-happened, why it matters, and any stated next step.
+happened, its development date, why it matters, and any stated next step. Recheck window
+eligibility against the read source before retaining the event.
 
 ### 5. Deliver the briefing
 
-Present most recent first. The default briefing uses a single event list:
+Present most recent first by development date, using the disclosure date for newly
+reported historical events and showing the underlying date or its uncertainty.
+The default briefing uses a single event list:
 
 - period covered, current update date, and a one-sentence bottom line;
 - 3–5 priority events, each with a headline and 1–2 sourced sentences covering what
