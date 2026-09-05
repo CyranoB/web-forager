@@ -386,8 +386,21 @@ def run_case(
             answer, metadata, violations = parse_output(agent, actor.stdout)
             result["actor"] = metadata
             if actor.returncode:
+                error_text = answer or str(metadata.get("error") or "")
+                combined = error_text + actor.stderr
+                for phrase, reason in (
+                    ("usage limit", "Agent usage limit reached"),
+                    ("token has expired", "Agent authentication expired"),
+                    (
+                        "requires a newer version",
+                        "Configured model requires a newer CLI",
+                    ),
+                ):
+                    if phrase in combined.lower():
+                        result["environment_blocked"] = True
+                        raise RuntimeError(reason)
                 raise RuntimeError(
-                    f"Agent exited with status {actor.returncode}: {answer[:400] or 'see actor.stderr'}"
+                    f"Agent exited with status {actor.returncode}: {error_text[:400] or 'see actor.stderr'}"
                 )
             (destination / "answer.md").write_text(answer)
             trace = (
@@ -498,8 +511,20 @@ def main() -> int:
     print("Evaluation artifacts: " + str(run_output), flush=True)
     results = []
     for agent in agents:
+        blocked_by = None
         for case in cases:
-            result = run_case(case, agent, args.model, run_output, args.timeout)
+            if blocked_by:
+                result = {
+                    "id": case["id"],
+                    "skill": case["skill"],
+                    "agent": agent,
+                    "status": "skipped",
+                    "failures": ["Environment blocked by " + blocked_by],
+                }
+            else:
+                result = run_case(case, agent, args.model, run_output, args.timeout)
+                if result.get("environment_blocked"):
+                    blocked_by = case["id"]
             results.append(result)
             print(
                 json.dumps(
