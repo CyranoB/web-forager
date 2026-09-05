@@ -316,13 +316,18 @@ Use [`tech-advisor`](skills/tech-advisor/) to decide whether to adopt a technolo
 which product to buy. A maturity assessment checks the exact technology and version for
 production use, ecosystem support, governance, release stability, documentation, and
 the roadmap. It ends with an `ADOPT`, `TRIAL`, `ASSESS`, or `HOLD` rating and states what
-would change that rating.
+would change that rating. Mandatory security, licensing, data-handling, recovery, and
+exit requirements act as adoption gates where relevant. Failed gates require `HOLD` for
+that use; unresolved gates prevent `ADOPT`. A `TRIAL` includes workload, baseline,
+success thresholds, duration, and rollback conditions.
 
 A product comparison checks current models against the user's region, budget,
 must-haves, compatibility needs, and risk tolerance. It verifies specifications and
 prices, chooses a qualifying winner, and explains the tradeoffs and total cost. It
 names an alternative only when another option meets the must-haves. If none qualify,
-it explains the blocking constraints without silently relaxing the requirements.
+it explains verified blocking constraints without relaxing the requirements. When an
+otherwise viable option has unverified must-haves, it reports eligibility as unresolved
+and identifies the evidence needed instead of treating missing information as a pass.
 
 ### Geopolitical analyst
 
