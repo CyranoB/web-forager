@@ -52,16 +52,22 @@ def check(root, base=None):
 
 def bump(root, version):
     new_tuple = version_tuple(version)
-    current = check(root)
-    if new_tuple <= version_tuple(current):
-        raise ValueError(f"New version must be greater than {current}")
     manifest = json.loads((root / MANIFEST).read_text())
     marketplace = json.loads((root / MARKETPLACE).read_text())
+    current = max(
+        manifest["version"],
+        marketplace["metadata"]["version"],
+        plugin_entry(marketplace)["version"],
+        key=version_tuple,
+    )
+    if new_tuple <= version_tuple(current):
+        raise ValueError(f"New version must be greater than {current}")
     manifest["version"] = version
     marketplace["metadata"]["version"] = version
     plugin_entry(marketplace)["version"] = version
     for path, value in ((MANIFEST, manifest), (MARKETPLACE, marketplace)):
         (root / path).write_text(json.dumps(value, indent=2) + "\n")
+    check(root)
 
 
 def main():

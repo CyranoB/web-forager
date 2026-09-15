@@ -15,7 +15,13 @@ HELPERS = runpy.run_path(str(Path(__file__).parents[1] / "scripts/plugin_version
 
 
 @pytest.fixture
-def repository(tmp_path):
+def repository(tmp_path, monkeypatch):
+    # Exercise fixture commits with signing enabled and no usable signer.
+    config = tmp_path / "global.gitconfig"
+    config.write_text(
+        "[commit]\n\tgpgsign = true\n[gpg]\n\tprogram = nonexistent-test-signer\n"
+    )
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(config))
     folder = tmp_path / ".claude-plugin"
     folder.mkdir()
     (folder / "plugin.json").write_text(json.dumps({"version": "1.1.3"}))
@@ -37,6 +43,8 @@ def repository(tmp_path):
             "user.name=Test",
             "-c",
             "user.email=test@example.com",
+            "-c",
+            "commit.gpgsign=false",
             "commit",
             "-m",
             "base",
@@ -70,6 +78,31 @@ def test_manifest_drift_is_rejected(repository):
     (repository / ".claude-plugin/plugin.json").write_text('{"version": "1.1.4"}')
     with pytest.raises(ValueError, match="versions differ"):
         HELPERS["check"](repository)
+
+
+@pytest.mark.parametrize("ahead", ["manifest", "metadata", "plugin"])
+def test_bump_repairs_drift_without_downgrading_any_field(repository, ahead):
+    manifest_path = repository / ".claude-plugin/plugin.json"
+    marketplace_path = repository / ".claude-plugin/marketplace.json"
+    manifest = json.loads(manifest_path.read_text())
+    marketplace = json.loads(marketplace_path.read_text())
+    fields = {
+        "manifest": manifest,
+        "metadata": marketplace["metadata"],
+        "plugin": marketplace["plugins"][0],
+    }
+    fields[ahead]["version"] = "1.1.5"
+    manifest_path.write_text(json.dumps(manifest))
+    marketplace_path.write_text(json.dumps(marketplace))
+    before = (manifest_path.read_text(), marketplace_path.read_text())
+
+    for value in ("1.1.4", "1.1.5"):
+        with pytest.raises(ValueError, match="greater than"):
+            HELPERS["bump"](repository, value)
+        assert (manifest_path.read_text(), marketplace_path.read_text()) == before
+
+    HELPERS["bump"](repository, "1.1.6")
+    assert HELPERS["check"](repository, "HEAD") == "1.1.6"
 
 
 def test_cli_reports_installed_package_version(capsys):
