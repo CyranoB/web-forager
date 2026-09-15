@@ -3,7 +3,6 @@ name: news-monitor
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.4.0"
 description: >
   Monitor recent developments on a topic and produce a chronological, source-read
   briefing. Use when recency or a stated time window is the core question.
