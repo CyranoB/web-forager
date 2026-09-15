@@ -99,7 +99,8 @@ def test_bump_repairs_drift_without_downgrading_any_field(repository, ahead):
     for value in ("1.1.4", "1.1.5"):
         with pytest.raises(ValueError, match="greater than"):
             HELPERS["bump"](repository, value)
-        assert (manifest_path.read_text(), marketplace_path.read_text()) == before
+        actual = (manifest_path.read_text(), marketplace_path.read_text())
+        assert actual == before
 
     HELPERS["bump"](repository, "1.1.6")
     assert HELPERS["check"](repository, "HEAD") == "1.1.6"
