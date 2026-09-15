@@ -32,7 +32,8 @@ uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python -c \
   'from ddgs import DDGS; print(DDGS().text(query="your query", max_results=8))'
 ```
 
-If packaged fetch fails, use Jina Reader:
+Use Jina Reader only if the normal fetch pipeline has not already tried it and
+the URL is eligible under [source-access.md](source-access.md):
 
 ```bash
 curl -s "https://r.jina.ai/https://example.com"
@@ -54,6 +55,8 @@ what is missing and limit the analysis to evidence you can verify.
 ## Research proportionately
 
 Read [source-standards.md](references/source-standards.md) whenever researching.
+Follow [research-budget.md](references/research-budget.md) for default scope,
+batching, recovery limits, and stopping conditions.
 
 - Establish the relevant factual baseline. Build a chronology only when sequence matters.
 - Scale research to the claim. Use the smallest probative source set for a narrow question; broaden source types and perspectives for disputed or comprehensive analysis.
@@ -100,7 +103,7 @@ Attribute allegations and contested characterizations. Do not infer dishonesty o
 
 ## Audit an article
 
-When the article itself is the object of review, apply the completeness and temporal
+When the article itself is the object of review, apply the materiality and temporal
 checks in [source-standards.md](references/source-standards.md) before assigning a
 whole-article verdict:
 

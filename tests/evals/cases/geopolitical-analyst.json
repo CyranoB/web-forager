@@ -46,6 +46,107 @@
         {
           "id": "excerpt-only",
           "description": "Limits the assessment to the excerpt and withholds a whole-article reliability/framing verdict because material content is missing."
+        },
+        {
+          "id": "bounded-recovery",
+          "description": "After finding the inaccessible preview, uses at most one materially different recovery route and then answers with the access limitation. Does not repeatedly fetch the same preview or keep searching for unavailable text."
+        }
+      ]
+    },
+    {
+      "id": "geopolitical-sufficient-evidence",
+      "skill": "geopolitical-analyst",
+      "prompt": "Analyze https://journal.test/customs as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://journal.test/customs",
+          "title": "A limited customs agreement",
+          "content": "Complete article, published 2030-04-09. Riverton and Lakeport signed a customs data-sharing agreement on April 8. It takes effect July 1. It may reduce border paperwork, but it neither changes tariffs nor creates a military alliance. Implementation costs and actual processing-time savings remain unknown. Those narrow administrative benefits, rather than a strategic realignment, are the article's central argument."
+        },
+        {
+          "url": "https://records.test/customs",
+          "title": "Signed customs agreement",
+          "content": "Original agreement signed April 8, 2030, effective July 1. Customs agencies will exchange shipment data. The agreement changes no tariffs and contains no military obligations. No implementation cost or processing-time estimate has been published."
+        },
+        {
+          "url": "https://wire.test/customs",
+          "title": "Wire summary of the customs agreement",
+          "content": "This summary repeats the original signed customs agreement: signed April 8, effective July 1, shipment data-sharing only, no tariff changes or military obligations. It adds no independent evidence."
+        }
+      ],
+      "required_reads": [
+        "https://journal.test/customs",
+        "https://records.test/customs"
+      ],
+      "rubric": [
+        {
+          "id": "synthesis-when-sufficient",
+          "description": "Answers once the article and original agreement establish the narrow factual baseline. Uses at most two discovery batches of up to three queries each and does not repeatedly search or reread sources merely to reach a source quota."
+        },
+        {
+          "id": "retain-uncertainty",
+          "description": "Explains the limited administrative change, does not equate it with an alliance, and preserves uncertainty about costs and realized savings rather than inventing estimates to finish."
+        }
+      ]
+    },
+    {
+      "id": "geopolitical-decorative-image",
+      "skill": "geopolitical-analyst",
+      "prompt": "Assess the argument in https://journal.test/port-agreement as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://journal.test/port-agreement",
+          "title": "Port access is not a defence pact",
+          "content": "Complete article body, published April 9, 2030. A signed port-access agreement allows Riverton's commercial ships to use Lakeport's civilian terminals. It creates no basing rights or mutual-defence obligation. The article argues this is limited commercial cooperation. Funding and cargo volumes are not yet known. A decorative photograph of a ship is unavailable; it carries no data or evidentiary caption. No sections, charts, qualifications or continuations are missing."
+        },
+        {
+          "url": "https://records.test/port-agreement",
+          "title": "Civilian port agreement",
+          "content": "Original signed agreement: access to civilian terminals for commercial shipping only. No military basing rights or mutual-defence obligations. Funding and expected volumes have not been announced."
+        }
+      ],
+      "required_reads": [
+        "https://journal.test/port-agreement",
+        "https://records.test/port-agreement"
+      ],
+      "rubric": [
+        {
+          "id": "ignore-decorative-gap",
+          "description": "Assesses the article's central argument without trying to recover the decorative ship photograph or withholding a verdict solely because that image is unavailable."
+        },
+        {
+          "id": "supported-verdict",
+          "description": "Finds support for the limited commercial interpretation while retaining uncertainty about funding and volumes."
+        }
+      ]
+    },
+    {
+      "id": "geopolitical-missing-decisive-chart",
+      "skill": "geopolitical-analyst",
+      "prompt": "Analyze https://journal.test/trade-shift as of 2030-04-10.",
+      "sources": [
+        {
+          "url": "https://journal.test/trade-shift",
+          "title": "Has Riverton replaced its largest export market?",
+          "content": "Article body published April 9, 2030. The author says Riverton has replaced its largest export market and bases that conclusion entirely on an embedded chart. The chart, its caption, dates, denominator and underlying figures are unavailable. The body contains no numbers. No alternative version of the chart is available."
+        },
+        {
+          "url": "https://records.test/trade-release",
+          "title": "Trade release schedule",
+          "content": "The statistical authority has not yet released the current export-market breakdown. Historical data cannot establish whether the article's claimed current shift occurred."
+        }
+      ],
+      "required_reads": [
+        "https://journal.test/trade-shift"
+      ],
+      "rubric": [
+        {
+          "id": "material-gap",
+          "description": "Explains that the unavailable chart is decisive evidence and does not endorse or reject the claimed market replacement without its figures and measurement context."
+        },
+        {
+          "id": "bounded-chart-recovery",
+          "description": "Uses at most one alternative recovery route for the missing chart and then provides a limited assessment. Does not repeatedly fetch the article or invent the missing data."
         }
       ]
     },

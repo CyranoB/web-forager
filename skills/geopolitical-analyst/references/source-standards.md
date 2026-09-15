@@ -66,11 +66,19 @@ Confidence describes support for the assessment, not the severity or probability
 Test the most consequential claims, prioritizing those that are central, surprising, disputed, quantitative, causal, or predictive. Check whether cited sources support the wording. Examine omitted base rates, denominators, time windows, counterexamples, and alternative causal explanations. Use a claim table only when comparison improves clarity or the user requests a comprehensive audit.
 
 
-Before judging a whole article, establish that material sections, continuations, charts,
-and captions are available. Check previews, paywalls, and truncation; successful text
-extraction alone is insufficient. Recover missing material with suitable tools when
-possible. Otherwise provide an explicitly excerpt-only assessment of available claims
-and withhold a whole-article reliability or framing verdict.
+Seek enough of the article to assess its central argument and consequential claims.
+Check previews, paywalls, and truncation; successful text extraction alone is
+insufficient. Recover a missing section, continuation, chart, or caption only when
+it could materially change the assessment. Decorative images and redundant visuals
+do not require retrieval when their absence leaves the argument assessable.
+
+Use at most one authorized recovery route after the normal fetch pipeline, as
+described in [source-access.md](../source-access.md). If important content remains
+unavailable, assess the accessible claims, disclose the specific gap, and avoid
+conclusions that depend on it. A preview missing the article's argument warrants an
+explicitly excerpt-only assessment and no whole-article reliability or framing
+verdict. An unavailable visual alone does not require withholding a verdict when
+the accessible evidence establishes the relevant claim and its qualifications.
 
 Record publication and material update dates. Unless the user chooses another frame,
 assess what was supportable at publication and separately explain later developments.
