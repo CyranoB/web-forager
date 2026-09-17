@@ -3,7 +3,6 @@ name: fact-check
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.3.0"
 description: >
   Fact-check a specific, verifiable claim by seeking supporting and contradicting
   evidence, weighing source quality, and issuing a calibrated verdict with citations.

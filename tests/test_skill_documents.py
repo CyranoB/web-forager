@@ -27,12 +27,14 @@ def test_published_skills_match_manifest():
 
 
 def test_marketplace_plugin_version_is_consistent_and_semver():
+    manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
     marketplace = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
     marketplace_version = marketplace["metadata"]["version"]
     plugin = next(plugin for plugin in marketplace["plugins"] if plugin["name"] == "forager-skills")
 
     assert re.fullmatch(r"\d+\.\d+\.\d+", marketplace_version)
     assert plugin["version"] == marketplace_version
+    assert manifest["version"] == marketplace_version
 
 
 def test_frontmatter_and_entrypoints():
@@ -43,6 +45,8 @@ def test_frontmatter_and_entrypoints():
         assert not before.strip()
         data = yaml.safe_load(metadata)
         assert data["name"] == name
+        assert "version" not in data
+        assert "version" not in data.get("metadata", {})
         assert isinstance(data["description"], str)
         assert 20 <= len(data["description"].strip()) <= 320
         assert body.strip()

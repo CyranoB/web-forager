@@ -22,6 +22,13 @@ jobs:
           version: "0.11.6"
       # Test the checkout directly; install dependency wheels without build scripts.
       - run: uv sync --frozen --extra dev --no-build --no-install-project
+      # Build only this project to generate its version from the checked-out Git state.
+      - run: uv pip install --no-deps -e .
+      - name: Check plugin release version
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python scripts/plugin_version.py check --base "$BASE_SHA"
       - run: uv run --no-sync --no-build pytest
       - run: uv run --no-sync --no-build mypy src
       - run: uv run --no-sync --no-build black --check src

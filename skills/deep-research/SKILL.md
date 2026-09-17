@@ -3,7 +3,6 @@ name: deep-research
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.5.0"
 description: >
   Research broad, current questions through multi-angle web search, selective source
   reading, and cited synthesis. Use for a general investigation or deep dive whose

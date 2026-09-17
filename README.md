@@ -464,9 +464,16 @@ uv pip install -e ".[dev]"
 pytest
 ```
 
-CI installs the committed `uv.lock` with `uv sync --frozen --extra dev`. Use the same
-command locally for reproducible development dependencies; run `uv lock` deliberately
-when changing dependencies and include the updated lockfile in the change.
+CI installs dependency wheels from the committed `uv.lock`, then builds the local
+project to generate its Python version. Reproduce that setup with:
+
+```bash
+uv sync --frozen --extra dev --no-build --no-install-project
+uv pip install --no-deps -e .
+```
+
+Run `uv lock` deliberately when changing dependencies and include the updated
+lockfile in the change.
 
 Skill packaging checks and deterministic regressions run with `pytest`; they do not
 prove model behavior. Run fixture-based agent evaluations separately using an installed,
@@ -493,6 +500,12 @@ Useful local commands:
 web-forager serve
 web-forager version --debug
 ```
+
+### Versions and releases
+
+All seven skills share one plugin version for Claude Code and Codex. Python
+package releases use a separate Git-tag version. See [Versioning](docs/versioning.md)
+for the bump command, CI checks, and Docker build instructions.
 
 ## Notes
 

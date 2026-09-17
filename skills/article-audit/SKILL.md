@@ -3,7 +3,6 @@ name: article-audit
 license: MIT
 metadata:
   author: CyranoB
-  version: "1.4.0"
 description: >
   Audit a full article for factual accuracy, missing counter-voices, numerical
   context, and promotional or one-sided framing. Use when a user shares an

@@ -142,6 +142,7 @@ Icon
 repl_state/
 
 # Project specific
+src/web_forager/_version.py
 config.ini
 *.log
 logs/

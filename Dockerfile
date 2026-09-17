@@ -4,7 +4,8 @@ WORKDIR /app
 
 # Version for setuptools_scm (required since .git is not copied)
 # Override at build time with: docker build --build-arg VERSION=x.y.z
-ARG VERSION=0.0.0
+ARG VERSION
+RUN test -n "$VERSION" || (echo 'Supply --build-arg VERSION=<package-version>' >&2; exit 1)
 ENV SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
 
 # Install uv as a pinned wheel, then install only locked binary dependencies.
