@@ -101,17 +101,54 @@ def _validate_url(url: str) -> None:
         raise ValueError("A valid HTTP/HTTPS URL is required") from None
 
 
-def _truncate_content(content: str, max_length: int | None) -> str:
-    """Truncate content if it exceeds max_length."""
-    if max_length and len(content) > max_length:
-        return content[:max_length] + "... (content truncated)"
-    return content
+@dataclass(frozen=True)
+class _Page:
+    content: str
+    offset: int
+    total_length: int
+    next_offset: int | None
+
+
+def _paginate(content: str, max_length: int | None, offset: int) -> _Page:
+    """Return one character window of the extracted content."""
+    total = len(content)
+    if offset and offset >= total:
+        raise ValueError(
+            f"offset {offset} is beyond the content length ({total} characters)"
+        )
+    end = total if max_length is None else min(offset + max_length, total)
+    return _Page(content[offset:end], offset, total, end if end < total else None)
+
+
+def _apply_page(
+    result: str | dict[str, Any], max_length: int | None, offset: int
+) -> str | dict[str, Any]:
+    """Slice fetched content and describe how to continue reading it."""
+    if max_length is None and not offset:
+        return result
+    if isinstance(result, dict):
+        if not isinstance(result.get("content"), str):
+            return result
+        page = _paginate(result["content"], max_length, offset)
+        return {
+            **result,
+            "content": page.content,
+            "offset": page.offset,
+            "total_length": page.total_length,
+            "next_offset": page.next_offset,
+        }
+    page = _paginate(result, max_length, offset)
+    if page.next_offset is None:
+        return page.content
+    return (
+        f"{page.content}\n\n[Truncated: characters {page.offset}-{page.next_offset} "
+        f"of {page.total_length}. Continue with offset={page.next_offset}.]"
+    )
 
 
 def _direct_fetch(
     url: str,
     output_format: str = "markdown",
-    max_length: int | None = None,
     with_images: bool = False,
 ) -> _DirectResult:
     """
@@ -171,18 +208,17 @@ def _direct_fetch(
             {
                 "url": url,
                 "title": title,
-                "content": _truncate_content(content, max_length),
+                "content": content,
             },
             visited,
         )
 
-    return _DirectResult(_truncate_content(content, max_length), visited)
+    return _DirectResult(content, visited)
 
 
 def _jina_fetch(
     url: str,
     output_format: str = "markdown",
-    max_length: int | None = None,
     with_images: bool = False,
 ) -> str | dict[str, Any]:
     """Fetch a URL using the Jina Reader API."""
@@ -206,11 +242,9 @@ def _jina_fetch(
     try:
         response.raise_for_status()
         if output_format.lower() == "json":
-            content = response.json()
-            if max_length and content.get("content"):
-                content["content"] = _truncate_content(content["content"], max_length)
+            content: dict[str, Any] = response.json()
             return content
-        return _truncate_content(response.text, max_length)
+        return response.text
     finally:
         response.close()
 
@@ -221,6 +255,7 @@ def fetch_url(
     max_length: int | None = None,
     with_images: bool = False,
     allow_jina: bool = True,
+    offset: int = 0,
 ) -> str | dict[str, Any]:
     """
     Fetch a URL and convert its content to markdown or JSON.
@@ -234,23 +269,29 @@ def fetch_url(
         max_length: Maximum content length to return (None for no limit)
         with_images: Whether to include images in the output
         allow_jina: Allow fallback for eligible public URLs (False for direct-only)
+        offset: Character position in the extracted content to start from
 
     Returns:
-        The fetched content as markdown string or JSON dict
+        The fetched content as markdown string or JSON dict. A partial page ends
+        with a marker giving the next offset; JSON adds pagination fields.
 
     Raises:
-        ValueError: If the URL is invalid
+        ValueError: If the URL, max_length, or offset is invalid
         RuntimeError: If both direct fetch and Jina Reader fail
     """
     _validate_url(url)
+    if max_length is not None and max_length <= 0:
+        raise ValueError("max_length must be a positive integer")
+    if offset < 0:
+        raise ValueError("offset must be a non-negative integer")
 
     # Try direct fetch first
     try:
-        result = _direct_fetch(url, output_format, max_length, with_images)
+        result = _direct_fetch(url, output_format, with_images)
     except Exception:
         raise RuntimeError("Direct content extraction failed") from None
     if result.content is not None:
-        return result.content
+        return _apply_page(result.content, max_length, offset)
 
     if (
         not allow_jina
@@ -264,11 +305,12 @@ def fetch_url(
 
     # Fall back to Jina Reader
     try:
-        return _jina_fetch(url, output_format, max_length, with_images)
+        content = _jina_fetch(url, output_format, with_images)
     except (requests.exceptions.RequestException, json.JSONDecodeError):
         raise RuntimeError(
             "Jina Reader failed; source content is unavailable"
         ) from None
+    return _apply_page(content, max_length, offset)
 
 
 @mcp.tool()
@@ -278,6 +320,7 @@ def web_fetch(
     max_length: int | None = None,
     with_images: bool = False,
     allow_jina: bool = True,
+    offset: int = 0,
 ) -> str | dict[str, Any]:
     """
     Fetch a URL and convert it to markdown or JSON.
@@ -291,6 +334,8 @@ def web_fetch(
         max_length: Maximum content length to return (None for no limit)
         with_images: Whether to include images in the output
         allow_jina: Allow fallback for eligible public URLs (False for direct-only)
+        offset: Character position to start from; use the next offset reported
+            by a truncated result to continue reading
 
     Returns:
         The fetched content in the specified format (markdown string or JSON object)
@@ -309,12 +354,20 @@ def web_fetch(
         except (ValueError, TypeError) as e:
             raise ValueError("max_length must be a positive integer") from e
 
+    try:
+        offset = int(offset)
+        if offset < 0:
+            raise ValueError("offset must be a non-negative integer")
+    except (ValueError, TypeError) as e:
+        raise ValueError("offset must be a non-negative integer") from e
+
     return fetch_url(
         url,
         output_format=format,
         max_length=max_length,
         with_images=with_images,
         allow_jina=allow_jina,
+        offset=offset,
     )
 
 

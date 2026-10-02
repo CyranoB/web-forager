@@ -177,11 +177,71 @@ def test_successful_direct_fetch_preserves_format_and_skips_proxy(monkeypatch):
     )
     proxy = Mock()
     monkeypatch.setattr(fetch, "_jina_fetch", proxy)
-    result = fetch.web_fetch(PUBLIC, format="json", max_length=20)
+    result = fetch.web_fetch(PUBLIC, format="json")
     assert set(result) == {"url", "title", "content"}
     assert result["url"] == PUBLIC
-    assert result["content"].endswith("... (content truncated)")
     proxy.assert_not_called()
+
+
+ARTICLE = (
+    "<html><body><article><p>" + "0123456789" * 30 + "</p></article></body></html>"
+)
+
+
+def direct_article(monkeypatch):
+    monkeypatch.setattr(fetch.requests, "get", lambda *a, **kw: response(ARTICLE))
+    monkeypatch.setattr(fetch, "_jina_fetch", Mock())
+    return fetch.fetch_url(PUBLIC)
+
+
+def test_paged_markdown_reports_next_offset(monkeypatch):
+    full = direct_article(monkeypatch)
+    first = fetch.web_fetch(PUBLIC, max_length=120)
+    assert first == (
+        f"{full[:120]}\n\n[Truncated: characters 0-120 of {len(full)}. "
+        "Continue with offset=120.]"
+    )
+    last = fetch.web_fetch(PUBLIC, max_length=len(full), offset=120)
+    assert last == full[120:]
+
+
+def test_paged_json_reports_pagination_fields(monkeypatch):
+    full = direct_article(monkeypatch)
+    page = fetch.web_fetch(PUBLIC, format="json", max_length=50, offset=100)
+    assert page["content"] == full[100:150]
+    assert (page["offset"], page["total_length"], page["next_offset"]) == (
+        100,
+        len(full),
+        150,
+    )
+    rest = fetch.web_fetch(PUBLIC, format="json", offset=150)
+    assert rest["content"] == full[150:]
+    assert rest["next_offset"] is None
+
+
+def test_offset_beyond_content_is_reported(monkeypatch):
+    full = direct_article(monkeypatch)
+    with pytest.raises(ValueError, match=f"beyond the content length \\({len(full)}"):
+        fetch.web_fetch(PUBLIC, offset=len(full))
+
+
+@pytest.mark.parametrize("kwargs", [{"offset": -1}, {"offset": "x"}, {"max_length": 0}])
+def test_invalid_pagination_fails_before_fetching(monkeypatch, kwargs):
+    get = Mock()
+    monkeypatch.setattr(fetch.requests, "get", get)
+    with pytest.raises(ValueError):
+        fetch.web_fetch(PUBLIC, **kwargs)
+    get.assert_not_called()
+
+
+def test_jina_fallback_is_paged(monkeypatch, public_dns):
+    monkeypatch.setattr(
+        fetch, "_direct_fetch", Mock(return_value=fetch._DirectResult(None, [PUBLIC]))
+    )
+    monkeypatch.setattr(fetch, "_jina_fetch", Mock(return_value="abcdefghij"))
+    assert fetch.fetch_url(PUBLIC, max_length=4, offset=4) == (
+        "efgh\n\n[Truncated: characters 4-8 of 10. Continue with offset=8.]"
+    )
 
 
 def test_cli_direct_only(monkeypatch):
@@ -190,6 +250,18 @@ def test_cli_direct_only(monkeypatch):
     args = cli._setup_parser().parse_args(["fetch", PUBLIC, "--direct-only"])
     assert cli._handle_fetch(args) == 0
     assert invoke.call_args.kwargs["allow_jina"] is False
+    assert invoke.call_args.kwargs["offset"] == 0
+
+
+def test_cli_fetch_offset(monkeypatch):
+    invoke = Mock(return_value="content")
+    monkeypatch.setattr(cli, "fetch_url", invoke)
+    args = cli._setup_parser().parse_args(
+        ["fetch", PUBLIC, "--max-length", "100", "--offset", "200"]
+    )
+    assert cli._handle_fetch(args) == 0
+    assert invoke.call_args.kwargs["max_length"] == 100
+    assert invoke.call_args.kwargs["offset"] == 200
 
 
 def test_cli_fetch_failure(monkeypatch, caplog):

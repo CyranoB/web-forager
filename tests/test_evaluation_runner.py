@@ -84,6 +84,71 @@ def test_sensitive_url_and_injection_fail_trace_grading():
     assert len(failures) == 4
 
 
+def fetch_event(url, offset=0, result="text"):
+    return {
+        "tool": "web_fetch",
+        "arguments": {"url": url, "allow_jina": True, "offset": offset},
+        "result": result,
+    }
+
+
+def test_budget_and_refetch_checks():
+    case = {"max_searches": 1, "max_fetches": 3, "no_refetch": True}
+    search = {"tool": "duckduckgo_search", "arguments": {"query": "q"}, "result": []}
+    within = [search, fetch_event("a"), fetch_event("a", offset=100), fetch_event("b")]
+    assert runner.check_trace(case, within, "") == []
+    over = [search, search] + within + [fetch_event("a")]
+    assert runner.check_trace(case, over, "") == [
+        "Budget exceeded: 3 > max_searches 1",
+        "Budget exceeded: 4 > max_fetches 3",
+        "Source refetched: a",
+    ]
+    failed_retry = [fetch_event("c", result={"error": "x"}), fetch_event("c")]
+    assert runner.check_trace({"no_refetch": True}, failed_retry, "") == []
+
+
+@pytest.mark.parametrize(
+    "extra", [{"max_fetches": 0}, {"max_searches": "2"}, {"no_refetch": "yes"}]
+)
+def test_invalid_budget_fields_rejected(extra):
+    case = next(
+        case
+        for case in runner.load_cases()
+        if case["id"] == "source-injection--fact-check"
+    )
+    with pytest.raises(ValueError):
+        runner.validate_case(case | extra)
+
+
+def test_fixture_fetch_pages_like_the_published_tool(tmp_path):
+    long_text = "x" * 250
+    case = {
+        "sources": [{"url": "https://long.test", "title": "Long", "content": long_text}]
+    }
+    trace = tmp_path / "trace"
+    server = build_server(case, runner.ROOT / "skills" / "deep-research", trace)
+
+    async def check():
+        async with Client(server) as client:
+            first = await client.call_tool(
+                "web_fetch", {"url": "https://long.test", "max_length": 100}
+            )
+            assert first.data.endswith("Continue with offset=100.]")
+            rest = await client.call_tool(
+                "web_fetch", {"url": "https://long.test", "offset": 100}
+            )
+            assert rest.data == "x" * 150
+            with pytest.raises(ToolError):
+                await client.call_tool(
+                    "web_fetch", {"url": "https://long.test", "offset": 250}
+                )
+
+    asyncio.run(check())
+    events = [json.loads(line) for line in trace.read_text().splitlines()]
+    assert [event["arguments"]["offset"] for event in events] == [0, 100, 250]
+    assert "error" in events[2]["result"]
+
+
 def test_parsers_detect_unexpected_tools():
     events = "\n".join(
         json.dumps(event)
@@ -106,6 +171,11 @@ def test_parsers_detect_unexpected_tools():
         "claude", json.dumps({"type": "system", "subtype": "init", "tools": ["Bash"]})
     )
     assert violations
+    structured = json.dumps(
+        {"type": "system", "subtype": "init", "tools": ["StructuredOutput"]}
+    )
+    assert runner.parse_output("claude", structured)[2]
+    assert not runner.parse_output("claude", structured, runner.GRADER_TOOLS)[2]
 
 
 def test_agent_commands_disable_native_tools(tmp_path):
