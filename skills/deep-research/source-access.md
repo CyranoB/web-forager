@@ -15,6 +15,9 @@ parameters to make a different URL eligible. Explicit proxy calls follow the sam
 public-URL restriction; omit them when eligibility is uncertain.
 
 A successful extraction may still be a preview or incomplete page. Check the content
-needed for the conclusion and record access gaps. A tool error is not an empty result:
-try another available search capability when useful, then report incomplete coverage
-if recovery fails. Only successful searches can establish that no matches were found.
+needed for the conclusion and record access gaps. For a failed or blocked source, make
+at most one recovery attempt, and only if the evidence could change the conclusion.
+
+A tool error is not an empty result: try another available search capability when
+useful, then report incomplete coverage if recovery fails. Only successful searches
+can establish that no matches were found.

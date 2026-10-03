@@ -13,5 +13,5 @@ PY
 ```
 
 The workflow requires both search and fetch. If fetching is unavailable, report the
-missing capability and resulting evidence gap. Base conclusions only on sources read in
-full.
+missing capability and resulting evidence gap. Base conclusions only on sources that were
+read, not on search snippets.

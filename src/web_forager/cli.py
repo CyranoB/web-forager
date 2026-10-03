@@ -91,6 +91,7 @@ def _handle_fetch(args: argparse.Namespace) -> int:
             max_length=args.max_length,
             with_images=args.with_images,
             allow_jina=not getattr(args, "direct_only", False),
+            offset=args.offset,
         )
 
         if args.format == "json":
@@ -220,6 +221,13 @@ def _setup_parser() -> argparse.ArgumentParser:
     )
     fetch_parser.add_argument(
         "--max-length", type=int, help="Maximum length of content to return"
+    )
+    fetch_parser.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="Character position to start from, e.g. the next offset of a "
+        "truncated result (default: 0)",
     )
     fetch_parser.add_argument(
         "--with-images", action="store_true", help="Generate alt text for images"

@@ -3,8 +3,12 @@
 import argparse
 import json
 from pathlib import Path
+from typing import Annotated
 
 from fastmcp import FastMCP
+from pydantic import Field
+
+from web_forager.web_fetch import _apply_page, _validate_paging
 
 
 def build_server(case: dict, skill_root: Path, trace: Path) -> FastMCP:
@@ -69,15 +73,35 @@ def build_server(case: dict, skill_root: Path, trace: Path) -> FastMCP:
             "openWorldHint": False,
         }
     )
-    def web_fetch(url: str, allow_jina: bool = True) -> str:
-        """Read one source. Set allow_jina=False for direct-only access."""
-        arguments = {"url": url, "allow_jina": allow_jina}
+    def web_fetch(
+        url: str,
+        allow_jina: bool = True,
+        max_length: int | None = None,
+        offset: Annotated[int, Field(strict=True, ge=0)] | None = 0,
+    ) -> str:
+        """Read one source. Set allow_jina=False for direct-only access.
+
+        max_length and offset page through long content; a partial result ends
+        with the next offset to continue from.
+        """
+        arguments = {
+            "url": url,
+            "allow_jina": allow_jina,
+            "max_length": max_length,
+            "offset": offset,
+        }
         if url not in pages or pages[url].get("unavailable"):
             record("web_fetch", arguments, {"error": "Source unavailable"})
             raise RuntimeError("Source unavailable; no source content was read")
-        content = pages[url]["content"]
+        try:
+            # Same validation and pagination as the published tool's direct path.
+            max_length, offset = _validate_paging(max_length, offset)
+            content = _apply_page(pages[url]["content"], max_length, offset, "direct")
+        except ValueError as error:
+            record("web_fetch", arguments, {"error": str(error)})
+            raise
         record("web_fetch", arguments, content)
-        return content
+        return str(content)
 
     @server.tool(
         annotations={
