@@ -46,8 +46,9 @@ def test_empty_result_logs_omit_query(
     monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
     caplog.set_level(logging.DEBUG)
     cli_logging(debug=debug)
-    # ddgs reports engine errors at INFO with request details.
+    # ddgs reports engine errors at INFO; its HTTP/2 client logs request headers.
     logging.getLogger("ddgs.ddgs").info("Error in engine: %s", PRIVATE_QUERY)
+    logging.getLogger("hpack.hpack").debug("Encoding :path %s", PRIVATE_QUERY)
 
     async def check():
         async with Client(mcp) as client:
@@ -118,3 +119,21 @@ def test_mcp_surfaces_provider_failure(monkeypatch):
                 await client.call_tool("duckduckgo_news_search", {"query": "topic"})
 
     asyncio.run(check())
+
+
+def test_fastmcp_logs_omit_tool_arguments(monkeypatch, caplog, cli_logging):
+    # FASTMCP_LOG_LEVEL=DEBUG logs every call's arguments.
+    monkeypatch.setattr(logging.getLogger("fastmcp"), "level", logging.DEBUG)
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=True)
+    logging.getLogger("fastmcp.server").error("FastMCP errors remain visible")
+
+    async def check():
+        async with Client(mcp) as client:
+            # A misspelled argument makes FastMCP warn with the submitted input.
+            with pytest.raises(ToolError):
+                await client.call_tool("duckduckgo_search", {"qury": PRIVATE_QUERY})
+
+    asyncio.run(check())
+    assert "FastMCP errors remain visible" in caplog.text
+    assert PRIVATE_QUERY not in caplog.text

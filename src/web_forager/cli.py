@@ -16,34 +16,41 @@ from .duckduckgo_search import duckduckgo_search
 from .server import mcp
 from .web_fetch import fetch_url
 
-# Dependency loggers record request URLs, provider queries, and MCP payloads at
-# DEBUG or INFO, so they stay at WARNING even when debug logging is enabled.
-_DEPENDENCY_LOGGERS = (
-    "charset_normalizer",
-    "ddgs",
-    "httpcore",
-    "httpx",
-    "mcp",
-    "primp",
-    "requests",
-    "trafilatura",
-    "urllib3",
+logger = logging.getLogger(__name__)
+
+# Only Web Forager's own loggers go below WARNING. Dependency loggers record
+# request URLs, provider queries, HTTP/2 headers, and MCP payloads at DEBUG or
+# INFO, so they inherit the WARNING root level even when debug logging is on.
+_APP_LOGGER = "web_forager"
+# FastMCP's argument-validation warnings include the submitted arguments; the
+# client already receives that error, so only FastMCP errors are logged.
+_FASTMCP_LOGGER = "fastmcp"
+# Redact URLs with a scheme and request targets such as "GET /path?sig=...".
+_URL = re.compile(
+    r"\b[a-z][a-z0-9+.-]*://[^\s'\"<>]+|(?<![\w.])/[^\s'\"<>]*\?[^\s'\"<>]*",
+    re.IGNORECASE,
 )
-_URL = re.compile(r"\b[a-z][a-z0-9+.-]*://[^\s'\"<>]+", re.IGNORECASE)
+
+
+def _redact(text: str) -> str:
+    return _URL.sub("<redacted URL>", text)
 
 
 class _RedactURLs(logging.Filter):
     """Replace URLs in emitted records; they can carry tokens or credentials."""
 
     def filter(self, record: logging.LogRecord) -> bool:
-        record.msg = _URL.sub("<redacted URL>", record.getMessage())
+        record.msg = _redact(record.getMessage())
         record.args = None
-        if record.exc_info and not record.exc_text:
-            record.exc_text = logging.Formatter().formatException(record.exc_info)
+        if record.exc_info:
+            if not record.exc_text:
+                record.exc_text = logging.Formatter().formatException(record.exc_info)
+            # Handlers that render exc_info directly would bypass the redaction.
+            record.exc_info = None
         if record.exc_text:
-            record.exc_text = _URL.sub("<redacted URL>", record.exc_text)
+            record.exc_text = _redact(record.exc_text)
         if record.stack_info:
-            record.stack_info = _URL.sub("<redacted URL>", record.stack_info)
+            record.stack_info = _redact(record.stack_info)
         return True
 
 
@@ -53,15 +60,20 @@ _REDACT_URLS = _RedactURLs()
 def _configure_logging(debug: bool) -> None:
     """Log application diagnostics without dependency request payloads."""
     logging.basicConfig(
-        level=logging.DEBUG if debug else logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    for name in _DEPENDENCY_LOGGERS:
-        logging.getLogger(name).setLevel(logging.WARNING)
-    # FastMCP logs through its own handler rather than propagating to the root.
-    for logger in (logging.getLogger(), logging.getLogger("fastmcp")):
-        for handler in logger.handlers:
-            handler.addFilter(_REDACT_URLS)
+    root = logging.getLogger()
+    root.setLevel(logging.WARNING)
+    logging.getLogger(_APP_LOGGER).setLevel(logging.DEBUG if debug else logging.INFO)
+    # FastMCP installs its own non-propagating handlers, which would bypass the
+    # redaction filter; route its records through the root handlers instead.
+    fastmcp_logger = logging.getLogger(_FASTMCP_LOGGER)
+    for handler in fastmcp_logger.handlers[:]:
+        fastmcp_logger.removeHandler(handler)
+    fastmcp_logger.propagate = True
+    fastmcp_logger.setLevel(logging.ERROR)
+    for handler in root.handlers:
+        handler.addFilter(_REDACT_URLS)
 
 
 def _handle_version(args: argparse.Namespace) -> int:
@@ -104,7 +116,7 @@ def _handle_search(args: argparse.Namespace) -> int:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
     except Exception:
-        logging.exception("Search error")
+        logger.exception("Search error")
         return 1
 
 
@@ -126,7 +138,7 @@ def _handle_news(args: argparse.Namespace) -> int:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
     except Exception:
-        logging.exception("News search error")
+        logger.exception("News search error")
         return 1
 
 
@@ -149,7 +161,7 @@ def _handle_fetch(args: argparse.Namespace) -> int:
         return 0
     except Exception as error:
         # Chained request exceptions can contain signed URLs; omit the traceback.
-        logging.exception("Fetch failed: %s", error, exc_info=False)
+        logger.exception("Fetch failed: %s", error, exc_info=False)
         return 1
 
 
@@ -157,8 +169,8 @@ def _handle_serve(args: argparse.Namespace) -> int:
     """Handle the serve command."""
     from . import __version__
 
-    logging.info(f"Starting Web Forager MCP Server v{__version__} (STDIO transport)")
-    logging.info("Press Ctrl+C to stop the server")
+    logger.info(f"Starting Web Forager MCP Server v{__version__} (STDIO transport)")
+    logger.info("Press Ctrl+C to stop the server")
 
     # Register "search" as an alias for "duckduckgo_search" for backward compatibility.
     # Some MCP clients may expect the shorter name. This simply delegates to the main tool.
@@ -170,7 +182,7 @@ def _handle_serve(args: argparse.Namespace) -> int:
         output_format: str = "json",
     ) -> list[dict[str, str]] | str:
         """Search DuckDuckGo for the given query."""
-        logging.debug(
+        logger.debug(
             "Searching (max_results: %s, safesearch: %s, output_format: %s)",
             max_results,
             safesearch,
@@ -178,17 +190,17 @@ def _handle_serve(args: argparse.Namespace) -> int:
         )
         results = duckduckgo_search(query, max_results, safesearch, output_format)
         if isinstance(results, list):
-            logging.debug(f"Found {len(results)} results")
+            logger.debug(f"Found {len(results)} results")
         return results
 
     try:
         mcp.run(transport="stdio")
         return 0
     except KeyboardInterrupt:
-        logging.info("Server stopped by user")
+        logger.info("Server stopped by user")
         return 0
     except Exception:
-        logging.exception("Error running MCP server")
+        logger.exception("Error running MCP server")
         return 1
 
 

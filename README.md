@@ -403,11 +403,13 @@ Some clients use a different top-level config shape, but the command and args ar
 the same.
 
 The server writes diagnostics to stderr, and clients that capture stderr show them in
-their MCP logs. Add `--debug` after `serve` to include Web Forager debug messages, such as fetch
-outcomes and result counts. Logs never include search queries. HTTP, search provider,
-and MCP library logs stay at warning level, even with `--debug`, because those
-libraries record request URLs, queries, and tool arguments. Any URL that still reaches
-a log message appears as `<redacted URL>`.
+their MCP logs. Add `--debug` after `serve` to include Web Forager debug messages, such
+as fetch outcomes and result counts. Web Forager's own messages omit search queries.
+Every other library logs only warnings and errors, even with `--debug`, because HTTP,
+search provider, and MCP libraries record request URLs, queries, and tool arguments.
+FastMCP logs only errors, and invalid tool arguments go back to the client as a tool
+error. Log messages and tracebacks show URLs and request paths with query strings as
+`<redacted URL>`.
 
 ## Optional: CLI
 

@@ -196,6 +196,21 @@ def test_debug_server_logs_omit_signed_url(monkeypatch, caplog, cli_logging):
     assert SECRET not in caplog.text
 
 
+def test_logged_urls_and_tracebacks_are_redacted(caplog, cli_logging):
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=True)
+    app = logging.getLogger("web_forager.test")
+    app.warning("Max retries exceeded with url: /report?sig=%s", SECRET)
+    try:
+        raise requests.ConnectionError(f"https://www.example.com/r?sig={SECRET}")
+    except requests.ConnectionError:
+        app.exception("Request failed")
+    assert "Request failed" in caplog.text
+    assert "Max retries exceeded with url: <redacted URL>" in caplog.text
+    assert SECRET not in caplog.text
+    assert all(record.exc_info is None for record in caplog.records)
+
+
 def test_successful_preview_extraction_does_not_prove_completeness(monkeypatch):
     html = (
         "<article><h1>Report</h1><p>"
