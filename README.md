@@ -436,8 +436,10 @@ LLM-friendly formatted results. Successful searches with no matches return an em
 list. Provider failures raise `SearchError`, surface as MCP tool errors, and make CLI
 search/news commands exit with status 1; they do not represent an empty news period.
 
-Fetching tries direct HTTP first. Jina fallback remains automatic for eligible public
-URLs: no user information, query string, or fragment, and only publicly resolved hosts.
+Fetching tries direct HTTP first. Jina fallback is automatic when direct retrieval
+fails, content extraction fails, or extraction returns too little text. It applies only
+to eligible public URLs: no user information, query string, or fragment, and only
+publicly resolved hosts.
 Private/internal hosts, unresolved or mixed public/private DNS, and ineligible observed
 redirect destinations prevent forwarding. This checks observed destinations; it cannot
 prove that every URL path is non-sensitive or predict a different redirect seen by Jina.
