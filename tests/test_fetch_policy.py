@@ -336,9 +336,6 @@ def extraction_error(monkeypatch, *pages, extractor="extract"):
     """Serve pages over HTTP, then make trafilatura fail on the retrieved HTML."""
     get = Mock(side_effect=list(pages))
     monkeypatch.setattr(fetch.requests, "get", get)
-    if extractor == "bare_extraction":
-        # Main text extraction succeeds; JSON metadata extraction fails.
-        monkeypatch.setattr(fetch.trafilatura, "extract", lambda *a, **kw: "x" * 200)
     monkeypatch.setattr(
         fetch.trafilatura, extractor, Mock(side_effect=RuntimeError(SECRET))
     )
@@ -346,21 +343,35 @@ def extraction_error(monkeypatch, *pages, extractor="extract"):
 
 
 @pytest.mark.parametrize(
-    "output_format,extractor,reader",
+    "output_format,reader",
     [
-        ("markdown", "extract", "reader content"),
-        ("json", "extract", {"data": {"content": "reader content"}}),
-        ("json", "bare_extraction", {"data": {"content": "reader content"}}),
+        ("markdown", "reader content"),
+        ("json", {"data": {"content": "reader content"}}),
     ],
 )
 def test_extraction_failure_falls_back_for_public_url(
-    monkeypatch, public_dns, output_format, extractor, reader
+    monkeypatch, caplog, public_dns, output_format, reader
 ):
-    extraction_error(monkeypatch, response(ARTICLE), extractor=extractor)
+    caplog.set_level(logging.DEBUG)
+    extraction_error(monkeypatch, response(ARTICLE))
     proxy = Mock(return_value=reader)
     monkeypatch.setattr(fetch, "_jina_fetch", proxy)
     assert fetch.fetch_url(PUBLIC, output_format=output_format) == reader
     proxy.assert_called_once_with(PUBLIC, output_format, False)
+    assert "Direct content extraction failed" in caplog.text
+    assert SECRET not in caplog.text
+
+
+def test_metadata_failure_keeps_direct_content(monkeypatch, caplog):
+    caplog.set_level(logging.DEBUG)
+    extraction_error(monkeypatch, response(ARTICLE), extractor="bare_extraction")
+    proxy = Mock()
+    monkeypatch.setattr(fetch, "_jina_fetch", proxy)
+    result = fetch.fetch_url(PUBLIC, output_format="json")
+    assert (result["url"], result["title"]) == (PUBLIC, "")
+    assert "0123456789" in result["content"]
+    proxy.assert_not_called()
+    assert SECRET not in caplog.text
 
 
 def test_extraction_failure_fallback_is_paged(monkeypatch, public_dns):
@@ -391,14 +402,15 @@ def test_extraction_failure_after_public_redirect_falls_back(monkeypatch, public
     ],
 )
 def test_extraction_failure_never_forwards_ineligible_chain(
-    monkeypatch, public_dns, first, pages
+    monkeypatch, caplog, public_dns, first, pages
 ):
+    caplog.set_level(logging.DEBUG)
     extraction_error(monkeypatch, *pages, response(ARTICLE))
     proxy = Mock()
     monkeypatch.setattr(fetch, "_jina_fetch", proxy)
     with pytest.raises(RuntimeError, match="ineligible") as failure:
         fetch.fetch_url(first)
-    assert SECRET not in str(failure.value)
+    assert SECRET not in str(failure.value) + caplog.text
     proxy.assert_not_called()
 
 
@@ -412,11 +424,12 @@ def test_extraction_failure_respects_direct_only(monkeypatch, public_dns):
     public_dns.assert_not_called()
 
 
-def test_extraction_and_fallback_failure_is_sanitized(monkeypatch, public_dns):
+def test_extraction_and_fallback_failure_is_sanitized(monkeypatch, caplog, public_dns):
+    caplog.set_level(logging.DEBUG)
     extraction_error(monkeypatch, response(ARTICLE), response(status=503))
     with pytest.raises(RuntimeError, match="Jina Reader failed") as failure:
         fetch.fetch_url(PUBLIC)
-    assert SECRET not in str(failure.value)
+    assert SECRET not in str(failure.value) + caplog.text
     assert failure.value.__suppress_context__
 
 

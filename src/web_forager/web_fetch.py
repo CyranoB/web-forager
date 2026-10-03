@@ -231,7 +231,6 @@ def _direct_fetch(
         logger.debug("Direct fetch failed")
         return _DirectResult(None, visited)
 
-    title = ""
     try:
         # Use trafilatura to extract the main content
         content = trafilatura.extract(
@@ -242,21 +241,25 @@ def _direct_fetch(
             include_formatting=True,
             include_images=with_images,
         )
-        if content is None or len(content) < MIN_CONTENT_LENGTH:
-            logger.debug("Direct fetch returned insufficient content")
-            return _DirectResult(None, visited)
-        if output_format.lower() == "json":
-            # Extract metadata for JSON format
-            metadata = trafilatura.bare_extraction(html, with_metadata=True)
-            title = getattr(metadata, "title", "") or "" if metadata else ""
     except Exception:
         # Extractor errors can embed page or URL text; keep the observed chain.
         logger.debug("Direct content extraction failed")
         return _DirectResult(None, visited)
 
+    if content is None or len(content) < MIN_CONTENT_LENGTH:
+        logger.debug("Direct fetch returned insufficient content")
+        return _DirectResult(None, visited)
+
     logger.debug("Direct fetch successful (%s chars)", len(content))
 
     if output_format.lower() == "json":
+        # Extract metadata for JSON format; the content is usable without it.
+        try:
+            metadata = trafilatura.bare_extraction(html, with_metadata=True)
+            title = getattr(metadata, "title", "") or "" if metadata else ""
+        except Exception:
+            logger.debug("Direct metadata extraction failed")
+            title = ""
         return _DirectResult(
             {
                 "url": url,
