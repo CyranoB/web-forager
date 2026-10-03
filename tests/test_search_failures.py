@@ -1,5 +1,6 @@
 import asyncio
 import importlib
+import logging
 from unittest.mock import Mock
 
 import pytest
@@ -23,6 +24,39 @@ def test_successful_empty_is_not_failure(monkeypatch, module, function):
     provider.news.return_value = []
     monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
     assert getattr(module, function)("topic") == []
+
+
+PRIVATE_QUERY = "FAKE_PRIVATE_QUERY patient 4711"
+
+
+@pytest.mark.parametrize("debug", [False, True])
+@pytest.mark.parametrize(
+    "module,tool,message",
+    [
+        (news, "duckduckgo_news_search", "News search returned no results"),
+        (search, "duckduckgo_search", "Search returned no results"),
+    ],
+)
+def test_empty_result_logs_omit_query(
+    monkeypatch, caplog, cli_logging, debug, module, tool, message
+):
+    provider = Mock()
+    provider.text.return_value = []
+    provider.news.return_value = []
+    monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=debug)
+    # ddgs reports engine errors at INFO with request details.
+    logging.getLogger("ddgs.ddgs").info("Error in engine: %s", PRIVATE_QUERY)
+
+    async def check():
+        async with Client(mcp) as client:
+            result = await client.call_tool(tool, {"query": PRIVATE_QUERY})
+            assert result.structured_content == {"result": []}
+
+    asyncio.run(check())
+    assert message in caplog.text
+    assert PRIVATE_QUERY not in caplog.text
 
 
 @pytest.mark.parametrize(

@@ -6,6 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 import requests
+import urllib3
 
 from web_forager import cli
 
@@ -153,6 +154,46 @@ def test_errors_and_logs_do_not_disclose_urls(monkeypatch, caplog, public_dns):
         fetch.fetch_url(PUBLIC)
     assert SECRET not in str(failure.value) + caplog.text
     assert failure.value.__suppress_context__
+
+
+def test_debug_server_logs_omit_signed_url(monkeypatch, caplog, cli_logging):
+    """Run the real Requests/urllib3 path over a fake connection with debug on."""
+    from fastmcp import Client
+
+    signed = f"http://www.example.com/report?X-Amz-Signature={SECRET}"
+    body = ARTICLE.encode()
+
+    def fake_connection(self):
+        client, server = socket.socketpair()
+        server.sendall(
+            b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+            + f"Content-Length: {len(body)}\r\n\r\n".encode()
+            + body
+        )
+        self._fake_server = server
+        return client
+
+    for name in ("HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(urllib3.connection.HTTPConnection, "_new_conn", fake_connection)
+    proxy = Mock()
+    monkeypatch.setattr(fetch, "_jina_fetch", proxy)
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=True)
+    logging.getLogger("urllib3").warning("Failed to parse headers (url=%s)", signed)
+
+    async def check():
+        async with Client(fetch.mcp) as client:
+            result = await client.call_tool(
+                "web_fetch", {"url": signed, "allow_jina": False}
+            )
+            assert "0123456789" in result.data
+
+    asyncio.run(check())
+    proxy.assert_not_called()
+    assert "Direct fetch successful" in caplog.text
+    assert "<redacted URL>" in caplog.text
+    assert SECRET not in caplog.text
 
 
 def test_successful_preview_extraction_does_not_prove_completeness(monkeypatch):

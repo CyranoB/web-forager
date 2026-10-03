@@ -138,7 +138,7 @@ def duckduckgo_news_search(
     results = search_duckduckgo_news(query, max_results, safesearch)
 
     if not results:
-        logger.warning(f"No news results found for query: '{query}'")
+        logger.warning("News search returned no results")
 
     if output_format == "text":
         return _format_news_as_text(results, query)

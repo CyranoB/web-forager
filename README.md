@@ -402,6 +402,13 @@ Add a local stdio MCP server with this standard config:
 Some clients use a different top-level config shape, but the command and args are
 the same.
 
+The server writes diagnostics to stderr, and clients that capture stderr show them in
+their MCP logs. Add `--debug` after `serve` to include Web Forager debug messages, such as fetch
+outcomes and result counts. Logs never include search queries. HTTP, search provider,
+and MCP library logs stay at warning level, even with `--debug`, because those
+libraries record request URLs, queries, and tool arguments. Any URL that still reaches
+a log message appears as `<redacted URL>`.
+
 ## Optional: CLI
 
 Run commands without installing the package:

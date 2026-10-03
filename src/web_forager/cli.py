@@ -7,6 +7,7 @@ This module provides the entry point for the `web-forager` command.
 import argparse
 import json
 import logging
+import re
 import sys
 from collections.abc import Callable
 
@@ -14,6 +15,53 @@ from .duckduckgo_news import duckduckgo_news_search
 from .duckduckgo_search import duckduckgo_search
 from .server import mcp
 from .web_fetch import fetch_url
+
+# Dependency loggers record request URLs, provider queries, and MCP payloads at
+# DEBUG or INFO, so they stay at WARNING even when debug logging is enabled.
+_DEPENDENCY_LOGGERS = (
+    "charset_normalizer",
+    "ddgs",
+    "httpcore",
+    "httpx",
+    "mcp",
+    "primp",
+    "requests",
+    "trafilatura",
+    "urllib3",
+)
+_URL = re.compile(r"\b[a-z][a-z0-9+.-]*://[^\s'\"<>]+", re.IGNORECASE)
+
+
+class _RedactURLs(logging.Filter):
+    """Replace URLs in emitted records; they can carry tokens or credentials."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.msg = _URL.sub("<redacted URL>", record.getMessage())
+        record.args = None
+        if record.exc_info and not record.exc_text:
+            record.exc_text = logging.Formatter().formatException(record.exc_info)
+        if record.exc_text:
+            record.exc_text = _URL.sub("<redacted URL>", record.exc_text)
+        if record.stack_info:
+            record.stack_info = _URL.sub("<redacted URL>", record.stack_info)
+        return True
+
+
+_REDACT_URLS = _RedactURLs()
+
+
+def _configure_logging(debug: bool) -> None:
+    """Log application diagnostics without dependency request payloads."""
+    logging.basicConfig(
+        level=logging.DEBUG if debug else logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    for name in _DEPENDENCY_LOGGERS:
+        logging.getLogger(name).setLevel(logging.WARNING)
+    # FastMCP logs through its own handler rather than propagating to the root.
+    for logger in (logging.getLogger(), logging.getLogger("fastmcp")):
+        for handler in logger.handlers:
+            handler.addFilter(_REDACT_URLS)
 
 
 def _handle_version(args: argparse.Namespace) -> int:
@@ -123,8 +171,7 @@ def _handle_serve(args: argparse.Namespace) -> int:
     ) -> list[dict[str, str]] | str:
         """Search DuckDuckGo for the given query."""
         logging.debug(
-            "Searching for: %s (max_results: %s, safesearch: %s, output_format: %s)",
-            query,
+            "Searching (max_results: %s, safesearch: %s, output_format: %s)",
             max_results,
             safesearch,
             output_format,
@@ -247,11 +294,7 @@ def main() -> int:
     parser = _setup_parser()
     args = parser.parse_args()
 
-    # Configure logging
-    log_level = logging.DEBUG if getattr(args, "debug", False) else logging.INFO
-    logging.basicConfig(
-        level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    _configure_logging(getattr(args, "debug", False))
 
     # Command dispatch
     handlers: dict[str, Callable[[argparse.Namespace], int]] = {

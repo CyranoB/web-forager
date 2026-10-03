@@ -227,7 +227,7 @@ def duckduckgo_search(
     results = search_duckduckgo(query, max_results, safesearch)
 
     if not results:
-        logger.warning(f"No results found for query: '{query}'")
+        logger.warning("Search returned no results")
 
     # Return based on output format
     if output_format == "text":
