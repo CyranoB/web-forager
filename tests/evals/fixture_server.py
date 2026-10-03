@@ -6,7 +6,7 @@ from pathlib import Path
 
 from fastmcp import FastMCP
 
-from web_forager.web_fetch import _apply_page
+from web_forager.web_fetch import _apply_page, _validate_paging
 
 
 def build_server(case: dict, skill_root: Path, trace: Path) -> FastMCP:
@@ -92,8 +92,9 @@ def build_server(case: dict, skill_root: Path, trace: Path) -> FastMCP:
             record("web_fetch", arguments, {"error": "Source unavailable"})
             raise RuntimeError("Source unavailable; no source content was read")
         try:
-            # Same pagination as the published tool, so the skill sees real markers.
-            content = _apply_page(pages[url]["content"], max_length, offset)
+            # Same validation and pagination as the published tool's direct path.
+            max_length, offset = _validate_paging(max_length, offset)
+            content = _apply_page(pages[url]["content"], max_length, offset, "direct")
         except ValueError as error:
             record("web_fetch", arguments, {"error": str(error)})
             raise

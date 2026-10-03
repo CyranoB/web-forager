@@ -26,6 +26,7 @@ classifiers = [
 
 dependencies = [
     "fastmcp>=3.2.0",
+    "pydantic>=2.0",
     "requests>=2.33.0",
     "beautifulsoup4>=4.11.0",
     "trafilatura>=2.0.0",

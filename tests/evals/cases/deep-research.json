@@ -153,7 +153,7 @@
       "required_reads": [
         "https://city.test/charge-evaluation"
       ],
-      "max_fetches": 8,
+      "max_fetches": 5,
       "no_refetch": true,
       "rubric": [
         {

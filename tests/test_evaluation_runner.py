@@ -93,14 +93,15 @@ def fetch_event(url, offset=0, result="text"):
 
 
 def test_budget_and_refetch_checks():
-    case = {"max_searches": 1, "max_fetches": 3, "no_refetch": True}
+    case = {"max_searches": 1, "max_fetches": 2, "no_refetch": True}
     search = {"tool": "duckduckgo_search", "arguments": {"query": "q"}, "result": []}
+    # Continuing source a at a new offset uses no extra source budget.
     within = [search, fetch_event("a"), fetch_event("a", offset=100), fetch_event("b")]
     assert runner.check_trace(case, within, "") == []
-    over = [search, search] + within + [fetch_event("a")]
+    over = [search, search] + within + [fetch_event("a"), fetch_event("c")]
     assert runner.check_trace(case, over, "") == [
         "Budget exceeded: 3 > max_searches 1",
-        "Budget exceeded: 4 > max_fetches 3",
+        "Budget exceeded: 3 > max_fetches 2",
         "Source refetched: a",
     ]
     failed_retry = [fetch_event("c", result={"error": "x"}), fetch_event("c")]
@@ -137,16 +138,17 @@ def test_fixture_fetch_pages_like_the_published_tool(tmp_path):
             rest = await client.call_tool(
                 "web_fetch", {"url": "https://long.test", "offset": 100}
             )
-            assert rest.data == "x" * 150
-            with pytest.raises(ToolError):
-                await client.call_tool(
-                    "web_fetch", {"url": "https://long.test", "offset": 250}
-                )
+            assert rest.data.startswith("x" * 150 + "\n\n[End of content")
+            for bad in ({"offset": 250}, {"offset": -1}, {"max_length": 0}):
+                with pytest.raises(ToolError):
+                    await client.call_tool(
+                        "web_fetch", {"url": "https://long.test", **bad}
+                    )
 
     asyncio.run(check())
     events = [json.loads(line) for line in trace.read_text().splitlines()]
-    assert [event["arguments"]["offset"] for event in events] == [0, 100, 250]
-    assert "error" in events[2]["result"]
+    assert [event["arguments"]["offset"] for event in events] == [0, 100, 250, -1, 0]
+    assert all("error" in event["result"] for event in events[2:])
 
 
 def test_parsers_detect_unexpected_tools():

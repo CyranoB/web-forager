@@ -289,10 +289,11 @@ def check_trace(case: dict, trace: list[dict], answer: str) -> list[str]:
         if event["tool"] in {"duckduckgo_search", "duckduckgo_news_search"}
     ]
     fetches = [event for event in trace if event["tool"] == "web_fetch"]
-    # Failed fetches count: recovery attempts consume the same budget.
-    for key, events in (("max_searches", searches), ("max_fetches", fetches)):
-        if key in case and len(events) > case[key]:
-            failures.append(f"Budget exceeded: {len(events)} > {key} {case[key]}")
+    # A source counts once however many parts are read; failed sources still count.
+    sources = {event["arguments"]["url"] for event in fetches}
+    for key, used in (("max_searches", len(searches)), ("max_fetches", len(sources))):
+        if key in case and used > case[key]:
+            failures.append(f"Budget exceeded: {used} > {key} {case[key]}")
     if case.get("no_refetch"):
         # Continuing a page at a new offset is a different read, not a refetch.
         windows = [

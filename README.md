@@ -456,10 +456,13 @@ content or use another authorized direct-fetch tool. A successful extraction sti
 needs checking for previews, paywalls, missing sections, and truncation.
 
 To read a long page in parts, set `max_length` and continue from `offset`. Both count
-characters of the extracted content. A partial markdown result ends with a marker such
-as `[Truncated: characters 0-12000 of 48211. Continue with offset=12000.]`; JSON adds
-`offset`, `total_length`, and `next_offset` (`null` on the last part). Each call fetches
-the page again, so a page that changes between calls can shift its offsets.
+characters of the extracted content. A paged markdown result ends with a marker such as
+`[Truncated: characters 0-12000 of 48211 (direct). Continue with offset=12000.]`, and
+the last part ends with `[End of content: ...]`. Paged JSON adds `source`, `offset`,
+`total_length`, and `next_offset` (`null` on the last part); Jina JSON keeps its text
+under `data.content`. Each call fetches the page again. The source is `direct` or
+`jina`, and offsets are comparable only between parts from the same source and an
+unchanged page. If the source changes, read again from offset 0.
 
 ```bash
 web-forager fetch "https://example.com" --max-length 12000
@@ -497,8 +500,9 @@ python tests/evals/run.py --agent codex --skill fact-check
 ```
 
 The runner supplies synthetic search/fetch sources, disables unrelated tools, records
-source reads, and uses a separate rubric grader. Cases can also set `max_searches`,
-`max_fetches`, and `no_refetch` to fail traces that exceed a research budget. Each case has a five-minute limit
+source reads, and uses a separate rubric grader. Cases can also set `max_searches`
+(search calls), `max_fetches` (distinct sources, however many parts), and `no_refetch`
+to fail traces that exceed a research budget. Each case has a five-minute limit
 per actor or grader and no automatic retries. Use `--model` for a single-client model
 override, `--case` to rerun an affected scenario, and `--output` to retain a run in a
 chosen directory. Results include passed, behavioral failure, infrastructure failure,

@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10, <3.14"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -2297,6 +2297,7 @@ dependencies = [
     { name = "beautifulsoup4" },
     { name = "ddgs" },
     { name = "fastmcp" },
+    { name = "pydantic" },
     { name = "requests" },
     { name = "trafilatura" },
 ]
@@ -2319,6 +2320,7 @@ requires-dist = [
     { name = "fastmcp", specifier = ">=3.2.0" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=5.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
+    { name = "pydantic", specifier = ">=2.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.3" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "pyyaml", marker = "extra == 'dev'", specifier = ">=6.0" },

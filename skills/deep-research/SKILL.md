@@ -45,11 +45,13 @@ uncertainty that could change the conclusion: one targeted batch, then synthesiz
 scope and limits take precedence. Never invent evidence or drop a material
 qualification to stay within budget.
 
-When the fetch tool accepts `max_length`, read sources with `max_length=12000`. A partial
-result ends with `Continue with offset=N`; continue only when a passage needed for a
-material claim is missing, and then read the rest in one call with `max_length=40000`.
-Read each part once, and note each source's date and the claims it supports instead of
-fetching it again.
+When the fetch tool accepts `max_length` and `offset`, read sources with
+`max_length=12000`. A partial result ends with `Continue with offset=N`; continue only
+when a passage needed for a material claim is missing, and then read the rest in one
+call with `max_length=40000`. Offsets apply only while the marker names the same
+source; otherwise re-read from the start. Without `offset` support, read the whole
+source. Read each part once, and note each source's date and the claims it supports
+instead of fetching it again.
 
 ## Workflow
 
