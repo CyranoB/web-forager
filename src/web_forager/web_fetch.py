@@ -3,8 +3,9 @@
 Web Fetch — URL content retrieval with automatic fallback.
 
 Tries a direct HTTP fetch with trafilatura for content extraction first.
-Falls back to the Jina Reader API when direct fetch fails or returns
-insufficient content (e.g., JavaScript-rendered pages, bot-blocked sites).
+Falls back to the Jina Reader API when direct fetch fails, content extraction
+fails, or extraction returns insufficient content (e.g., JavaScript-rendered pages,
+bot-blocked sites).
 """
 
 import json
@@ -230,15 +231,20 @@ def _direct_fetch(
         logger.debug("Direct fetch failed")
         return _DirectResult(None, visited)
 
-    # Use trafilatura to extract the main content
-    content = trafilatura.extract(
-        html,
-        output_format="markdown",
-        include_links=True,
-        include_tables=True,
-        include_formatting=True,
-        include_images=with_images,
-    )
+    try:
+        # Use trafilatura to extract the main content
+        content = trafilatura.extract(
+            html,
+            output_format="markdown",
+            include_links=True,
+            include_tables=True,
+            include_formatting=True,
+            include_images=with_images,
+        )
+    except Exception:
+        # Extractor errors can embed page or URL text; keep the observed chain.
+        logger.debug("Direct content extraction failed")
+        return _DirectResult(None, visited)
 
     if content is None or len(content) < MIN_CONTENT_LENGTH:
         logger.debug("Direct fetch returned insufficient content")
@@ -247,9 +253,13 @@ def _direct_fetch(
     logger.debug("Direct fetch successful (%s chars)", len(content))
 
     if output_format.lower() == "json":
-        # Extract metadata for JSON format
-        metadata = trafilatura.bare_extraction(html, with_metadata=True)
-        title = getattr(metadata, "title", "") or "" if metadata else ""
+        # Extract metadata for JSON format; the content is usable without it.
+        try:
+            metadata = trafilatura.bare_extraction(html, with_metadata=True)
+            title = getattr(metadata, "title", "") or "" if metadata else ""
+        except Exception:
+            logger.debug("Direct metadata extraction failed")
+            title = ""
         return _DirectResult(
             {
                 "url": url,
@@ -306,8 +316,9 @@ def fetch_url(
     """
     Fetch a URL and convert its content to markdown or JSON.
 
-    Tries a direct HTTP fetch with trafilatura first. If that fails or
-    returns insufficient content, falls back to the Jina Reader API.
+    Tries a direct HTTP fetch with trafilatura first. If retrieval or extraction
+    fails, or extraction returns insufficient content, falls back to the Jina
+    Reader API for eligible URLs.
 
     Args:
         url: The URL to fetch and convert
