@@ -436,6 +436,22 @@ LLM-friendly formatted results. Successful searches with no matches return an em
 list. Provider failures raise `SearchError`, surface as MCP tool errors, and make CLI
 search/news commands exit with status 1; they do not represent an empty news period.
 
+Search failure messages identify confirmed timeouts, rate limits, and unavailable
+backends and suggest trying again, waiting, or using another search tool. The CLI
+logs these messages without a traceback. The CLI and STDIO server entry point
+suppress provider and HTTP transport logs that can contain private inputs, including
+in debug mode. Web search still tries its Brave fallback;
+if that succeeds, it returns the results. If fallback fails, the message describes
+the final provider failure.
+
+These diagnostics use typed `ddgs` timeout/rate-limit exceptions or structured
+HTTP errors exposed by the provider: HTTP 408/504 indicate timeouts, 429 indicates
+rate limiting, and 502/503 indicate unavailable backends. When the provider exposes
+only exception text, the message stays generic; words such as "timeout" or
+"backend" are not sufficient evidence. Web Forager's failure messages omit queries,
+URLs, credentials, and raw provider exception text. No automatic retry loop or rate
+limiting is added.
+
 Fetching tries direct HTTP first. Jina fallback remains automatic for eligible public
 URLs: no user information, query string, or fragment, and only publicly resolved hosts.
 Private/internal hosts, unresolved or mixed public/private DNS, and ineligible observed

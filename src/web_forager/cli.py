@@ -12,6 +12,7 @@ from collections.abc import Callable
 
 from .duckduckgo_news import duckduckgo_news_search
 from .duckduckgo_search import duckduckgo_search
+from .errors import SearchError
 from .server import mcp
 from .web_fetch import fetch_url
 
@@ -55,8 +56,11 @@ def _handle_search(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
+    except SearchError as error:
+        logging.error("%s", error)
+        return 1
     except Exception:
-        logging.exception("Search error")
+        logging.error("Search failed. Try another search tool.")
         return 1
 
 
@@ -77,8 +81,11 @@ def _handle_news(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
+    except SearchError as error:
+        logging.error("%s", error)
+        return 1
     except Exception:
-        logging.exception("News search error")
+        logging.error("News search failed. Try another search tool.")
         return 1
 
 
@@ -252,6 +259,10 @@ def main() -> int:
     logging.basicConfig(
         level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
+    # Provider/transport logs can contain queries, signed URLs, and raw errors.
+    # Search handlers emit sanitized diagnostics instead, including in debug mode.
+    for logger_name in ("ddgs", "primp", "httpx", "httpcore"):
+        logging.getLogger(logger_name).setLevel(logging.CRITICAL + 1)
 
     # Command dispatch
     handlers: dict[str, Callable[[argparse.Namespace], int]] = {
