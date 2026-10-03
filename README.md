@@ -421,6 +421,9 @@ web-forager news "your topic"
 web-forager fetch "https://example.com"
 ```
 
+`web-forager` and `python -m web_forager` report the same exit status. They return 0
+on success and 1 when a command fails. Invalid arguments return 2.
+
 ## MCP tools
 
 The MCP server exposes:
