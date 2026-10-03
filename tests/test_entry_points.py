@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -5,11 +6,12 @@ from pathlib import Path
 import pytest
 
 # The console script installed beside the interpreter, and the module entry point.
-CONSOLE = str(Path(sys.executable).with_name("web-forager"))
+CONSOLE = shutil.which("web-forager", path=str(Path(sys.executable).parent))
 ENTRY_POINTS = [[CONSOLE], [sys.executable, "-m", "web_forager"]]
 
 
 def run(entry_point, *args):
+    assert entry_point[0], "web-forager console script is not installed"
     return subprocess.run(
         [*entry_point, *args], capture_output=True, text=True, timeout=60
     )
