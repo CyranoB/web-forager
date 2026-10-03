@@ -109,7 +109,14 @@ def test_budget_and_refetch_checks():
 
 
 @pytest.mark.parametrize(
-    "extra", [{"max_fetches": 0}, {"max_searches": "2"}, {"no_refetch": "yes"}]
+    "extra",
+    [
+        {"max_fetches": 0},
+        {"max_searches": "2"},
+        {"max_fetches": None},
+        {"max_searches": None},
+        {"no_refetch": "yes"},
+    ],
 )
 def test_invalid_budget_fields_rejected(extra):
     case = next(
@@ -147,8 +154,30 @@ def test_fixture_fetch_pages_like_the_published_tool(tmp_path):
 
     asyncio.run(check())
     events = [json.loads(line) for line in trace.read_text().splitlines()]
-    assert [event["arguments"]["offset"] for event in events] == [0, 100, 250, -1, 0]
+    # Negative offsets are rejected by the MCP schema before the fixture runs.
+    assert [event["arguments"]["offset"] for event in events] == [0, 100, 250, 0]
     assert all("error" in event["result"] for event in events[2:])
+
+
+def test_fixture_fetch_offset_accepts_null_and_rejects_coercion(tmp_path):
+    content = "abcdef"
+    url = "https://long.test"
+    case = {"sources": [{"url": url, "title": "Long", "content": content}]}
+    trace = tmp_path / "trace"
+    server = build_server(case, runner.ROOT / "skills" / "deep-research", trace)
+
+    async def check():
+        async with Client(server) as client:
+            result = await client.call_tool("web_fetch", {"url": url, "offset": None})
+            assert result.data == content
+            for offset in (True, False, "1", 1.5):
+                with pytest.raises(ToolError, match="validation error"):
+                    await client.call_tool("web_fetch", {"url": url, "offset": offset})
+
+    asyncio.run(check())
+    events = [json.loads(line) for line in trace.read_text().splitlines()]
+    assert len(events) == 1
+    assert events[0]["result"] == content
 
 
 def test_parsers_detect_unexpected_tools():

@@ -94,7 +94,7 @@ def validate_case(case: dict) -> None:
             raise ValueError("Invalid search route")
     for key in ("max_searches", "max_fetches"):
         value = case.get(key)
-        if value is not None and (type(value) is not int or value < 1):
+        if key in case and (type(value) is not int or value < 1):
             raise ValueError(key + " must be a positive integer")
     if type(case.get("no_refetch", False)) is not bool:
         raise ValueError("no_refetch must be a boolean")

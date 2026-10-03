@@ -3,8 +3,10 @@
 import argparse
 import json
 from pathlib import Path
+from typing import Annotated
 
 from fastmcp import FastMCP
+from pydantic import Field
 
 from web_forager.web_fetch import _apply_page, _validate_paging
 
@@ -75,7 +77,7 @@ def build_server(case: dict, skill_root: Path, trace: Path) -> FastMCP:
         url: str,
         allow_jina: bool = True,
         max_length: int | None = None,
-        offset: int = 0,
+        offset: Annotated[int, Field(strict=True, ge=0)] | None = 0,
     ) -> str:
         """Read one source. Set allow_jina=False for direct-only access.
 
