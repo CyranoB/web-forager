@@ -57,7 +57,7 @@ def _handle_search(args: argparse.Namespace) -> int:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
     except SearchError as error:
-        logging.error("%s", error)
+        logging.exception("%s", error, exc_info=False)
         return 1
     except Exception:
         logging.error("Search failed. Try another search tool.")
@@ -82,7 +82,7 @@ def _handle_news(args: argparse.Namespace) -> int:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
     except SearchError as error:
-        logging.error("%s", error)
+        logging.exception("%s", error, exc_info=False)
         return 1
     except Exception:
         logging.error("News search failed. Try another search tool.")

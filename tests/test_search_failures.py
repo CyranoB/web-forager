@@ -15,6 +15,11 @@ from web_forager.server import mcp
 news = importlib.import_module("web_forager.duckduckgo_news")
 search = importlib.import_module("web_forager.duckduckgo_search")
 
+SEARCH_FUNCTIONS = [
+    (news, "search_duckduckgo_news", "News search"),
+    (search, "search_duckduckgo", "Search"),
+]
+
 
 def http_failure(status):
     response = Response()
@@ -50,13 +55,7 @@ FAILURES = [
 ]
 
 
-@pytest.mark.parametrize(
-    "module,function,prefix",
-    [
-        (news, "search_duckduckgo_news", "News search"),
-        (search, "search_duckduckgo", "Search"),
-    ],
-)
+@pytest.mark.parametrize("module,function,prefix", SEARCH_FUNCTIONS)
 @pytest.mark.parametrize("wrapper", ["argument", "cause"])
 @pytest.mark.parametrize("inner,diagnostic", FAILURES)
 def test_wrapped_provider_evidence_is_preserved(
@@ -69,18 +68,13 @@ def test_wrapped_provider_evidence_is_preserved(
         error = DDGSException("private wrapper details")
         error.__cause__ = inner
     mock_provider_failure(monkeypatch, module, error)
+    invoke = getattr(module, function)
     with pytest.raises(SearchError) as failure:
-        getattr(module, function)("private topic")
+        invoke("private topic")
     assert str(failure.value) == f"{prefix} {diagnostic}"
 
 
-@pytest.mark.parametrize(
-    "module,function,prefix",
-    [
-        (news, "search_duckduckgo_news", "News search"),
-        (search, "search_duckduckgo", "Search"),
-    ],
-)
+@pytest.mark.parametrize("module,function,prefix", SEARCH_FUNCTIONS)
 @pytest.mark.parametrize(
     "error,diagnostic",
     [
@@ -113,8 +107,9 @@ def test_provider_failure_has_action(
     monkeypatch, module, function, prefix, error, diagnostic
 ):
     mock_provider_failure(monkeypatch, module, error)
+    invoke = getattr(module, function)
     with pytest.raises(SearchError) as failure:
-        getattr(module, function)("private topic")
+        invoke("private topic")
     assert str(failure.value) == f"{prefix} {diagnostic}"
 
 
@@ -160,21 +155,16 @@ def test_web_fallback_can_recover(monkeypatch, error_type, empty):
     )
 
 
-@pytest.mark.parametrize(
-    "module,function,prefix",
-    [
-        (news, "search_duckduckgo_news", "News search"),
-        (search, "search_duckduckgo", "Search"),
-    ],
-)
+@pytest.mark.parametrize("module,function,prefix", SEARCH_FUNCTIONS)
 @pytest.mark.parametrize("error_type", [DDGSException, RuntimeError, HTTPError])
 def test_error_text_is_not_evidence(monkeypatch, module, function, prefix, error_type):
     error = error_type(
         "timed out; rate limited 429; backend unavailable 503; private query"
     )
     monkeypatch.setattr(module, "DDGS", Mock(side_effect=error))
+    invoke = getattr(module, function)
     with pytest.raises(SearchError) as failure:
-        getattr(module, function)("private topic")
+        invoke("private topic")
     assert str(failure.value) == (
         f"{prefix} failed. Try another search tool; coverage is incomplete."
     )
@@ -283,7 +273,7 @@ def test_cli_reports_safe_provider_cause(
     assert "secret-value" not in caplog.text
     assert "private provider details" not in caplog.text
     assert "https://example.com/private-query" not in caplog.text
-    assert all(record.exc_info is None for record in caplog.records)
+    assert all(not record.exc_info for record in caplog.records)
 
 
 @pytest.mark.parametrize("command", ["search", "news"])
