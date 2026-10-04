@@ -402,6 +402,9 @@ Add a local stdio MCP server with this standard config:
 Some clients use a different top-level config shape, but the command and args are
 the same.
 
+Installation through Smithery is currently unsupported by this project. Use the
+direct `uvx` configuration above to run the MCP server locally.
+
 The server writes diagnostics to stderr, and clients that capture stderr show them in
 their MCP logs. Add `--debug` after `serve` to include Web Forager debug messages, such
 as fetch outcomes and result counts. Web Forager's own messages omit search queries.
