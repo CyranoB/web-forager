@@ -6,6 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 import requests
+import urllib3
 
 from web_forager import cli
 
@@ -153,6 +154,61 @@ def test_errors_and_logs_do_not_disclose_urls(monkeypatch, caplog, public_dns):
         fetch.fetch_url(PUBLIC)
     assert SECRET not in str(failure.value) + caplog.text
     assert failure.value.__suppress_context__
+
+
+def test_debug_server_logs_omit_signed_url(monkeypatch, caplog, cli_logging):
+    """Run the real Requests/urllib3 path over a fake connection with debug on."""
+    from fastmcp import Client
+
+    signed = f"http://www.example.com/report?X-Amz-Signature={SECRET}"
+    body = ARTICLE.encode()
+
+    def fake_connection(self):
+        client, server = socket.socketpair()
+        server.sendall(
+            b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+            + f"Content-Length: {len(body)}\r\n\r\n".encode()
+            + body
+        )
+        self._fake_server = server
+        return client
+
+    for name in ("HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(urllib3.connection.HTTPConnection, "_new_conn", fake_connection)
+    proxy = Mock()
+    monkeypatch.setattr(fetch, "_jina_fetch", proxy)
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=True)
+    logging.getLogger("urllib3").warning("Failed to parse headers (url=%s)", signed)
+
+    async def check():
+        async with Client(fetch.mcp) as client:
+            result = await client.call_tool(
+                "web_fetch", {"url": signed, "allow_jina": False}
+            )
+            assert "0123456789" in result.data
+
+    asyncio.run(check())
+    proxy.assert_not_called()
+    assert "Direct fetch successful" in caplog.text
+    assert "<redacted URL>" in caplog.text
+    assert SECRET not in caplog.text
+
+
+def test_logged_urls_and_tracebacks_are_redacted(caplog, cli_logging):
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=True)
+    app = logging.getLogger("web_forager.test")
+    app.warning("Max retries exceeded with url: /report?sig=%s", SECRET)
+    try:
+        raise requests.ConnectionError(f"https://www.example.com/r?sig={SECRET}")
+    except requests.ConnectionError:
+        app.exception("Request failed")
+    assert "Request failed" in caplog.text
+    assert "Max retries exceeded with url: <redacted URL>" in caplog.text
+    assert SECRET not in caplog.text
+    assert all(record.exc_info is None for record in caplog.records)
 
 
 def test_successful_preview_extraction_does_not_prove_completeness(monkeypatch):
@@ -330,3 +386,123 @@ def test_cli_fetch_failure(monkeypatch, caplog):
     args = cli._setup_parser().parse_args(["fetch", PUBLIC + "?token=" + SECRET])
     assert cli._handle_fetch(args) == 1
     assert SECRET not in caplog.text
+
+
+def extraction_error(monkeypatch, *pages, extractor="extract"):
+    """Serve pages over HTTP, then make trafilatura fail on the retrieved HTML."""
+    get = Mock(side_effect=list(pages))
+    monkeypatch.setattr(fetch.requests, "get", get)
+    monkeypatch.setattr(
+        fetch.trafilatura, extractor, Mock(side_effect=RuntimeError(SECRET))
+    )
+    return get
+
+
+@pytest.mark.parametrize(
+    "output_format,reader",
+    [
+        ("markdown", "reader content"),
+        ("json", {"data": {"content": "reader content"}}),
+    ],
+)
+def test_extraction_failure_falls_back_for_public_url(
+    monkeypatch, caplog, public_dns, output_format, reader
+):
+    caplog.set_level(logging.DEBUG)
+    extraction_error(monkeypatch, response(ARTICLE))
+    proxy = Mock(return_value=reader)
+    monkeypatch.setattr(fetch, "_jina_fetch", proxy)
+    assert fetch.fetch_url(PUBLIC, output_format=output_format) == reader
+    proxy.assert_called_once_with(PUBLIC, output_format, False)
+    assert "Direct content extraction failed" in caplog.text
+    assert SECRET not in caplog.text
+
+
+def test_metadata_failure_keeps_direct_content(monkeypatch, caplog):
+    caplog.set_level(logging.DEBUG)
+    extraction_error(monkeypatch, response(ARTICLE), extractor="bare_extraction")
+    proxy = Mock()
+    monkeypatch.setattr(fetch, "_jina_fetch", proxy)
+    result = fetch.fetch_url(PUBLIC, output_format="json")
+    assert (result["url"], result["title"]) == (PUBLIC, "")
+    assert "0123456789" in result["content"]
+    proxy.assert_not_called()
+    assert SECRET not in caplog.text
+
+
+def test_extraction_failure_fallback_is_paged(monkeypatch, public_dns):
+    extraction_error(monkeypatch, response(ARTICLE))
+    monkeypatch.setattr(fetch, "_jina_fetch", Mock(return_value="abcdefghij"))
+    assert fetch.fetch_url(PUBLIC, max_length=4) == (
+        "abcd\n\n[Truncated: characters 0-4 of 10 (jina). Continue with offset=4.]"
+    )
+
+
+def test_extraction_failure_after_public_redirect_falls_back(monkeypatch, public_dns):
+    get = extraction_error(
+        monkeypatch, response(status=302, location="/next"), response(ARTICLE)
+    )
+    monkeypatch.setattr(fetch, "_jina_fetch", Mock(return_value="read"))
+    assert fetch.fetch_url(PUBLIC) == "read"
+    assert get.call_args.args[0] == "https://www.example.com/next"
+    assert public_dns.call_count == 2
+
+
+@pytest.mark.parametrize(
+    "first,pages",
+    [
+        (PUBLIC, [response(status=302, location=f"/next?token={SECRET}")]),
+        (f"{PUBLIC}?token={SECRET}", [response(status=302, location=PUBLIC)]),
+        (f"{PUBLIC}?token={SECRET}", []),
+        ("http://service.internal/a", []),
+    ],
+)
+def test_extraction_failure_never_forwards_ineligible_chain(
+    monkeypatch, caplog, public_dns, first, pages
+):
+    caplog.set_level(logging.DEBUG)
+    extraction_error(monkeypatch, *pages, response(ARTICLE))
+    proxy = Mock()
+    monkeypatch.setattr(fetch, "_jina_fetch", proxy)
+    with pytest.raises(RuntimeError, match="ineligible") as failure:
+        fetch.fetch_url(first)
+    assert SECRET not in str(failure.value) + caplog.text
+    proxy.assert_not_called()
+
+
+def test_extraction_failure_respects_direct_only(monkeypatch, public_dns):
+    extraction_error(monkeypatch, response(ARTICLE))
+    proxy = Mock()
+    monkeypatch.setattr(fetch, "_jina_fetch", proxy)
+    with pytest.raises(RuntimeError, match="disabled"):
+        fetch.fetch_url(PUBLIC, allow_jina=False)
+    proxy.assert_not_called()
+    public_dns.assert_not_called()
+
+
+def test_extraction_and_fallback_failure_is_sanitized(monkeypatch, caplog, public_dns):
+    caplog.set_level(logging.DEBUG)
+    extraction_error(monkeypatch, response(ARTICLE), response(status=503))
+    with pytest.raises(RuntimeError, match="Jina Reader failed") as failure:
+        fetch.fetch_url(PUBLIC)
+    assert SECRET not in str(failure.value) + caplog.text
+    assert failure.value.__suppress_context__
+
+
+def test_extraction_failure_recovers_through_cli_and_mcp(
+    monkeypatch, public_dns, capsys
+):
+    from fastmcp import Client
+
+    extraction_error(monkeypatch, response(ARTICLE), response(ARTICLE))
+    monkeypatch.setattr(fetch, "_jina_fetch", Mock(return_value="reader content"))
+    args = cli._setup_parser().parse_args(["fetch", PUBLIC])
+    assert cli._handle_fetch(args) == 0
+    assert capsys.readouterr().out.strip() == "reader content"
+
+    async def check():
+        async with Client(fetch.mcp) as client:
+            result = await client.call_tool("web_fetch", {"url": PUBLIC})
+            assert result.data == "reader content"
+
+    asyncio.run(check())

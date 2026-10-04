@@ -402,6 +402,17 @@ Add a local stdio MCP server with this standard config:
 Some clients use a different top-level config shape, but the command and args are
 the same.
 
+The server writes diagnostics to stderr, and clients that capture stderr show them in
+their MCP logs. Add `--debug` after `serve` to include Web Forager debug messages, such
+as fetch outcomes and result counts. Web Forager's own messages omit search queries.
+The CLI and STDIO entry point suppress `ddgs`, `primp`, `httpx`, and `httpcore` logs
+because they can contain private queries, URLs, and raw provider errors. Other
+libraries log only warnings and errors, even with `--debug`, because HTTP, search
+provider, and MCP libraries record request URLs, queries, and tool arguments.
+FastMCP logs only errors, and invalid tool arguments go back to the client as a tool
+error. Log messages and tracebacks show URLs and request paths with query strings as
+`<redacted URL>`.
+
 ## Optional: CLI
 
 Run commands without installing the package:
@@ -421,6 +432,9 @@ web-forager news "your topic"
 web-forager fetch "https://example.com"
 ```
 
+`web-forager` and `python -m web_forager` report the same exit status. They return 0
+on success and 1 when a command fails. Invalid arguments return 2.
+
 ## MCP tools
 
 The MCP server exposes:
@@ -438,9 +452,7 @@ search/news commands exit with status 1; they do not represent an empty news per
 
 Search failure messages identify confirmed timeouts, rate limits, and unavailable
 backends and suggest trying again, waiting, or using another search tool. The CLI
-logs these messages without a traceback. The CLI and STDIO server entry point
-suppress provider and HTTP transport logs that can contain private inputs, including
-in debug mode. Web search still tries its Brave fallback;
+logs these messages without a traceback. Web search still tries its Brave fallback;
 if that succeeds, it returns the results. If fallback fails, the message describes
 the final provider failure.
 
@@ -452,8 +464,10 @@ only exception text, the message stays generic; words such as "timeout" or
 URLs, credentials, and raw provider exception text. No automatic retry loop or rate
 limiting is added.
 
-Fetching tries direct HTTP first. Jina fallback remains automatic for eligible public
-URLs: no user information, query string, or fragment, and only publicly resolved hosts.
+Fetching tries direct HTTP first. Jina fallback is automatic when direct retrieval
+fails, content extraction fails, or extraction returns too little text. It applies only
+to eligible public URLs: no user information, query string, or fragment, and only
+publicly resolved hosts.
 Private/internal hosts, unresolved or mixed public/private DNS, and ineligible observed
 redirect destinations prevent forwarding. This checks observed destinations; it cannot
 prove that every URL path is non-sensitive or predict a different redirect seen by Jina.

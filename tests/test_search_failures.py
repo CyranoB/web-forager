@@ -124,6 +124,40 @@ def test_successful_empty_is_not_failure(monkeypatch, module, function):
     assert getattr(module, function)("topic") == []
 
 
+PRIVATE_QUERY = "FAKE_PRIVATE_QUERY patient 4711"
+
+
+@pytest.mark.parametrize("debug", [False, True])
+@pytest.mark.parametrize(
+    "module,tool,message",
+    [
+        (news, "duckduckgo_news_search", "News search returned no results"),
+        (search, "duckduckgo_search", "Search returned no results"),
+    ],
+)
+def test_empty_result_logs_omit_query(
+    monkeypatch, caplog, cli_logging, debug, module, tool, message
+):
+    provider = Mock()
+    provider.text.return_value = []
+    provider.news.return_value = []
+    monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=debug)
+    # ddgs reports engine errors at INFO; its HTTP/2 client logs request headers.
+    logging.getLogger("ddgs.ddgs").info("Error in engine: %s", PRIVATE_QUERY)
+    logging.getLogger("hpack.hpack").debug("Encoding :path %s", PRIVATE_QUERY)
+
+    async def check():
+        async with Client(mcp) as client:
+            result = await client.call_tool(tool, {"query": PRIVATE_QUERY})
+            assert result.structured_content == {"result": []}
+
+    asyncio.run(check())
+    assert message in caplog.text
+    assert PRIVATE_QUERY not in caplog.text
+
+
 @pytest.mark.parametrize(
     "module,function", [(news, "search_duckduckgo_news"), (search, "search_duckduckgo")]
 )
@@ -194,6 +228,7 @@ def test_failed_fallback_reports_final_provider_evidence(
     assert str(failure.value) == diagnostic
 
 
+@pytest.mark.usefixtures("cli_logging")
 @pytest.mark.parametrize(
     "command,module",
     [("news", news), ("search", search)],
@@ -247,6 +282,7 @@ def test_mcp_surfaces_safe_provider_failure(
     "command,module,prefix",
     [("news", news, "News search"), ("search", search, "Search")],
 )
+@pytest.mark.usefixtures("cli_logging")
 @pytest.mark.parametrize("error,diagnostic", FAILURES)
 @pytest.mark.parametrize("output_format", ["json", "text"])
 def test_cli_reports_safe_provider_cause(
@@ -276,6 +312,7 @@ def test_cli_reports_safe_provider_cause(
     assert all(not record.exc_info for record in caplog.records)
 
 
+@pytest.mark.usefixtures("cli_logging")
 @pytest.mark.parametrize("command", ["search", "news"])
 def test_cli_suppresses_private_dependency_logs(monkeypatch, command, capsys, caplog):
     from ddgs.ddgs import DDGS
@@ -300,3 +337,21 @@ def test_cli_suppresses_private_dependency_logs(monkeypatch, command, capsys, ca
     assert capsys.readouterr().out == ""
     assert "failed. Try another search tool" in caplog.text
     assert "private" not in caplog.text
+
+
+def test_fastmcp_logs_omit_tool_arguments(monkeypatch, caplog, cli_logging):
+    # FASTMCP_LOG_LEVEL=DEBUG logs every call's arguments.
+    monkeypatch.setattr(logging.getLogger("fastmcp"), "level", logging.DEBUG)
+    caplog.set_level(logging.DEBUG)
+    cli_logging(debug=True)
+    logging.getLogger("fastmcp.server").error("FastMCP errors remain visible")
+
+    async def check():
+        async with Client(mcp) as client:
+            # A misspelled argument makes FastMCP warn with the submitted input.
+            with pytest.raises(ToolError):
+                await client.call_tool("duckduckgo_search", {"qury": PRIVATE_QUERY})
+
+    asyncio.run(check())
+    assert "FastMCP errors remain visible" in caplog.text
+    assert PRIVATE_QUERY not in caplog.text
