@@ -23,6 +23,13 @@ def http_failure(status):
     return HTTPError("private provider details", response=response)
 
 
+def mock_provider_failure(monkeypatch, module, error):
+    provider = Mock()
+    provider.text.side_effect = error
+    provider.news.side_effect = error
+    monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
+
+
 FAILURES = [
     (
         TimeoutException("private provider details"),
@@ -61,10 +68,7 @@ def test_wrapped_provider_evidence_is_preserved(
     else:
         error = DDGSException("private wrapper details")
         error.__cause__ = inner
-    provider = Mock()
-    provider.text.side_effect = error
-    provider.news.side_effect = error
-    monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
+    mock_provider_failure(monkeypatch, module, error)
     with pytest.raises(SearchError) as failure:
         getattr(module, function)("private topic")
     assert str(failure.value) == f"{prefix} {diagnostic}"
@@ -78,53 +82,37 @@ def test_wrapped_provider_evidence_is_preserved(
     ],
 )
 @pytest.mark.parametrize(
-    "status,diagnostic",
+    "error,diagnostic",
     [
-        (408, "timed out. Try again or use another search tool."),
-        (429, "rate limited. Wait before trying again or use another search tool."),
-        (502, "backend unavailable. Try again later or use another search tool."),
-        (503, "backend unavailable. Try again later or use another search tool."),
-        (504, "timed out. Try again or use another search tool."),
-        (403, "failed. Try another search tool; coverage is incomplete."),
-    ],
-)
-def test_structured_provider_status_has_action(
-    monkeypatch, module, function, prefix, status, diagnostic
-):
-    provider = Mock()
-    error = http_failure(status)
-    provider.text.side_effect = error
-    provider.news.side_effect = error
-    monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
-    with pytest.raises(SearchError) as failure:
-        getattr(module, function)("private topic")
-    assert str(failure.value) == f"{prefix} {diagnostic}"
-
-
-@pytest.mark.parametrize(
-    "module,function,prefix",
-    [
-        (news, "search_duckduckgo_news", "News search"),
-        (search, "search_duckduckgo", "Search"),
-    ],
-)
-@pytest.mark.parametrize(
-    "error_type,diagnostic",
-    [
-        (TimeoutException, "timed out. Try again or use another search tool."),
+        (http_failure(408), "timed out. Try again or use another search tool."),
         (
-            RatelimitException,
+            http_failure(429),
+            "rate limited. Wait before trying again or use another search tool.",
+        ),
+        (
+            http_failure(502),
+            "backend unavailable. Try again later or use another search tool.",
+        ),
+        (
+            http_failure(503),
+            "backend unavailable. Try again later or use another search tool.",
+        ),
+        (http_failure(504), "timed out. Try again or use another search tool."),
+        (http_failure(403), "failed. Try another search tool; coverage is incomplete."),
+        (
+            TimeoutException("private query and URL"),
+            "timed out. Try again or use another search tool.",
+        ),
+        (
+            RatelimitException("private query and URL"),
             "rate limited. Wait before trying again or use another search tool.",
         ),
     ],
 )
-def test_confirmed_provider_failure_has_action(
-    monkeypatch, module, function, prefix, error_type, diagnostic
+def test_provider_failure_has_action(
+    monkeypatch, module, function, prefix, error, diagnostic
 ):
-    provider = Mock()
-    provider.text.side_effect = error_type("private query and URL")
-    provider.news.side_effect = error_type("private query and URL")
-    monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
+    mock_provider_failure(monkeypatch, module, error)
     with pytest.raises(SearchError) as failure:
         getattr(module, function)("private topic")
     assert str(failure.value) == f"{prefix} {diagnostic}"
@@ -283,10 +271,7 @@ def test_cli_reports_safe_provider_cause(
     caplog,
 ):
     private = "private-topic https://example.com/private?token=secret-value"
-    provider = Mock()
-    provider.text.side_effect = error
-    provider.news.side_effect = error
-    monkeypatch.setattr(module, "DDGS", Mock(return_value=provider))
+    mock_provider_failure(monkeypatch, module, error)
     monkeypatch.setattr(
         "sys.argv", ["web-forager", command, private, "--output-format", output_format]
     )
