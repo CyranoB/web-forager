@@ -12,7 +12,7 @@ import logging
 from ddgs import DDGS
 from ddgs.exceptions import DDGSException
 
-from .errors import SearchError
+from .errors import provider_search_error
 from .server import mcp
 
 logger = logging.getLogger(__name__)
@@ -94,7 +94,6 @@ def _try_fallback_search(
     safesearch: str,
     max_results: int,
     timeout: int,
-    original_error: Exception,
 ) -> list[dict[str, str]]:
     """
     Attempt a fallback search using the brave backend.
@@ -105,24 +104,15 @@ def _try_fallback_search(
         safesearch: Safe search setting
         max_results: Maximum number of results
         timeout: Request timeout in seconds
-        original_error: The original exception that triggered the fallback
 
     Returns:
         List of formatted search results; raises SearchError on provider failure
     """
-    # Don't retry if the error was already about the backend
-    if "backend" in str(original_error).lower():
-        raise SearchError(
-            "Search backend unavailable. Try another search tool."
-        ) from None
-
     logger.info("Retrying with brave backend as fallback")
     try:
         return _execute_search(query, region, safesearch, max_results, timeout, "brave")
-    except Exception:
-        raise SearchError(
-            "Search providers failed. Try another search tool; coverage is incomplete."
-        ) from None
+    except Exception as error:
+        raise provider_search_error(error) from None
 
 
 def _validate_search_params(query: str, max_results: int, safesearch: str) -> str:
@@ -182,11 +172,11 @@ def search_duckduckgo(
         return _execute_search(
             query, region, safesearch, max_results, timeout, "duckduckgo"
         )
-    except DDGSException as e:
+    except DDGSException:
         logger.info("Primary search provider failed; trying fallback")
-        return _try_fallback_search(query, region, safesearch, max_results, timeout, e)
-    except Exception:
-        raise SearchError("Search failed. Try another search tool.") from None
+        return _try_fallback_search(query, region, safesearch, max_results, timeout)
+    except Exception as error:
+        raise provider_search_error(error) from None
 
 
 @mcp.tool()

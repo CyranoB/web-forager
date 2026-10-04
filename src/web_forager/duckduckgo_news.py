@@ -11,7 +11,7 @@ from typing import Any
 
 from ddgs import DDGS
 
-from .errors import SearchError
+from .errors import provider_search_error
 from .server import mcp
 
 logger = logging.getLogger(__name__)
@@ -92,10 +92,8 @@ def search_duckduckgo_news(
             max_results=max_results,
         )
         return [_format_news_result(r) for r in results]
-    except Exception:
-        raise SearchError(
-            "News search failed. Try another search tool; coverage is incomplete."
-        ) from None
+    except Exception as error:
+        raise provider_search_error(error, news=True) from None
 
 
 @mcp.tool()

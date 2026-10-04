@@ -13,6 +13,7 @@ from collections.abc import Callable
 
 from .duckduckgo_news import duckduckgo_news_search
 from .duckduckgo_search import duckduckgo_search
+from .errors import SearchError
 from .server import mcp
 from .web_fetch import fetch_url
 
@@ -22,6 +23,8 @@ logger = logging.getLogger(__name__)
 # request URLs, provider queries, HTTP/2 headers, and MCP payloads at DEBUG or
 # INFO, so they inherit the WARNING root level even when debug logging is on.
 _APP_LOGGER = "web_forager"
+# These providers and transports also log raw failures at WARNING or higher.
+_PROVIDER_LOGGERS = ("ddgs", "primp", "httpx", "httpcore")
 # FastMCP's argument-validation warnings include the submitted arguments; the
 # client already receives that error, so only FastMCP errors are logged.
 _FASTMCP_LOGGER = "fastmcp"
@@ -65,6 +68,8 @@ def _configure_logging(debug: bool) -> None:
     root = logging.getLogger()
     root.setLevel(logging.WARNING)
     logging.getLogger(_APP_LOGGER).setLevel(logging.DEBUG if debug else logging.INFO)
+    for logger_name in _PROVIDER_LOGGERS:
+        logging.getLogger(logger_name).setLevel(logging.CRITICAL + 1)
     # FastMCP installs its own non-propagating handlers, which would bypass the
     # redaction filter; route its records through the root handlers instead.
     fastmcp_logger = logging.getLogger(_FASTMCP_LOGGER)
@@ -115,8 +120,11 @@ def _handle_search(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
+    except SearchError as error:
+        logger.exception("%s", error, exc_info=False)
+        return 1
     except Exception:
-        logger.exception("Search error")
+        logger.error("Search failed. Try another search tool.")
         return 1
 
 
@@ -137,8 +145,11 @@ def _handle_news(args: argparse.Namespace) -> int:
         else:
             print(json.dumps(results, indent=2, ensure_ascii=False))
         return 0
+    except SearchError as error:
+        logger.exception("%s", error, exc_info=False)
+        return 1
     except Exception:
-        logger.exception("News search error")
+        logger.error("News search failed. Try another search tool.")
         return 1
 
 

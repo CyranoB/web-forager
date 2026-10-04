@@ -405,8 +405,10 @@ the same.
 The server writes diagnostics to stderr, and clients that capture stderr show them in
 their MCP logs. Add `--debug` after `serve` to include Web Forager debug messages, such
 as fetch outcomes and result counts. Web Forager's own messages omit search queries.
-Every other library logs only warnings and errors, even with `--debug`, because HTTP,
-search provider, and MCP libraries record request URLs, queries, and tool arguments.
+The CLI and STDIO entry point suppress `ddgs`, `primp`, `httpx`, and `httpcore` logs
+because they can contain private queries, URLs, and raw provider errors. Other
+libraries log only warnings and errors, even with `--debug`, because HTTP, search
+provider, and MCP libraries record request URLs, queries, and tool arguments.
 FastMCP logs only errors, and invalid tool arguments go back to the client as a tool
 error. Log messages and tracebacks show URLs and request paths with query strings as
 `<redacted URL>`.
@@ -447,6 +449,20 @@ Search and news tools return JSON by default and support `output_format="text"` 
 LLM-friendly formatted results. Successful searches with no matches return an empty
 list. Provider failures raise `SearchError`, surface as MCP tool errors, and make CLI
 search/news commands exit with status 1; they do not represent an empty news period.
+
+Search failure messages identify confirmed timeouts, rate limits, and unavailable
+backends and suggest trying again, waiting, or using another search tool. The CLI
+logs these messages without a traceback. Web search still tries its Brave fallback;
+if that succeeds, it returns the results. If fallback fails, the message describes
+the final provider failure.
+
+These diagnostics use typed `ddgs` timeout/rate-limit exceptions or structured
+HTTP errors exposed by the provider: HTTP 408/504 indicate timeouts, 429 indicates
+rate limiting, and 502/503 indicate unavailable backends. When the provider exposes
+only exception text, the message stays generic; words such as "timeout" or
+"backend" are not sufficient evidence. Web Forager's failure messages omit queries,
+URLs, credentials, and raw provider exception text. No automatic retry loop or rate
+limiting is added.
 
 Fetching tries direct HTTP first. Jina fallback is automatic when direct retrieval
 fails, content extraction fails, or extraction returns too little text. It applies only
