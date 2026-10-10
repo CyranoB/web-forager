@@ -31,6 +31,7 @@ dependencies = [
     "beautifulsoup4>=4.11.0",
     "trafilatura>=2.0.0",
     "ddgs>=9.5.2",
+    "youtube-transcript-api>=1.2.4,<2",
 ]
 
 [project.optional-dependencies]

@@ -49,9 +49,14 @@ for r in results:
 PY
 ```
 
-The workflow requires both search and fetch. If fetching is unavailable, report the
-missing capability instead of sending the URL through another service or producing
-unsupported intelligence.
+The workflow requires both search and fetch. If page fetching is unavailable, report
+the missing capability instead of sending the URL through another service or producing
+unsupported intelligence. For a YouTube video, the packaged `fetch` command can read
+captions with `--direct-only`:
+
+```bash
+uvx --python '>=3.10,<3.14' web-forager fetch "https://www.youtube.com/watch?v=VIDEO_ID" --direct-only
+```
 
 Markets move quickly. Use `[current year]` in discovery queries and prefer current
 official product, pricing, and changelog pages. Use older sources only for history, and

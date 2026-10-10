@@ -14,6 +14,15 @@ supplied content or an authorized tool known to fetch directly. Never strip quer
 parameters to make a different URL eligible. Explicit proxy calls follow the same
 public-URL restriction; omit them when eligibility is uncertain.
 
+For a YouTube video URL, use a transcript-capable `web_fetch` with
+`allow_jina=False` or packaged `fetch --direct-only` when available. It reads
+captions from YouTube without Jina fallback. Confirm the result contains caption text;
+video page metadata alone is not a transcript.
+The result gives timestamps, language, and whether captions were automatic. Request a
+specific language when needed; otherwise English is preferred, then an available
+track. Cite the video URL. Captions provide spoken text, not visual evidence, and a
+missing or blocked transcript is an access gap.
+
 A successful extraction may still be a preview, CAPTCHA, login screen, navigation
 shell, or empty article body. Classify these as access failures immediately; do not
 treat HTTP success as readable evidence.

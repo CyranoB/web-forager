@@ -443,7 +443,7 @@ The MCP server exposes:
 | --- | --- |
 | `duckduckgo_search` | Search the web with DuckDuckGo-compatible results |
 | `duckduckgo_news_search` | Search recent news with dates and sources |
-| `web_fetch` | Fetch a URL and return markdown or JSON |
+| `web_fetch` | Fetch a page or YouTube captions as markdown or JSON |
 
 Search and news tools return JSON by default and support `output_format="text"` for
 LLM-friendly formatted results. Successful searches with no matches return an empty
@@ -464,10 +464,10 @@ only exception text, the message stays generic; words such as "timeout" or
 URLs, credentials, and raw provider exception text. No automatic retry loop or rate
 limiting is added.
 
-Fetching tries direct HTTP first. Jina fallback is automatic when direct retrieval
-fails, content extraction fails, or extraction returns too little text. It applies only
-to eligible public URLs: no user information, query string, or fragment, and only
-publicly resolved hosts.
+For pages, fetching tries direct HTTP first. Jina fallback is automatic when direct
+retrieval fails, content extraction fails, or extraction returns too little text. It
+applies only to eligible public URLs: no user information, query string, or fragment,
+and only publicly resolved hosts.
 Private/internal hosts, unresolved or mixed public/private DNS, and ineligible observed
 redirect destinations prevent forwarding. This checks observed destinations; it cannot
 prove that every URL path is non-sensitive or predict a different redirect seen by Jina.
@@ -485,14 +485,30 @@ retry a different URL. With older tools that lack direct-only support, supply th
 content or use another authorized direct-fetch tool. A successful extraction still
 needs checking for previews, paywalls, missing sections, and truncation.
 
+YouTube video URLs (`watch`, `youtu.be`, `shorts`, `live`, and `embed`) return
+timestamped captions through the same `web_fetch` tool and `fetch` command. English
+captions are preferred; if unavailable, Web Forager reads an available track. Choose a
+language explicitly with `web_fetch(..., language="fr")` or:
+
+```bash
+web-forager fetch "https://www.youtube.com/watch?v=dQw4w9WgXcQ" --language en
+```
+
+Markdown includes the video URL, language, caption type, and timestamped lines. JSON
+puts these details in `url`, `language`, `language_code`, `is_generated`, and `content`.
+Transcript requests go directly to YouTube, even when `--direct-only` is set; they
+never fall back to Jina. Videos without accessible captions and blocked requests
+return an error. Captions do not describe video frames or transcribe uncaptained audio.
+All seven skills can use this route when a video is relevant to their research.
+
 To read a long page in parts, set `max_length` and continue from `offset`. Both count
 characters of the extracted content. A paged markdown result ends with a marker such as
 `[Truncated: characters 0-12000 of 48211 (direct). Continue with offset=12000.]`, and
 the last part ends with `[End of content: ...]`. Paged JSON adds `source`, `offset`,
 `total_length`, and `next_offset` (`null` on the last part); Jina JSON keeps its text
-under `data.content`. Each call fetches the page again. The source is `direct` or
-`jina`, and offsets are comparable only between parts from the same source and an
-unchanged page. If the source changes, read again from offset 0.
+under `data.content`. Each call fetches the source again. The source is `direct`,
+`jina`, or `youtube`, and offsets are comparable only between parts from the same
+extractor and unchanged content. If the source changes, read again from offset 0.
 
 ```bash
 web-forager fetch "https://example.com" --max-length 12000

@@ -21,6 +21,7 @@ import trafilatura
 from pydantic import Field
 
 from .server import mcp
+from .youtube_transcript import fetch_transcript, video_id_from_url
 
 logger = logging.getLogger(__name__)
 
@@ -312,13 +313,13 @@ def fetch_url(
     with_images: bool = False,
     allow_jina: bool = True,
     offset: int = 0,
+    language: str | None = None,
 ) -> str | dict[str, Any]:
     """
     Fetch a URL and convert its content to markdown or JSON.
 
-    Tries a direct HTTP fetch with trafilatura first. If retrieval or extraction
-    fails, or extraction returns insufficient content, falls back to the Jina
-    Reader API for eligible URLs.
+    YouTube video URLs return timestamped captions. Other URLs use direct HTTP
+    extraction, then Jina Reader for eligible URLs when extraction fails.
 
     Args:
         url: The URL to fetch and convert
@@ -327,6 +328,7 @@ def fetch_url(
         with_images: Whether to include images in the output
         allow_jina: Allow fallback for eligible public URLs (False for direct-only)
         offset: Character position in the extracted content to start from
+        language: Preferred caption language for YouTube videos (for example, "fr")
 
     Returns:
         The fetched content as markdown string or JSON dict. A paged markdown
@@ -339,6 +341,11 @@ def fetch_url(
     """
     _validate_url(url)
     max_length, offset = _validate_paging(max_length, offset)
+
+    video_id = video_id_from_url(url)
+    if video_id is not None:
+        transcript = fetch_transcript(video_id, output_format, language)
+        return _apply_page(transcript, max_length, offset, "youtube")
 
     # Try direct fetch first
     try:
@@ -377,22 +384,24 @@ def web_fetch(
     allow_jina: bool = True,
     # Strict so the MCP schema rejects booleans instead of coercing True to 1.
     offset: Annotated[int, Field(strict=True, ge=0)] | None = 0,
+    language: str | None = None,
 ) -> str | dict[str, Any]:
     """
     Fetch a URL and convert it to markdown or JSON.
 
-    Tries direct HTTP fetch first for speed. Falls back to Jina Reader
-    for JavaScript-heavy or bot-protected pages.
+    YouTube video URLs return timestamped captions. Other URLs try direct
+    HTTP extraction first, then Jina Reader for eligible pages.
 
     Args:
         url: The URL to fetch and convert
         format: Output format - "markdown" or "json"
         max_length: Maximum content length to return (None for no limit)
-        with_images: Whether to include images in the output
+        with_images: Whether to include images in page output (not video frames)
         allow_jina: Allow fallback for eligible public URLs (False for direct-only)
         offset: Character position to start from; use the next offset reported
             by a truncated result to continue reading. Offsets are comparable only
-            between results from the same source (direct or jina)
+            between results from the same source (direct, jina, or youtube)
+        language: Preferred caption language for YouTube videos (for example, "fr")
 
     Returns:
         The fetched content in the specified format (markdown string or JSON object)
@@ -412,6 +421,7 @@ def web_fetch(
         with_images=with_images,
         allow_jina=allow_jina,
         offset=offset,
+        language=language,
     )
 
 
