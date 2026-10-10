@@ -19,9 +19,10 @@ for r in results:
 PY
 ```
 
-If packaged fetch fails, use Jina Reader subject to [source-access.md](source-access.md):
+If packaged page fetch fails, use Jina Reader subject to [source-access.md](source-access.md):
 
 ```bash
 curl -s "https://r.jina.ai/https://example.com"
 ```
 
+For a YouTube caption failure, report the access gap without forwarding the video URL.

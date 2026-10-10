@@ -21,7 +21,8 @@ video page metadata alone is not a transcript.
 The result gives timestamps, language, and whether captions were automatic. Request a
 specific language when needed; otherwise English is preferred, then an available
 track. Cite the video URL. Captions provide spoken text, not visual evidence, and a
-missing or blocked transcript is an access gap.
+missing or blocked transcript is an access gap. Report it without forwarding the video
+URL to Jina or another proxy fetch service.
 
 A successful extraction may still be a preview, CAPTCHA, login screen, navigation
 shell, or empty article body. Classify these as access failures immediately; do not
