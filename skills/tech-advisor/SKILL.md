@@ -49,11 +49,13 @@ for r in results:
 PY
 ```
 
-If packaged fetch fails, use Jina Reader:
+If packaged page fetch fails, use Jina Reader:
 
 ```bash
 curl -s "https://r.jina.ai/https://example.com"
 ```
+
+For a YouTube caption failure, report the access gap without forwarding the video URL.
 
 The workflow requires both search and fetch. If either capability is unavailable, state
 what is missing instead of recommending from stale knowledge.

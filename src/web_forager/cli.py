@@ -163,6 +163,7 @@ def _handle_fetch(args: argparse.Namespace) -> int:
             with_images=args.with_images,
             allow_jina=not getattr(args, "direct_only", False),
             offset=args.offset,
+            language=args.language,
         )
 
         if args.format == "json":
@@ -301,6 +302,9 @@ def _setup_parser() -> argparse.ArgumentParser:
     )
     fetch_parser.add_argument(
         "--with-images", action="store_true", help="Generate alt text for images"
+    )
+    fetch_parser.add_argument(
+        "--language", help="Preferred caption language for YouTube videos (e.g. fr)"
     )
 
     # Version command

@@ -32,12 +32,14 @@ uv run --no-project --python '>=3.10,<3.14' --with 'ddgs>=9.5.2' python -c \
   'from ddgs import DDGS; print(DDGS().text(query="your query", max_results=8))'
 ```
 
-Use Jina Reader only if the normal fetch pipeline has not already tried it and
-the URL is eligible under [source-access.md](source-access.md):
+Use Jina Reader for non-video pages only if the normal fetch pipeline has not
+already tried it and the URL is eligible under [source-access.md](source-access.md):
 
 ```bash
 curl -s "https://r.jina.ai/https://example.com"
 ```
+
+For a YouTube caption failure, report the access gap without forwarding the video URL.
 
 The workflow requires both search and fetch. If either capability is unavailable, state
 what is missing and limit the analysis to evidence you can verify.
